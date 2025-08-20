@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 
-export default function LiveVideoEmbed({ videoId = "DOOrIxw5xOw", autoplay = false }: { videoId?: string; autoplay?: boolean; }) {
+export default function LiveVideoEmbed({ videoId = "b5sqilX2C2U", autoplay = false }: { videoId?: string; autoplay?: boolean; }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
