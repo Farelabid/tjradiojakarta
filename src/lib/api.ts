@@ -1,127 +1,171 @@
 // src/lib/api.ts
 // ------------------------------------------------------------------
-// Sumber: API Berita Indonesia (RSS -> JSON).
-// Demo/Docs & daftar route (CNN, CNBC, Tempo, Merdeka, SINDOnews, dll) ada di README. 
-// Kita ambil khusus kanal yang relevan Jakarta: 
+// Aggregator Berita (server-only) berbasis "API Berita Indonesia".
+// Kanal yang diambil (Jakarta/Metro):
 //   - /merdeka/jakarta
 //   - /tempo/metro
 //   - /sindonews/metro
-// Lalu filter lagi judul/desc/link yang mengandung "Jakarta" (case-insensitive).
+//
+// Lalu DISARING lagi berdasarkan keyword yang kamu minta:
+//   ["jakarta","pramono anung","rano karno","transjakarta","gubernur jakarta"]
+// Pencocokan case-insensitive terhadap judul, deskripsi, dan link.
 // ------------------------------------------------------------------
 
 import 'server-only';
 import type { NewsArticle } from '@/types';
 
+// Basis API (boleh override via ENV BERITA_ID_BASE_URL)
 const BASE =
-  process.env.BERITA_ID_BASE_URL?.replace(/\/$/, '') ||
-  'https://api-berita-indonesia.vercel.app';
+  (process.env.BERITA_ID_BASE_URL?.replace(/\/$/, '') ||
+    'https://api-berita-indonesia.vercel.app') as string;
 
-// Endpoint yang relevan untuk Jakarta
-const JAKARTA_ENDPOINTS: Array<{ path: string; sourceName: string; sourceId: string }> = [
-  { path: '/merdeka/jakarta',   sourceName: 'Merdeka',   sourceId: 'merdeka' },   // README: merdeka punya kategori `jakarta`
-  { path: '/tempo/metro',       sourceName: 'Tempo',     sourceId: 'tempo' },     // README: tempo punya kategori `metro`
-  { path: '/sindonews/metro',   sourceName: 'SINDOnews', sourceId: 'sindonews' }, // README: sindonews punya kategori `metro`
+// Sumber-sumber yang relevan untuk Jakarta/Metro
+const FEEDS = [
+  '/cnn/terbaru',
+  '/cnbc/terbaru',
+  '/antara/terbaru',
+  '/tempo/hiburan',
+  '/sindonews/metro',
 ];
 
-// Fetch helper (dengan ISR revalidate)
-async function http<T>(path: string, revalidateSeconds = 300): Promise<T> {
-  const url = `${BASE}${path}`;
-  const res = await fetch(url, {
-    headers: { accept: 'application/json' },
-    next: { revalidate: revalidateSeconds },
-  });
-  if (!res.ok) throw new Error(`BeritaID API error ${res.status} for ${url}`);
-  return res.json() as Promise<T>;
-}
+// Keyword penyaring sesuai permintaan (huruf kecil semua utk match i)
+const KEYWORDS = [
+  'jakarta',
+  'persija',
+  'pramono anung',
+  'rano karno',
+  'transjakarta',
+  'jaklingko',
+  'gubernur jakarta',
+];
 
-// Ambil array item dari berbagai bentuk respons (defensif karena tiap provider bisa beda)
-function extractItems(payload: any): any[] {
-  if (!payload) return [];
-  // Beberapa API RSS->JSON lazim mengembalikan bentuk { data: [...] } atau { data: { posts: [...] } }
-  const d = payload.data ?? payload.result ?? payload.items ?? payload.articles ?? payload.posts;
-  if (Array.isArray(d)) return d;
-  if (Array.isArray(d?.posts)) return d.posts;
-  if (Array.isArray(payload?.posts)) return payload.posts;
-  return [];
-}
-
-function toIso(input: any): string {
-  const d = input ? new Date(input) : new Date();
-  return isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
-}
-
-function pickStr(...args: any[]): string | null {
-  for (const a of args) {
-    if (typeof a === 'string' && a.trim()) return a.trim();
+// Util: aman-kan parsing tanggal
+function toIsoDate(input: any): string {
+  try {
+    const d = new Date(input);
+    if (isNaN(+d)) return new Date().toISOString();
+    return d.toISOString();
+  } catch {
+    return new Date().toISOString();
   }
-  return null;
 }
 
-function pickImg(obj: any): string | null {
-  // Berbagai kemungkinan field gambar dari hasil parse RSS:
-  return (
-    obj?.thumbnail || obj?.thumb || obj?.image || obj?.enclosure?.url || obj?.enclosureUrl || null
-  );
+// Util: buang HTML tag sederhana di deskripsi
+function stripHtml(html?: string | null): string | null {
+  if (!html) return null;
+  return html.replace(/<[^>]*>/g, '').trim() || null;
 }
 
-function normalize(item: any, sourceId: string, sourceName: string): NewsArticle {
-  const title = pickStr(item?.title, item?.judul, item?.title_tag) || '(tanpa judul)';
-  const url = pickStr(item?.link, item?.url) || '#';
-  const desc = pickStr(item?.description, item?.contentSnippet, item?.summary, item?.body);
-  const date = pickStr(item?.pubDate, item?.isoDate, item?.waktu, item?.date, item?.published) || undefined;
-  const img = pickImg(item);
+// Cek apakah teks mengandung salah satu KEYWORDS
+function matchesKeywords(...texts: (string | null | undefined)[]): boolean {
+  const bag = (texts.filter(Boolean).join(' ') || '').toLowerCase();
+  return KEYWORDS.some((kw) => bag.includes(kw));
+}
+
+// Map satu post API ke NewsArticle
+function mapToArticle(post: any, sourceName: string): NewsArticle {
+  const title =
+    post?.title ??
+    post?.judul ??
+    '(Tanpa judul)';
+
+  const url =
+    post?.link ??
+    post?.guid ??
+    post?.url ??
+    '#';
+
+  // Gambar: thumbnail/enclosure jika ada
+  const urlToImage =
+    post?.thumbnail ??
+    post?.image ??
+    post?.enclosure?.url ??
+    null;
+
+  const description =
+    stripHtml(post?.description) ??
+    stripHtml(post?.content) ??
+    null;
+
+  const publishedAt =
+    toIsoDate(post?.pubDate ?? post?.isoDate ?? post?.date);
 
   return {
-    source: { id: sourceId, name: sourceName },
+    source: { id: null, name: sourceName },
     author: null,
     title,
-    description: desc ?? null,
-    url: url!,
-    urlToImage: img,
-    publishedAt: toIso(date),
+    description,
+    url,
+    urlToImage,
+    publishedAt,
     content: null,
   };
 }
 
-// ---------------- API yang dipakai UI ----------------
+// Ambil satu feed
+async function fetchFeed(path: string): Promise<NewsArticle[]> {
+  const res = await fetch(`${BASE}${path}`, {
+    // opsi ketat biar caching server Next.js wajar
+    next: { revalidate: 300 }, // 5 menit
+  });
 
-// Ambil berita gabungan "Jakarta" dari beberapa sumber
+  if (!res.ok) {
+    // fallback: tidak mematikan seluruh agregasi
+    return [];
+  }
+
+  const json = await res.json().catch(() => ({} as any));
+  // Struktur API Berita Indonesia umumnya: { success, message, data:{ posts:[...] , title, ... } }
+  const data = json?.data ?? {};
+  const posts: any[] = Array.isArray(data?.posts) ? data.posts : [];
+
+  const sourceName =
+    (typeof data?.title === 'string' && data.title) ||
+    // contoh judul sumber fallback dari path
+    path.replace(/^\//, '').toUpperCase();
+
+  return posts.map((p) => mapToArticle(p, sourceName));
+}
+
+// Public: ambil gabungan semua feed + filter keyword
 export async function fetchNews(): Promise<{ articles: NewsArticle[] }> {
-  // Ambil paralel dari 3 endpoint
-  const payloads = await Promise.allSettled(
-    JAKARTA_ENDPOINTS.map((e) => http<any>(e.path))
+  const results = await Promise.all(FEEDS.map((p) => fetchFeed(p)));
+  // gabung
+  let articles = results.flat();
+
+  // FILTER dengan KEYWORDS (judul/desc/url)
+  articles = articles.filter((a) =>
+    matchesKeywords(a.title, a.description ?? '', a.url)
   );
 
-  const candidates: Array<{ item: any; src: typeof JAKARTA_ENDPOINTS[number] }> = [];
-
-  payloads.forEach((res, idx) => {
-    if (res.status !== 'fulfilled') return;
-    const src = JAKARTA_ENDPOINTS[idx];
-    const arr = extractItems(res.value);
-    arr.forEach((it: any) => candidates.push({ item: it, src }));
+  // DEDUPE (berdasarkan URL, lalu judul)
+  const seenUrl = new Set<string>();
+  const seenTitle = new Set<string>();
+  articles = articles.filter((a) => {
+    const keyU = (a.url || '').trim();
+    const keyT = (a.title || '').trim().toLowerCase();
+    if (keyU && seenUrl.has(keyU)) return false;
+    if (keyT && seenTitle.has(keyT)) return false;
+    if (keyU) seenUrl.add(keyU);
+    if (keyT) seenTitle.add(keyT);
+    return true;
   });
 
-  // Filter keras: harus mengandung "Jakarta" di judul/desc/link
-  const reJakarta = /jakarta/i;
-  const filtered = candidates.filter(({ item }) => {
-    const hay = `${item?.title ?? item?.judul ?? ''} ${item?.description ?? item?.contentSnippet ?? item?.summary ?? item?.body ?? ''} ${item?.link ?? item?.url ?? ''}`;
-    return reJakarta.test(hay);
-  });
-
-  // Normalize
-  const articles = filtered.map(({ item, src }) => normalize(item, src.sourceId, src.sourceName));
-
-  // Sort terbaru -> lama
-  articles.sort((a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt));
+  // Sort terbaru → lama
+  articles.sort(
+    (a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt)
+  );
 
   return { articles };
 }
 
-// Pencarian bebas (masih disaring "Jakarta" juga, biar konsisten)
+// Search lokal (memakai hasil fetchNews yg sudah terfilter keywords)
 export async function searchNews(q: string): Promise<{ articles: NewsArticle[] }> {
-  // Di API ini tiap provider/kategori fixed; tidak ada endpoint search global.
-  // Jadi strategi: pakai fetchNews() (yang sudah Jakarta-only) lalu filter judul berisi q.
   const base = await fetchNews();
   const re = new RegExp(q, 'i');
-  return { articles: base.articles.filter(a => re.test(a.title) || re.test(a.description ?? '')) };
+  return {
+    articles: base.articles.filter(
+      (a) => re.test(a.title) || re.test(a.description ?? '')
+    ),
+  };
 }

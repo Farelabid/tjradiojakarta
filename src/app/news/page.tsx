@@ -82,7 +82,7 @@ export default function NewsPage({ searchParams }: NewsPageProps) {
         <div className="text-center mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">Berita Jakarta</h1>
           <p className="text-white/70 max-w-2xl mx-auto">
-            Kumpulan berita terbaru seputar Jakarta dari The Jakarta Post
+            Kumpulan berita terbaru seputar Jakarta
           </p>
         </div>
 
