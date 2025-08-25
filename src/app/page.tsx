@@ -36,7 +36,6 @@ function NewsLoadingSkeleton() {
   );
 }
 
-// ----- GANTI SELURUH fungsi NewsSection LAMA dengan blok ini -----
 async function NewsSection() {
   // Error akan otomatis ditangkap oleh error.tsx terdekat jika ada
   const newsData = await fetchNews();
@@ -90,16 +89,16 @@ export default function HomePage() {
             <Image
               src="/newlogo.png"
               alt="TJRadio Jakarta"
-              width={1280}           // rasio perkiraan; tidak memaksa bentuk
+              width={1280}
               height={640}
-              className="h-28 w-auto md:h-36 lg:h-40 drop-shadow-lg mb-6 md:mb-8"
-              sizes="(max-width: 640px) 112px, (max-width: 1024px) 144px, 160px"
+              className="h-40 w-auto md:h-48 lg:h-56 drop-shadow-lg mb-6 md:mb-8"
+              sizes="(max-width: 640px) 160px, (max-width: 1024px) 192px, 224px"
               priority
             />
           </div>
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
-              TJRadio <span className="text-orange-500">Jakarta</span>
+              TJRadio <span className="text-red-500">Jakarta</span>
             </h1>
             <p className="text-xl md:text-2xl text-white/80 mb-8 max-w-2xl mx-auto">
               Teman perjalanan kota Jakarta

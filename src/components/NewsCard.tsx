@@ -1,7 +1,10 @@
+"use client";
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { Calendar, ExternalLink } from 'lucide-react';
 import { NewsArticle } from '@/types';
+import { useState } from 'react';
 
 interface NewsCardProps {
   article: NewsArticle;
@@ -9,6 +12,7 @@ interface NewsCardProps {
 }
 
 export default function NewsCard({ article, featured = false }: NewsCardProps) {
+  const [imgSrc, setImgSrc] = useState(article.urlToImage || '/placeholder-news.jpg');
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -30,10 +34,13 @@ export default function NewsCard({ article, featured = false }: NewsCardProps) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="relative h-64 lg:h-80 rounded-xl overflow-hidden">
             <Image
-              src={article.urlToImage || '/placeholder-news.jpg'}
+              src={imgSrc}
               alt={article.title}
               fill
               className="object-cover"
+              onError={() => {
+                if (imgSrc !== '/placeholder-news.jpg') setImgSrc('/placeholder-news.jpg');
+              }}
             />
           </div>
           <div className="flex flex-col justify-center">
@@ -70,10 +77,13 @@ export default function NewsCard({ article, featured = false }: NewsCardProps) {
     <div className="card-gradient rounded-xl overflow-hidden hover:scale-[1.02] transition-transform">
       <div className="relative h-48">
         <Image
-          src={article.urlToImage || '/placeholder-news.jpg'}
+          src={imgSrc}
           alt={article.title}
           fill
           className="object-cover"
+          onError={() => {
+            if (imgSrc !== '/placeholder-news.jpg') setImgSrc('/placeholder-news.jpg');
+          }}
         />
       </div>
       <div className="p-4">
