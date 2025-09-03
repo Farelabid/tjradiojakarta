@@ -1,38 +1,27 @@
 // src/lib/api.ts
 import 'server-only';
+import { headers } from 'next/headers';
 import type { NewsArticle } from '@/types';
-// Paksa halaman/komponen pemanggil jadi dinamis (hindari static optimization Vercel)
-import { unstable_noStore as noStore } from 'next/cache';
 
 /**
- * BASIS API
- * - Bisa dioverride via ENV: BERITA_ID_BASE_URL
- * - Dibereskan trailing slash, dan kalau user keliru isi http → dipaksa https.
+ * =========================
+ *  KONFIG & UTILITAS
+ * =========================
  */
-const RAW_BASE =
-  process.env.BERITA_ID_BASE_URL ??
-  'https://api-berita-indonesia.vercel.app';
 
-const BASE = (() => {
-  const trimmed = RAW_BASE.replace(/\/$/, '');
-  if (/^https?:\/\//i.test(trimmed)) {
-    return trimmed.replace(/^http:\/\//i, 'https://');
-  }
-  return `https://${trimmed}`;
-})();
-
-/**
- * FEEDS — path relatif ke BASE
- */
-const FEEDS = [
-  '/cnn/terbaru',
-  '/cnbc/terbaru',
-  '/antara/terbaru',
-  '/tempo/hiburan',
-  '/sindonews/metro',
+// RSS resmi (tanpa agregator pihak ketiga)
+const RSS_FEEDS: { url: string; sourceHint?: string }[] = [
+  // CNN Indonesia - Nasional
+  { url: 'https://www.cnnindonesia.com/nasional/rss', sourceHint: 'CNN Indonesia' },
+  // CNBC Indonesia - News
+  { url: 'https://www.cnbcindonesia.com/news/rss', sourceHint: 'CNBC Indonesia' },
+  // ANTARA - Megapolitan (Jabodetabek)
+  { url: 'https://megapolitan.antaranews.com/rss/', sourceHint: 'ANTARA Megapolitan' },
+  // SINDOnews - Metro
+  { url: 'https://metro.sindonews.com/rss', sourceHint: 'SINDOnews Metro' },
 ];
 
-/** KEYWORDS untuk filter */
+// Keyword penyaring sesuai permintaan (lowercase semua)
 const KEYWORDS = [
   'jakarta',
   'persija',
@@ -43,8 +32,25 @@ const KEYWORDS = [
   'gubernur jakarta',
 ];
 
-/** Util: aman-kan parsing tanggal */
-function toIsoDate(input: any): string {
+// Helpers
+const decodeHtml = (s?: string | null): string | null => {
+  if (!s) return null;
+  return s
+    .replace(/<!\[CDATA\[(.*?)\]\]>/gis, '$1')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .trim() || null;
+};
+
+const stripHtml = (html?: string | null): string | null => {
+  if (!html) return null;
+  return html.replace(/<[^>]*>/g, '').trim() || null;
+};
+
+const toIsoDate = (input: any): string => {
   try {
     const d = new Date(input);
     if (isNaN(+d)) return new Date().toISOString();
@@ -52,130 +58,127 @@ function toIsoDate(input: any): string {
   } catch {
     return new Date().toISOString();
   }
-}
+};
 
-/** Util: buang HTML tag sederhana */
-function stripHtml(html?: string | null): string | null {
-  if (!html) return null;
-  return html.replace(/<[^>]*>/g, '').trim() || null;
-}
+const getTag = (xml: string, tag: string): string | null => {
+  const m = new RegExp(`<${tag}\\b[^>]*>([\\s\\S]*?)<\\/${tag}>`, 'i').exec(xml);
+  return decodeHtml(m?.[1] ?? null);
+};
 
-/** Cek apakah teks mengandung salah satu KEYWORDS */
-function matchesKeywords(...texts: (string | null | undefined)[]): boolean {
+const getAttr = (xml: string, tag: string, attr: string): string | null => {
+  const m = new RegExp(`<${tag}[^>]*\\b${attr}\\s*=\\s*"(.*?)"[^>]*\\/?>`, 'i').exec(xml);
+  return decodeHtml(m?.[1] ?? null);
+};
+
+const matchesKeywords = (...texts: (string | null | undefined)[]): boolean => {
   const bag = (texts.filter(Boolean).join(' ') || '').toLowerCase();
   return KEYWORDS.some((kw) => bag.includes(kw));
+};
+
+function parseRss(xml: string, sourceHint?: string): NewsArticle[] {
+  // Ambil judul channel (nama sumber fallback)
+  const channelTitle =
+    getTag(xml, 'title') ||
+    sourceHint ||
+    'Sumber RSS';
+
+  // Pecah berdasarkan item
+  const items = xml.split(/<item\b/i).slice(1).map((chunk) => {
+    const itemXml = '<item' + chunk.split(/<\/item>/i)[0] + '</item>';
+
+    const title =
+      getTag(itemXml, 'title') ||
+      getTag(itemXml, 'judul') ||
+      '(Tanpa judul)';
+
+    const url =
+      getTag(itemXml, 'link') ||
+      getTag(itemXml, 'guid') ||
+      getTag(itemXml, 'url') ||
+      '#';
+
+    // Gambar: enclosure/media:content/thumbnail
+    const urlToImage =
+      getAttr(itemXml, 'enclosure', 'url') ||
+      getAttr(itemXml, 'media:content', 'url') ||
+      getAttr(itemXml, 'media:thumbnail', 'url') ||
+      null;
+
+    const description =
+      stripHtml(decodeHtml(getTag(itemXml, 'description') || getTag(itemXml, 'content:encoded'))) ||
+      null;
+
+    const publishedAt = toIsoDate(
+      getTag(itemXml, 'pubDate') ||
+        getTag(itemXml, 'dc:date') ||
+        getTag(itemXml, 'updated') ||
+        getTag(itemXml, 'isoDate') ||
+        getTag(itemXml, 'date')
+    );
+
+    const a: NewsArticle = {
+      source: { id: null, name: channelTitle },
+      author: null,
+      title,
+      description,
+      url,
+      urlToImage,
+      publishedAt,
+      content: null,
+    };
+    return a;
+  });
+
+  return items;
 }
 
-/** Map satu post API ke NewsArticle */
-function mapToArticle(post: any, sourceName: string): NewsArticle {
-  const title =
-    post?.title ??
-    post?.judul ??
-    '(Tanpa judul)';
-
-  const url =
-    post?.link ??
-    post?.guid ??
-    post?.url ??
-    '#';
-
-  const urlToImage =
-    post?.thumbnail ??
-    post?.image ??
-    post?.enclosure?.url ??
-    null;
-
-  const description =
-    stripHtml(post?.description) ??
-    stripHtml(post?.content) ??
-    null;
-
-  const publishedAt =
-    toIsoDate(post?.pubDate ?? post?.isoDate ?? post?.date);
-
-  return {
-    source: { id: null, name: sourceName },
-    author: null,
-    title,
-    description,
-    url,
-    urlToImage,
-    publishedAt,
-    content: null,
-  };
-}
-
-/**
- * Ambil satu feed
- * - noStore() → paksa dinamis
- * - fetch cache: 'no-store' → hindari cache kosong di Vercel
- * - fallback [] bila gagal
- */
-async function fetchFeed(path: string): Promise<NewsArticle[]> {
-  // Pastikan fungsi ini selalu diperlakukan dinamis
-  noStore();
-
-  let res: Response;
+async function fetchRssFeed(url: string, sourceHint?: string): Promise<NewsArticle[]> {
   try {
-    res = await fetch(`${BASE}${path}`, {
+    const res = await fetch(url, {
+      // Hindari konflik opsi caching: cukup no-store.
       cache: 'no-store',
+      headers: {
+        // Beberapa origin menolak UA default fetch; set UA sederhana.
+        'User-Agent': 'TJRadioJakarta/1.0 (+https://tjradiojakarta.id)',
+        'Accept': 'application/rss+xml, application/xml, text/xml, */*;q=0.1',
+      },
     });
-  } catch (e) {
-    console.debug('[news] fetch error:', (e as any)?.message || e);
+
+    if (!res.ok) {
+      // Jangan putus seluruh agregasi bila salah satu feed error
+      console.warn('[news] upstream not ok:', res.status, url);
+      return [];
+    }
+
+    const xml = await res.text();
+    return parseRss(xml, sourceHint);
+  } catch (err) {
+    console.warn('[news] fetch error:', url, err);
     return [];
   }
-
-  if (!res.ok) {
-    console.debug('[news] upstream not ok:', res.status, path);
-    return [];
-  }
-
-  let json: any = {};
-  try {
-    json = await res.json();
-  } catch {
-    console.debug('[news] invalid json at', path);
-    return [];
-  }
-
-  // Struktur umum: { success, message, data: { posts:[...], title, ... } }
-  const data = json?.data ?? {};
-  const posts: any[] = Array.isArray(data?.posts) ? data.posts : [];
-
-  const sourceName =
-    (typeof data?.title === 'string' && data.title) ||
-    path.replace(/^\//, '').toUpperCase();
-
-  return posts.map((p) => mapToArticle(p, sourceName));
 }
 
 /**
- * Public: ambil gabungan semua feed + filter keyword + dedupe + sort terbaru
- * - noStore() di sini juga untuk menjamin pemanggilnya tidak di-static-kan
+ * =========================
+ *  PUBLIC API
+ * =========================
  */
+
+// Ambil gabungan semua feed + filter keyword
 export async function fetchNews(): Promise<{ articles: NewsArticle[] }> {
-  noStore();
+  // Membaca header sekali memaksa route jadi dinamis (opt-out full route cache).
+  // Ini penting di Vercel supaya data selalu ditarik fresh.
+  headers();
 
-  // Jalankan paralel, tahan error per feed
-  const results = await Promise.all(
-    FEEDS.map(async (p) => {
-      try {
-        return await fetchFeed(p);
-      } catch (e) {
-        console.debug('[news] feed failed:', p, (e as any)?.message || e);
-        return [];
-      }
-    })
+  const lists = await Promise.all(
+    RSS_FEEDS.map((f) => fetchRssFeed(f.url, f.sourceHint))
   );
+  let articles = lists.flat();
 
-  let articles = results.flat();
+  // Filter dengan KEYWORDS (judul/desc/url)
+  articles = articles.filter((a) => matchesKeywords(a.title, a.description ?? '', a.url));
 
-  // FILTER dengan KEYWORDS (judul/desc/url)
-  articles = articles.filter((a) =>
-    matchesKeywords(a.title, a.description ?? '', a.url)
-  );
-
-  // DEDUPE (berdasarkan URL, lalu judul)
+  // Dedupe (URL lalu judul)
   const seenUrl = new Set<string>();
   const seenTitle = new Set<string>();
   articles = articles.filter((a) => {
@@ -189,19 +192,13 @@ export async function fetchNews(): Promise<{ articles: NewsArticle[] }> {
   });
 
   // Sort terbaru → lama
-  articles.sort(
-    (a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt)
-  );
+  articles.sort((a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt));
 
   return { articles };
 }
 
-/**
- * Search lokal (memakai hasil fetchNews yang sudah terfilter keywords)
- */
+// Search lokal (memakai hasil fetchNews yang sudah terfilter keywords)
 export async function searchNews(q: string): Promise<{ articles: NewsArticle[] }> {
-  noStore();
-
   const base = await fetchNews();
   const re = new RegExp(q, 'i');
   return {
