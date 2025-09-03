@@ -11,8 +11,11 @@ const NavLink = ({ href, label }: { href: string; label: string }) => {
     <Link
       href={href}
       className={`px-3 py-2 rounded-md text-sm font-medium transition ${
-        active ? "bg-white/15" : "hover:bg-white/10"
+        active
+          ? "bg-primary-400/20 text-white"
+          : "hover:bg-primary-400/10 text-white/80"
       }`}
+
     >
       {label}
     </Link>
@@ -22,7 +25,7 @@ const NavLink = ({ href, label }: { href: string; label: string }) => {
 export default function Header() {
   const { isPlaying } = usePlayer();
   return (
-    <header className="sticky top-0 z-50 bg-neutral-950/70 backdrop-blur border-b border-white/10">
+    <header className="sticky top-0 z-50 bg-primary-950/60 backdrop-blur-lg border-b border-white/10">
       <div className="mx-auto max-w-6xl px-4 h-14 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 select-none">
           {/* Tinggi fix, lebar auto → rasio asli terjaga */}

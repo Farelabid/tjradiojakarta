@@ -46,3 +46,44 @@
 .safe-bottom {
   padding-bottom: calc(env(safe-area-inset-bottom));
 }
+
+/* === TJRadio Background System (tambahan) === */
+:root{
+  /* Palet variabel: ganti jika perlu ke kode final brand kamu */
+  --tj-navy: 10 22 40;      /* ex #0A1628 */
+  --tj-blue: 31 122 224;    /* ex biru TransJakarta-ish */
+  --tj-orange: 249 115 22;  /* ~ orange-500 */
+}
+
+/* Lapis latar gabungan radial + conic + linear */
+.bg-app {
+  background:
+    radial-gradient(1200px 600px at 80% -10%, rgb(var(--tj-orange) / 0.12), transparent 60%),
+    radial-gradient(900px 500px at -10% 25%, rgb(var(--tj-blue) / 0.10), transparent 60%),
+    conic-gradient(from 210deg at 70% 10%, rgb(var(--tj-blue) / 0.08), transparent 40% 65%, rgb(var(--tj-orange) / 0.08)),
+    linear-gradient(to bottom, rgb(5 10 20), rgb(7 12 24));
+}
+
+/* Grid halus + fade tepi via mask-image */
+.bg-grid {
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 24px 24px;
+  -webkit-mask-image: radial-gradient(120% 80% at 50% 10%, black 60%, transparent 100%);
+          mask-image: radial-gradient(120% 80% at 50% 10%, black 60%, transparent 100%);
+}
+
+/* Noise lembut berbasis SVG (fractal noise) */
+.bg-noise {
+  background-image: url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>\
+<filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/></filter>\
+<rect width='100%' height='100%' filter='url(%23n)' opacity='0.035'/>\
+</svg>");
+  background-size: 260px 260px;
+}
+
+/* Animasi ring conic opsional */
+@keyframes spin-slow { to { transform: rotate(360deg); } }
+.animate-spin-slow { animation: spin-slow 30s linear infinite; }

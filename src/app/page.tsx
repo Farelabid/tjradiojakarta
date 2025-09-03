@@ -11,23 +11,23 @@ function NewsLoadingSkeleton() {
     <div className="space-y-6">
       <div className="card-gradient rounded-2xl p-6 animate-pulse">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="h-64 lg:h-80 bg-primary-700 rounded-xl"></div>
+          <div className="h-64 lg:h-80 bg-primary-700/30 rounded-xl"></div>
           <div className="flex flex-col justify-center space-y-4">
-            <div className="h-4 bg-primary-700 rounded w-1/3"></div>
-            <div className="h-8 bg-primary-700 rounded w-full"></div>
-            <div className="h-4 bg-primary-700 rounded w-2/3"></div>
-            <div className="h-10 bg-primary-700 rounded w-40"></div>
+            <div className="h-4 bg-primary-700/30 rounded w-1/3"></div>
+            <div className="h-8 bg-primary-700/30 rounded w-full"></div>
+            <div className="h-4 bg-primary-700/30 rounded w-2/3"></div>
+            <div className="h-10 bg-primary-700/30 rounded w-40"></div>
           </div>
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {Array.from({ length: 6 }).map((_, i) => (
           <div key={i} className="card-gradient rounded-xl overflow-hidden animate-pulse">
-            <div className="h-48 bg-primary-700"></div>
+            <div className="h-48 bg-primary-700/30"></div>
             <div className="p-4 space-y-3">
-              <div className="h-3 bg-primary-700 rounded w-1/3"></div>
-              <div className="h-4 bg-primary-700 rounded w-full"></div>
-              <div className="h-3 bg-primary-700 rounded w-2/3"></div>
+              <div className="h-3 bg-primary-700/30 rounded w-1/3"></div>
+              <div className="h-4 bg-primary-700/30 rounded w-full"></div>
+              <div className="h-3 bg-primary-700/30 rounded w-2/3"></div>
             </div>
           </div>
         ))}
@@ -101,11 +101,11 @@ export default function HomePage() {
               TJRadio <span className="text-orange-500">Jakarta</span>
             </h1>
             <p className="text-xl md:text-2xl text-white/80 mb-8 max-w-2xl mx-auto">
-              Teman perjalanan kota Jakarta
+              Teman Perjalanan Jakarta
             </p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
               {menuItems.map((item, index) => (
-                <Link key={index} href={item.href} className="card-gradient rounded-xl p-4 hover:scale-105 transition-transform">
+                <Link key={index} href={item.href} className="rounded-xl p-4 hover:scale-105 transition-transform bg-white/5 hover:bg-white/10 ring-1 ring-white/10 backdrop-blur-sm">
                   <item.icon className="w-8 h-8 text-orange-500 mx-auto mb-2" />
                   <h3 className="text-white font-semibold text-sm mb-1">{item.title}</h3>
                   <p className="text-white/60 text-xs">{item.description}</p>

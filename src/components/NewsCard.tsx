@@ -30,7 +30,7 @@ export default function NewsCard({ article, featured = false }: NewsCardProps) {
 
   if (featured) {
     return (
-      <div className="card-gradient rounded-2xl p-6 mb-8">
+      <div className="rounded-2xl p-6 mb-8 bg-white/5 ring-1 ring-white/10 backdrop-blur-md">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="relative h-64 lg:h-80 rounded-xl overflow-hidden">
             <Image
@@ -74,7 +74,7 @@ export default function NewsCard({ article, featured = false }: NewsCardProps) {
   }
 
   return (
-    <div className="card-gradient rounded-xl overflow-hidden hover:scale-[1.02] transition-transform">
+    <div className="rounded-xl overflow-hidden hover:scale-[1.02] transition-transform bg-white/5 ring-1 ring-white/10 backdrop-blur-sm">
       <div className="relative h-48">
         <Image
           src={imgSrc}

@@ -61,7 +61,7 @@ const MiniBar: React.FC = () => {
   const { isPlaying, togglePlay, setExpanded } = usePlayer();
   const { program, timeLabel } = useCurrentProgram();
 
-  const title = program?.show ?? "TJRadio Jakarta — Teman Perjalanan Kota Jakarta";
+  const title = program?.show ?? "TJRadio Jakarta — Teman Perjalanan Jakarta";
   const sub = program
     ? [
         timeLabel,
@@ -153,7 +153,7 @@ const ExpandedOverlay: React.FC = () => {
         </div>
         <div>
           <p className="font-semibold">TJRadio Jakarta</p>
-          <p className="text-xs text-white/60">Teman Perjalanan Kota Jakarta</p>
+          <p className="text-xs text-white/60">Teman Perjalanan Jakarta</p>
         </div>
       </div>
       <button

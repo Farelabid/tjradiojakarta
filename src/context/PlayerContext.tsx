@@ -9,6 +9,9 @@ const STREAM_URL =
 const LS_VOLUME = "tj_v2_volume";
 const LS_MUTED = "tj_v2_muted";
 
+const EV_RADIO_PLAY = "tj:radio-play";
+const EV_RADIO_PAUSE = "tj:radio-pause";
+
 // Tipe konteks
 interface PlayerContextType {
   isPlaying: boolean;
@@ -83,17 +86,16 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const play = useCallback(async () => {
     const el = audioRef.current;
     if (!el) return;
-    // Jika source belum diset, set di sini (fallback)
     if (!el.src) el.src = STREAM_URL;
-    // iOS/Chrome butuh gesture – panggilan ini bisa reject.
     try {
-      await el.play();
+      await el.play(); // returns Promise — wajib ditangani (autoplay policy) 
       setPlaying(true);
+      // Beritahu komponen lain bahwa radio sedang diputar
+      window.dispatchEvent(new CustomEvent(EV_RADIO_PLAY));
     } catch (err) {
-      // NotAllowedError: user gesture belum ada
+      // NotAllowedError bila tanpa gesture, dsb.
       console.warn("Audio play blocked:", err);
       setPlaying(false);
-      // jangan looping tak terbatas; biarkan user tap
     }
   }, []);
 
@@ -102,6 +104,8 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     if (!el) return;
     el.pause();
     setPlaying(false);
+    // Beritahu komponen lain bahwa radio berhenti
+    window.dispatchEvent(new CustomEvent(EV_RADIO_PAUSE));
   }, []);
 
   // Debounce sederhana untuk menghindari double invoke di StrictMode

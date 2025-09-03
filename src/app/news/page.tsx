@@ -13,25 +13,25 @@ interface NewsPageProps {
 function NewsLoadingSkeleton() {
   return (
     <div className="space-y-8">
-      <div className="card-gradient rounded-2xl p-6 animate-pulse">
+      <div className="rounded-2xl p-6 mb-8 bg-white/5 ring-1 ring-white/10 backdrop-blur-sm animate-pulse">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="h-64 lg:h-80 bg-primary-700 rounded-xl"></div>
+          <div className="h-64 lg:h-80 bg-primary-700/30 rounded-xl"></div>
           <div className="flex flex-col justify-center space-y-4">
-            <div className="h-4 bg-primary-700 rounded w-1/3"></div>
-            <div className="h-8 bg-primary-700 rounded w-full"></div>
-            <div className="h-4 bg-primary-700 rounded w-2/3"></div>
-            <div className="h-10 bg-primary-700 rounded w-40"></div>
+            <div className="h-4 bg-primary-700/30 rounded w-1/3"></div>
+            <div className="h-8 bg-primary-700/30 rounded w-full"></div>
+            <div className="h-4 bg-primary-700/30 rounded w-2/3"></div>
+            <div className="h-10 bg-primary-700/30 rounded w-40"></div>
           </div>
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {Array.from({ length: 9 }).map((_, i) => (
           <div key={i} className="card-gradient rounded-xl overflow-hidden animate-pulse">
-            <div className="h-48 bg-primary-700"></div>
+            <div className="h-48 bg-primary-700/30"></div>
             <div className="p-4 space-y-3">
-              <div className="h-3 bg-primary-700 rounded w-1/3"></div>
-              <div className="h-4 bg-primary-700 rounded w-full"></div>
-              <div className="h-3 bg-primary-700 rounded w-2/3"></div>
+              <div className="h-3 bg-primary-700/30 rounded w-1/3"></div>
+              <div className="h-4 bg-primary-700/30 rounded w-full"></div>
+              <div className="h-3 bg-primary-700/30 rounded w-2/3"></div>
             </div>
           </div>
         ))}
