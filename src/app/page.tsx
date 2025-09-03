@@ -98,7 +98,7 @@ export default function HomePage() {
           </div>
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
-              TJRadio <span className="text-red-500">Jakarta</span>
+              TJRadio <span className="text-orange-500">Jakarta</span>
             </h1>
             <p className="text-xl md:text-2xl text-white/80 mb-8 max-w-2xl mx-auto">
               Teman perjalanan kota Jakarta
