@@ -17,7 +17,6 @@ import {
   nowJakarta,
   getSchedule,
   findCurrent,
-  isSoftLaunchDay,
   type Seg,
 } from "@/lib/schedule";
 
@@ -40,9 +39,8 @@ function useCurrentProgram() {
   );
 
   const timeLabel = current ? `${current.start}–${current.end} WIB` : null;
-  const isSoft = isSoftLaunchDay(isoDate);
 
-  return { program: current, timeLabel, isSoft };
+  return { program: current, timeLabel};
 }
 
 /* ===========================
@@ -63,7 +61,7 @@ const MiniBar: React.FC = () => {
   const { isPlaying, togglePlay, setExpanded } = usePlayer();
   const { program, timeLabel } = useCurrentProgram();
 
-  const title = program?.show ?? "TJRadio Jakarta — Teman Perjalanan Kota";
+  const title = program?.show ?? "TJRadio Jakarta — Teman Perjalanan Kota Jakarta";
   const sub = program
     ? [
         timeLabel,
@@ -129,7 +127,7 @@ const ExpandedOverlay: React.FC = () => {
     setVolume,
   } = usePlayer();
 
-  const { program, timeLabel, isSoft } = useCurrentProgram();
+  const { program, timeLabel} = useCurrentProgram();
   const target = usePortalTarget("player-portal");
   if (!isExpanded || !target) return null;
 
@@ -155,7 +153,7 @@ const ExpandedOverlay: React.FC = () => {
         </div>
         <div>
           <p className="font-semibold">TJRadio Jakarta</p>
-          <p className="text-xs text-white/60">Teman Perjalanan Kota</p>
+          <p className="text-xs text-white/60">Teman Perjalanan Kota Jakarta</p>
         </div>
       </div>
       <button
@@ -181,11 +179,6 @@ const ExpandedOverlay: React.FC = () => {
                 <span className="inline-flex items-center gap-1 rounded-full bg-red-600/90 px-2 py-0.5 text-[10px] font-semibold">
                   <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
                   LIVE
-                </span>
-              )}
-              {isSoft && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-orange-500/90 px-2 py-0.5 text-[10px] font-semibold">
-                  SOFT LAUNCH
                 </span>
               )}
             </div>

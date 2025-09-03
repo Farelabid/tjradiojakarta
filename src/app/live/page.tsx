@@ -10,7 +10,6 @@ import {
   getSchedule,
   findCurrent,
   toMin,
-  isSoftLaunchDay,
   type Seg,
 } from "@/lib/schedule";
 
@@ -31,7 +30,6 @@ export default function LivePage() {
     return () => clearInterval(t);
   }, []);
 
-  const isSoft = isSoftLaunchDay(isoDate);
 
   // jadwal hari ini & segmen aktif
   const schedule: Seg[] = useMemo(() => getSchedule(isoDate), [isoDate]);
@@ -84,10 +82,8 @@ export default function LivePage() {
       "Halo TJRadio! Saya ingin request lagu / kirim salam"
     );
 
-  const pageTitle = isSoft ? "PROGRAM KHUSUS: SOFT LAUNCHING TJ RADIO" : "Live Radio";
-  const pageDesc = isSoft
-    ? "Rangkaian spesial memperingati Hari Radio Nasional — tema: “Suara Jakarta, Suara Kita”."
-    : "Dengarkan siaran langsung TJ Radio Jakarta dengan kualitas audio terbaik";
+  const pageTitle ="Live Radio";
+  const pageDesc = "Dengarkan siaran langsung TJ Radio Jakarta dengan kualitas audio terbaik";
 
   return (
     <div className="py-8 pb-[calc(env(safe-area-inset-bottom)+96px)] md:pb-8">

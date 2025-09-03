@@ -23,20 +23,6 @@ export function nowJakarta() {
   return { isoDate, hhmm, minutes, fullDateLabel };
 }
 
-export const isSoftLaunchDay = (isoDate: string) => isoDate === "2025-09-11";
-
-export function softLaunch(): Seg[] {
-  return [
-    { start: "06:00", end: "08:00", show: "TJ Pagi Ceria Spesial Hari Radio", host: "TJRadio Crew", desc: "Nostalgia radio, kuis interaktif" },
-    { start: "08:00", end: "10:00", show: "Playlist TJRadio", host: "Pilihan Pendengar", desc: "Lagu-lagu bertema radio & Jakarta" },
-    { start: "10:00", end: "11:00", show: "Live Countdown", host: "Reporter TJRadio", live: true, desc: "Menuju sambutan Gubernur, testimoni publik" },
-    { start: "11:00", end: "11:30", show: "Acara Puncak: Sambutan Gubernur/Wagub", host: "Pemprov DKI", live: true, desc: "Disiarkan langsung serentak" },
-    { start: "11:30", end: "13:00", show: "TJ Lunch Beat Spesial Launching", host: "TJRadio Crew", desc: "Ucapan selebritas, kuis, giveaway" },
-    { start: "13:00", end: "16:00", show: "Playlist TJRadio", host: "Pilihan Penumpang", desc: "Lagu-lagu favorit penumpang" },
-    { start: "16:00", end: "20:00", show: "TJ Rush Hour Launch Edition", host: "TJRadio Crew", desc: "Cerita radio, interaksi & live shoutout" },
-  ];
-}
-
 export function regular(): Seg[] {
   return [
     { start: "06:00", end: "10:00", show: "Morning Drive",   host: "AKBAR KOBAR",   live: true, desc: "Temani awal aktivitas Anda", image: "/images/announcer/akbar.jpg" },
@@ -61,7 +47,7 @@ export function isNowInSlot(nowMin: number, start: string, end: string) {
 }
 
 export function getSchedule(isoDate: string) {
-  return isSoftLaunchDay(isoDate) ? softLaunch() : regular();
+  return regular();
 }
 
 export function findCurrent(isoDate: string, nowMin: number, segments: Seg[]) {

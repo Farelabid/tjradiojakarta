@@ -9,7 +9,6 @@ import {
   getSchedule,
   findCurrent,
   toMin,
-  isSoftLaunchDay,
   type Seg,
 } from "@/lib/schedule";
 
@@ -57,11 +56,7 @@ export default function ProgramToday() {
   const title = current?.show ?? "TJRadio Jakarta";
   const host = current?.host ?? "TJRadio";
   const timeLabel = current ? `${current.start} - ${current.end} WIB` : "—";
-  const desc =
-    current?.desc ??
-    (isSoftLaunchDay(isoDate)
-      ? "Rangkaian Soft Launching TJRadio"
-      : "Temani perjalanan kota Anda");
+  const desc = "Teman Perjalanan Kota Jakarta";
 
   return (
     <section className="rounded-2xl border border-white/10 bg-white/5 p-5 md:p-6">
