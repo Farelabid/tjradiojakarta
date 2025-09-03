@@ -1,25 +1,29 @@
 // src/lib/api.ts
-// ------------------------------------------------------------------
-// Aggregator Berita (server-only) berbasis "API Berita Indonesia".
-// Kanal yang diambil (Jakarta/Metro):
-//   - /merdeka/jakarta
-//   - /tempo/metro
-//   - /sindonews/metro
-//
-// Lalu DISARING lagi berdasarkan keyword yang kamu minta:
-//   ["jakarta","pramono anung","rano karno","transjakarta","gubernur jakarta"]
-// Pencocokan case-insensitive terhadap judul, deskripsi, dan link.
-// ------------------------------------------------------------------
-
 import 'server-only';
 import type { NewsArticle } from '@/types';
 
-// Basis API (boleh override via ENV BERITA_ID_BASE_URL)
-const BASE =
-  (process.env.BERITA_ID_BASE_URL?.replace(/\/$/, '') ||
-    'https://api-berita-indonesia.vercel.app') as string;
+/**
+ * BASIS API
+ * - Bisa dioverride via ENV: BERITA_ID_BASE_URL
+ * - Dibereskan trailing slash, dan kalau user keliru isi http → dipaksa https.
+ */
+const RAW_BASE =
+  process.env.BERITA_ID_BASE_URL ??
+  'https://api-berita-indonesia.vercel.app';
 
-// Sumber-sumber yang relevan untuk Jakarta/Metro
+const BASE = (() => {
+  const trimmed = RAW_BASE.replace(/\/$/, '');
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed.replace(/^http:\/\//i, 'https://');
+  }
+  return `https://${trimmed}`;
+})();
+
+/**
+ * FEEDS — path relatif ke BASE
+ * (Pastikan semua route ini memang tersedia di API sumbermu.
+ *  Kalau ada yang sering 404, sementara hapus dulu yang bermasalah.)
+ */
 const FEEDS = [
   '/cnn/terbaru',
   '/cnbc/terbaru',
@@ -28,7 +32,7 @@ const FEEDS = [
   '/sindonews/metro',
 ];
 
-// Keyword penyaring sesuai permintaan (huruf kecil semua utk match i)
+/** KEYWORDS untuk filter */
 const KEYWORDS = [
   'jakarta',
   'persija',
@@ -39,7 +43,7 @@ const KEYWORDS = [
   'gubernur jakarta',
 ];
 
-// Util: aman-kan parsing tanggal
+/** Util: aman-kan parsing tanggal */
 function toIsoDate(input: any): string {
   try {
     const d = new Date(input);
@@ -50,19 +54,19 @@ function toIsoDate(input: any): string {
   }
 }
 
-// Util: buang HTML tag sederhana di deskripsi
+/** Util: buang HTML tag sederhana */
 function stripHtml(html?: string | null): string | null {
   if (!html) return null;
   return html.replace(/<[^>]*>/g, '').trim() || null;
 }
 
-// Cek apakah teks mengandung salah satu KEYWORDS
+/** Cek apakah teks mengandung salah satu KEYWORDS */
 function matchesKeywords(...texts: (string | null | undefined)[]): boolean {
   const bag = (texts.filter(Boolean).join(' ') || '').toLowerCase();
   return KEYWORDS.some((kw) => bag.includes(kw));
 }
 
-// Map satu post API ke NewsArticle
+/** Map satu post API ke NewsArticle */
 function mapToArticle(post: any, sourceName: string): NewsArticle {
   const title =
     post?.title ??
@@ -75,7 +79,6 @@ function mapToArticle(post: any, sourceName: string): NewsArticle {
     post?.url ??
     '#';
 
-  // Gambar: thumbnail/enclosure jika ada
   const urlToImage =
     post?.thumbnail ??
     post?.image ??
@@ -102,35 +105,64 @@ function mapToArticle(post: any, sourceName: string): NewsArticle {
   };
 }
 
-// Ambil satu feed
+/**
+ * Ambil satu feed
+ * - Pakai ISR ringan (revalidate 60 dtk) agar tidak “stuck kosong”
+ * - Kalau error/format beda → fallback []
+ */
 async function fetchFeed(path: string): Promise<NewsArticle[]> {
-  const res = await fetch(`${BASE}${path}`, {
-    // opsi ketat biar caching server Next.js wajar
-    next: { revalidate: 300 }, // 5 menit
-  });
-
-  if (!res.ok) {
-    // fallback: tidak mematikan seluruh agregasi
+  let res: Response;
+  try {
+    res = await fetch(`${BASE}${path}`, {
+      // ISR ringan, aman untuk Vercel production
+      next: { revalidate: 60 },
+    });
+  } catch (e) {
+    // Untuk debug di Vercel Function Logs (tidak akan mengganggu UI)
+    console.debug('[news] fetch error:', (e as any)?.message || e);
     return [];
   }
 
-  const json = await res.json().catch(() => ({} as any));
-  // Struktur API Berita Indonesia umumnya: { success, message, data:{ posts:[...] , title, ... } }
+  if (!res.ok) {
+    console.debug('[news] upstream not ok:', res.status, path);
+    return [];
+  }
+
+  let json: any = {};
+  try {
+    json = await res.json();
+  } catch {
+    console.debug('[news] invalid json at', path);
+    return [];
+  }
+
+  // Struktur umum: { success, message, data: { posts:[...], title, ... } }
   const data = json?.data ?? {};
   const posts: any[] = Array.isArray(data?.posts) ? data.posts : [];
 
   const sourceName =
     (typeof data?.title === 'string' && data.title) ||
-    // contoh judul sumber fallback dari path
     path.replace(/^\//, '').toUpperCase();
 
   return posts.map((p) => mapToArticle(p, sourceName));
 }
 
-// Public: ambil gabungan semua feed + filter keyword
+/**
+ * Public: ambil gabungan semua feed + filter keyword + dedupe + sort terbaru
+ */
 export async function fetchNews(): Promise<{ articles: NewsArticle[] }> {
-  const results = await Promise.all(FEEDS.map((p) => fetchFeed(p)));
-  // gabung
+  // Jalankan paralel, tapi jangan sampai satu error mematikan semua
+  const results = await Promise.all(
+    FEEDS.map(async (p) => {
+      try {
+        return await fetchFeed(p);
+      } catch (e) {
+        console.debug('[news] feed failed:', p, (e as any)?.message || e);
+        return [];
+      }
+    })
+  );
+
   let articles = results.flat();
 
   // FILTER dengan KEYWORDS (judul/desc/url)
@@ -159,7 +191,9 @@ export async function fetchNews(): Promise<{ articles: NewsArticle[] }> {
   return { articles };
 }
 
-// Search lokal (memakai hasil fetchNews yg sudah terfilter keywords)
+/**
+ * Search lokal (memakai hasil fetchNews yang sudah terfilter keywords)
+ */
 export async function searchNews(q: string): Promise<{ articles: NewsArticle[] }> {
   const base = await fetchNews();
   const re = new RegExp(q, 'i');
