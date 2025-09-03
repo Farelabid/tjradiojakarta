@@ -1,6 +1,8 @@
 // src/lib/api.ts
 import 'server-only';
 import type { NewsArticle } from '@/types';
+// Paksa halaman/komponen pemanggil jadi dinamis (hindari static optimization Vercel)
+import { unstable_noStore as noStore } from 'next/cache';
 
 /**
  * BASIS API
@@ -21,8 +23,6 @@ const BASE = (() => {
 
 /**
  * FEEDS — path relatif ke BASE
- * (Pastikan semua route ini memang tersedia di API sumbermu.
- *  Kalau ada yang sering 404, sementara hapus dulu yang bermasalah.)
  */
 const FEEDS = [
   '/cnn/terbaru',
@@ -107,18 +107,20 @@ function mapToArticle(post: any, sourceName: string): NewsArticle {
 
 /**
  * Ambil satu feed
- * - Pakai ISR ringan (revalidate 60 dtk) agar tidak “stuck kosong”
- * - Kalau error/format beda → fallback []
+ * - noStore() → paksa dinamis
+ * - fetch cache: 'no-store' → hindari cache kosong di Vercel
+ * - fallback [] bila gagal
  */
 async function fetchFeed(path: string): Promise<NewsArticle[]> {
+  // Pastikan fungsi ini selalu diperlakukan dinamis
+  noStore();
+
   let res: Response;
   try {
     res = await fetch(`${BASE}${path}`, {
-      // ISR ringan, aman untuk Vercel production
-      next: { revalidate: 60 },
+      cache: 'no-store',
     });
   } catch (e) {
-    // Untuk debug di Vercel Function Logs (tidak akan mengganggu UI)
     console.debug('[news] fetch error:', (e as any)?.message || e);
     return [];
   }
@@ -149,9 +151,12 @@ async function fetchFeed(path: string): Promise<NewsArticle[]> {
 
 /**
  * Public: ambil gabungan semua feed + filter keyword + dedupe + sort terbaru
+ * - noStore() di sini juga untuk menjamin pemanggilnya tidak di-static-kan
  */
 export async function fetchNews(): Promise<{ articles: NewsArticle[] }> {
-  // Jalankan paralel, tapi jangan sampai satu error mematikan semua
+  noStore();
+
+  // Jalankan paralel, tahan error per feed
   const results = await Promise.all(
     FEEDS.map(async (p) => {
       try {
@@ -195,6 +200,8 @@ export async function fetchNews(): Promise<{ articles: NewsArticle[] }> {
  * Search lokal (memakai hasil fetchNews yang sudah terfilter keywords)
  */
 export async function searchNews(q: string): Promise<{ articles: NewsArticle[] }> {
+  noStore();
+
   const base = await fetchNews();
   const re = new RegExp(q, 'i');
   return {
