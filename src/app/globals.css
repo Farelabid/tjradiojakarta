@@ -22,8 +22,9 @@
   }
   
   .card-gradient {
-    @apply bg-gradient-to-br from-primary-800/50 to-primary-900/80 backdrop-blur-sm;
+    @apply bg-gradient-to-br from-primary-800/35 to-primary-900/60 backdrop-blur-md border border-white/10;
   }
+
   
   .glass-effect {
     @apply bg-white/10 backdrop-blur-md border border-white/20;

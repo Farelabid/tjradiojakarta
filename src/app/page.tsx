@@ -5,6 +5,9 @@ import NewsCard from '@/components/NewsCard';
 import { fetchNews } from '@/lib/api';
 import ProgramToday from '@/components/ProgramToday';
 import { Suspense } from 'react';
+import SoftOpeningMarquee from "@/components/SoftOpeningMarquee";
+import Countdown from "@/components/Countdown";
+
 
 function NewsLoadingSkeleton() {
   return (
@@ -83,38 +86,61 @@ export default function HomePage() {
 
   return (
     <div className="pb-20 md:pb-8">
-      <section className="relative py-12 md:py-20">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-center">
-            <Image
-              src="/newlogo.png"
-              alt="TJRadio Jakarta"
-              width={1280}
-              height={640}
-              className="h-40 w-auto md:h-48 lg:h-56 drop-shadow-lg mb-6 md:mb-8"
-              sizes="(max-width: 640px) 160px, (max-width: 1024px) 192px, 224px"
-              priority
-            />
-          </div>
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
-              TJRadio <span className="text-orange-500">Jakarta</span>
-            </h1>
-            <p className="text-xl md:text-2xl text-white/80 mb-8 max-w-2xl mx-auto">
-              Teman Perjalanan Jakarta
-            </p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-              {menuItems.map((item, index) => (
-                <Link key={index} href={item.href} className="rounded-xl p-4 hover:scale-105 transition-transform bg-white/5 hover:bg-white/10 ring-1 ring-white/10 backdrop-blur-sm">
-                  <item.icon className="w-8 h-8 text-orange-500 mx-auto mb-2" />
-                  <h3 className="text-white font-semibold text-sm mb-1">{item.title}</h3>
-                  <p className="text-white/60 text-xs">{item.description}</p>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+      <SoftOpeningMarquee
+  dateText="Segera Mengudara 11 September 2025"
+  hosts={[
+    "Cak Lontong",
+    "Reno Fenady",
+    "Eko Kuntadi",
+    "Indy Rahmawati",
+    "Akbar Kobar",
+    "McDanny",
+    "Denny Chandra",
+    "Irwan Ardian",
+    "Mo Sidik",
+    "MazdjoPray",
+  ]}
+/>
+
+      <section className="relative py-6 md:py-10">
+  <div className="container mx-auto px-4">
+    <div className="flex justify-center">
+      <Image
+        src="/logoneon.png"
+        alt="TJRadio Jakarta"
+        width={1280}
+        height={640}
+        className="mx-auto my-2 sm:my-3 md:my-4 w-64 sm:w-72 md:w-80 lg:w-[24rem] xl:w-[28rem] max-w-[88vw] h-auto"
+      />
+    </div>
+    <div className="text-center mb-12">
+      <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
+        TJRadio <span className="text-orange-500">Jakarta</span>
+      </h1>
+      <p className="text-xl md:text-2xl text-white/80 mb-8 max-w-2xl mx-auto">
+        Teman Perjalanan Jakarta
+      </p>
+      <div className="mb-6">
+  <Countdown target="2025-09-11T09:00:00+07:00" />
+</div>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+        {menuItems.map((item, index) => (
+          <Link
+            key={index}
+            href={item.href}
+            className="rounded-xl p-4 hover:scale-105 transition-transform bg-white/5 hover:bg-white/10 ring-1 ring-white/10 backdrop-blur-sm"
+          >
+            <item.icon className="w-8 h-8 text-orange-500 mx-auto mb-2" />
+            <h3 className="text-white font-semibold text-sm mb-1">{item.title}</h3>
+            <p className="text-white/60 text-xs">{item.description}</p>
+          </Link>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
 
       <section className="py-8">
         <div className="container mx-auto px-4">
