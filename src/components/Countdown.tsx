@@ -13,16 +13,28 @@ function diff(target: Date) {
 }
 
 export default function Countdown({
-  target = "2025-09-11T09:00:00+07:00",
+  target = "2025-09-11T09:45:00+07:00",
 }: {
   target?: string;
 }) {
-  const [t, setT] = React.useState(() => diff(new Date(target)));
+  const [t, setT] = React.useState({ days: 0, hours: 0, mins: 0, secs: 0, done: false });
+  const [isMounted, setIsMounted] = React.useState(false);
 
   React.useEffect(() => {
-    const id = setInterval(() => setT(diff(new Date(target))), 1000);
-    return () => clearInterval(id);
-  }, [target]);
+    setIsMounted(true);
+  }, []);
+
+  React.useEffect(() => {
+    if (isMounted) {
+      setT(diff(new Date(target)));
+      const id = setInterval(() => setT(diff(new Date(target))), 1000);
+      return () => clearInterval(id);
+    }
+  }, [target, isMounted]);
+
+  if (!isMounted) {
+    return null;
+  }
 
   if (t.done) {
     return (

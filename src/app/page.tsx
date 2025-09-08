@@ -7,6 +7,8 @@ import ProgramToday from '@/components/ProgramToday';
 import { Suspense } from 'react';
 import SoftOpeningMarquee from "@/components/SoftOpeningMarquee";
 import Countdown from "@/components/Countdown";
+import SoftOpeningLaunchButton from "@/components/SoftOpeningLaunchButton";
+
 
 
 function NewsLoadingSkeleton() {
@@ -102,7 +104,38 @@ export default function HomePage() {
   ]}
 />
 
-      <section className="relative py-6 md:py-10">
+  <section className="relative py-6 md:py-10 overflow=hidden">
+{/* === BACKGROUND OVERLAY (SKYLINE) — versi fix === */}
+  <div aria-hidden className="absolute inset-0 z-0 pointer-events-none">
+    {/* lighting halus */}
+    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_10%,rgba(249,115,22,0.10),transparent_55%),radial-gradient(ellipse_at_85%_15%,rgba(56,189,248,0.10),transparent_40%)]" />
+{/* skyline: selalu nempel bawah & center */}
+<div className="absolute bottom-0 left-1/2 -translate-x-1/2">
+  <Image
+    src="/jakarta.png"
+    alt=""
+    width={1600}
+    height={500}
+    priority
+    sizes="100vw"
+    className="
+      max-w-none
+      w-[96vw]        /* 🔼 mobile dibesarkan */
+      sm:w-[92vw]
+      md:w-[78vw]
+      lg:w-[68vw]
+      xl:w-[60vw]
+      opacity-40 sm:opacity-35 md:opacity-30
+      object-contain
+    "
+  />
+</div>
+
+    {/* gelapkan bawah agar kartu tetap kontras */}
+    <div className="absolute inset-x-0 bottom-0 h-28 md:h-40 bg-gradient-to-b from-transparent to-[#020617]/90" />
+  </div>
+
+
   <div className="container mx-auto px-4">
     <div className="flex justify-center">
       <Image
@@ -121,7 +154,8 @@ export default function HomePage() {
         Teman Perjalanan Jakarta
       </p>
       <div className="mb-6">
-  <Countdown target="2025-09-11T09:00:00+07:00" />
+  <Countdown target="2025-09-11T09:45:00+07:00" />
+  <SoftOpeningLaunchButton />
 </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
