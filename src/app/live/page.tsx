@@ -77,7 +77,7 @@ export default function LivePage() {
 
   // link WA Request Lagu (sesuai permintaan)
   const waLink =
-    "https://wa.me/6282234534570?text=" +
+    "https://wa.me/6288973077301?text=" +
     encodeURIComponent(
       "Halo TJRadio! Saya ingin request lagu / kirim salam"
     );

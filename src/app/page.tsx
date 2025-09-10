@@ -10,7 +10,7 @@ import Countdown from "@/components/Countdown";
 import SoftOpeningLaunchButton from "@/components/SoftOpeningLaunchButton";
 
 const WA_LINK =
-  "https://wa.me/6282234534570?text=" +
+  "https://wa.me/6288973077301?text=" +
   encodeURIComponent("Halo TJRadio! Saya ingin request lagu / kirim salam");
 
 const IG_LINK = "https://www.instagram.com/tjradio.jakarta/";
@@ -80,8 +80,6 @@ async function NewsSection() {
     </section>
   );
 }
-
-
 
 export default function HomePage() {
   const menuItems = [
