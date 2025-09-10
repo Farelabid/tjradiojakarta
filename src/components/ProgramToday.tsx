@@ -11,6 +11,7 @@ import {
   toMin,
   type Seg,
 } from "@/lib/schedule";
+import React from "react";
 
 export default function ProgramToday() {
   const { togglePlay, isPlaying } = usePlayer();
@@ -58,33 +59,49 @@ export default function ProgramToday() {
   const timeLabel = current ? `${current.start} - ${current.end} WIB` : "—";
   const desc = "Teman Perjalanan Jakarta";
 
-  return (
-    <section className="rounded-2xl border border-white/10 bg-white/5 p-5 md:p-6">
-      {/* lembutkan background seperti di live */}
-      <div className="pointer-events-none absolute -top-16 -right-16 h-56 w-56 rounded-full bg-orange-500/10 blur-2xl" />
+  const [imgOk, setImgOk] = React.useState(Boolean(current?.image));
+  React.useEffect(() => {
+  setImgOk(Boolean(current?.image));
+}, [current?.image]);
 
-      {/* GRID: mobile 2 kolom (gambar | detail) + baris CTA di bawah (col-span-2).
-         Di desktop, CTA otomatis pindah ke kolom kanan saja. */}
-      <div className="relative grid grid-cols-[auto,1fr] gap-4 md:gap-6">
-        {/* Kolom kiri — Foto:
-            - Mobile: PERSEGI (aspect-square) supaya tidak gepeng.
-            - Desktop: tinggi mengikuti konten (md:aspect-auto + self-stretch). */}
-        <div className="relative w-24 sm:w-28 md:w-32 aspect-square md:aspect-auto md:self-stretch">
-          <div className="absolute inset-0 rounded-2xl overflow-hidden border border-white/10 shadow-lg bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center">
-            {current?.image ? (
-              <Image
-                src={current.image}
-                alt={host}
-                fill
-                className="object-cover"
-                sizes="(max-width:768px) 112px, 128px"
-                priority
-              />
-            ) : (
-              <Mic className="text-white opacity-95" size={80} />
-            )}
-          </div>
+
+  return (
+  <section className="rounded-2xl border border-white/10 bg-white/5 p-5 md:p-6">
+    {/* lembutkan background seperti di live */}
+    <div className="pointer-events-none absolute -top-16 -right-16 h-56 w-56 rounded-full bg-orange-500/10 blur-2xl" />
+
+    {/* GRID: mobile 2 kolom (gambar | detail) + baris CTA di bawah (col-span-2).
+       Di desktop, CTA otomatis pindah ke kolom kanan saja. */}
+    <div className="relative grid grid-cols-[auto,1fr] gap-4 md:gap-6">
+
+      {/* Kolom kiri — Artwork dengan fallback Mic + judul */}
+      <div className="relative w-24 sm:w-28 md:w-32 aspect-square md:aspect-auto md:self-stretch">
+        <div
+          className="absolute inset-0 rounded-2xl overflow-hidden border border-white/10 shadow-lg
+                     bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center"
+          aria-label={current?.show || "Program TJRadio"}
+        >
+          {imgOk && current?.image ? (
+            <Image
+              src={current.image}
+              alt={current.show || "Program TJRadio"}
+              fill
+              className="object-cover"
+              sizes="(max-width:768px) 112px, 128px"
+              loading="lazy"
+              onError={() => setImgOk(false)}   // jika 404 ⇒ fallback
+            />
+          ) : (
+            <div className="flex flex-col items-center justify-center px-2 text-center">
+              <Mic className="text-white/90 mb-1" size={28} aria-hidden="true" />
+              <span className="text-[10px] md:text-xs font-medium text-white/95 leading-tight line-clamp-2">
+                {current?.show || "TJRadio"}
+              </span>
+            </div>
+          )}
         </div>
+      </div>
+
 
         {/* Kolom kanan — Detail */}
         <div className="min-w-0">

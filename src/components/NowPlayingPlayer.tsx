@@ -11,6 +11,7 @@ import {
   ChevronUp,
   X,
   Radio,
+  Mic,
 } from "lucide-react";
 import { usePlayer } from "@/context/PlayerContext"; // sesuaikan jika lokasinya berbeda
 import {
@@ -61,7 +62,7 @@ const MiniBar: React.FC = () => {
   const { isPlaying, togglePlay, setExpanded } = usePlayer();
   const { program, timeLabel } = useCurrentProgram();
 
-  const title = program?.show ?? "TJRadio Jakarta — Teman Perjalanan Jakarta";
+  const title = program?.show ?? "TJ Radio Jakarta — Teman Perjalanan Jakarta";
   const sub = program
     ? [
         timeLabel,
@@ -70,7 +71,7 @@ const MiniBar: React.FC = () => {
       ]
         .filter(Boolean)
         .join(" • ")
-    : "Streaming Samcloud (AAC)";
+    : "Streaming TJ RADIO Jakarta";
 
   return (
     <div className="fixed left-0 right-0 bottom-0 z-player-safe px-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
@@ -129,6 +130,9 @@ const ExpandedOverlay: React.FC = () => {
 
   const { program, timeLabel} = useCurrentProgram();
   const target = usePortalTarget("player-portal");
+  const [imgOk, setImgOk] = React.useState(Boolean(program?.image));
+  React.useEffect(() => setImgOk(Boolean(program?.image)), [program?.image]);
+  
   if (!isExpanded || !target) return null;
 
   return createPortal(
@@ -152,7 +156,7 @@ const ExpandedOverlay: React.FC = () => {
           <Radio className="w-5 h-5 text-orange-300" />
         </div>
         <div>
-          <p className="font-semibold">TJRadio Jakarta</p>
+          <p className="font-semibold">TJ Radio Jakarta</p>
           <p className="text-xs text-white/60">Teman Perjalanan Jakarta</p>
         </div>
       </div>
@@ -166,52 +170,65 @@ const ExpandedOverlay: React.FC = () => {
     </div>
 
         {/* body */}
-        <div className="p-6 flex flex-col gap-6">
-          {/* Info Program Realtime */}
-          <div className="rounded-2xl bg-gradient-to-br from-primary-700/60 via-primary-600/40 to-orange-600/30 p-6 border border-white/10">
-            <div className="flex flex-wrap items-center gap-2 text-xs text-white/80">
-              {timeLabel && (
-                <span className="inline-flex items-center gap-1 rounded-full border border-white/20 bg-white/10 px-2 py-0.5">
-                  {timeLabel}
-                </span>
-              )}
-              {program?.live && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-red-600/90 px-2 py-0.5 text-[10px] font-semibold">
-                  <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
-                  LIVE
-                </span>
-              )}
-            </div>
+<div className="p-6 flex flex-col gap-6">
+  {/* Info Program Realtime */}
+  <div className="rounded-2xl bg-gradient-to-br from-primary-700/60 via-primary-600/40 to-orange-600/30 p-6 border border-white/10">
+    <div className="flex flex-wrap items-center gap-2 text-xs text-white/80">
+      {timeLabel && (
+        <span className="inline-flex items-center gap-1 rounded-full border border-white/20 bg-white/10 px-2 py-0.5">
+          {timeLabel}
+        </span>
+      )}
+      {program?.live && (
+        <span className="inline-flex items-center gap-1 rounded-full bg-red-600/90 px-2 py-0.5 text-[10px] font-semibold">
+          <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
+          LIVE
+        </span>
+      )}
+    </div>
 
-            <div className="mt-2 flex items-start gap-4">
-              {/* Album art jika ada */}
-              {program?.image ? (
-                <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden border border-white/15 shadow">
-                  <Image
-                    src={program.image}
-                    alt={program.host ?? program.show}
-                    fill
-                    className="object-cover"
-                    sizes="96px"
-                  />
-                </div>
-              ) : null}
-
-              <div className="flex-1 min-w-0">
-                <p className="text-xl md:text-2xl font-semibold truncate">
-                  {program?.show ?? "Live Stream — Samcloud AAC"}
-                </p>
-                {program?.host && (
-                  <p className="text-sm text-orange-200 font-medium mt-0.5">
-                    dengan {program.host}
-                  </p>
-                )}
-                {program?.desc && (
-                  <p className="text-sm text-white/80 mt-2">{program.desc}</p>
-                )}
-              </div>
-            </div>
+    <div className="mt-2 flex items-start gap-4">
+      {/* Artwork: img valid ⇒ <Image>, kalau tidak ⇒ ikon Mic + judul */}
+      <div
+        className="relative w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden border border-white/15 shadow
+                   bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center"
+        aria-label={program?.show || "Program TJRadio"}
+      >
+        {imgOk && program?.image ? (
+          <Image
+            src={program.image}
+            alt={program.host ?? program.show ?? "Program TJRadio"}
+            fill
+            className="object-cover"
+            sizes="96px"
+            loading="lazy"
+            onError={() => setImgOk(false)}  // 404 ⇒ fallback
+          />
+        ) : (
+          <div className="flex flex-col items-center justify-center px-2 text-center">
+            <Mic className="text-white/90 mb-1" size={22} aria-hidden="true" />
+            <span className="text-[10px] font-medium text-white/95 leading-tight line-clamp-2">
+              {program?.show ?? "TJRadio"}
+            </span>
           </div>
+        )}
+      </div>
+
+      <div className="flex-1 min-w-0">
+        <p className="text-xl md:text-2xl font-semibold truncate">
+          {program?.show ?? "Live Stream — TJ Radio Jakarta"}
+        </p>
+        {program?.host && (
+          <p className="text-sm text-orange-200 font-medium mt-0.5">
+            dengan {program.host}
+          </p>
+        )}
+        {program?.desc && (
+          <p className="text-sm text-white/80 mt-2">{program.desc}</p>
+        )}
+      </div>
+    </div>
+  </div>
 
           {/* Controls (tema gelap klasik) */}
           <div className="flex items-center gap-4">

@@ -12,6 +12,7 @@ import {
   toMin,
   type Seg,
 } from "@/lib/schedule";
+import React from "react";
 
 export default function LivePage() {
   const { setExpanded, isPlaying, togglePlay } = usePlayer();
@@ -85,6 +86,9 @@ export default function LivePage() {
   const pageTitle ="Live Radio";
   const pageDesc = "Dengarkan siaran langsung TJ Radio Jakarta dengan kualitas audio terbaik";
 
+  const [imgOk, setImgOk] = React.useState(Boolean(current?.image));
+  React.useEffect(() => setImgOk(Boolean(current?.image)), [current?.image]);
+  
   return (
     <div className="py-8 pb-[calc(env(safe-area-inset-bottom)+96px)] md:pb-8">
       <div className="container mx-auto px-4">
@@ -110,24 +114,34 @@ export default function LivePage() {
               <div className="pointer-events-none absolute -top-16 -right-16 h-56 w-56 rounded-full bg-orange-500/10 blur-2xl" />
 
               {/* GRID: mobile 2 kolom (foto | detail) + baris CTA di bawah (col-span-2) */}
-              <div className="relative grid grid-cols-[auto,1fr] gap-4 md:gap-6">
-                {/* Foto penyiar */}
-                <div className="relative w-24 sm:w-28 md:w-32 aspect-square md:aspect-auto md:self-stretch">
-                  <div className="absolute inset-0 rounded-2xl overflow-hidden border border-white/10 shadow-lg bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center">
-                    {current?.image ? (
-                      <Image
-                        src={current.image}
-                        alt={current.host ?? current.show}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width:768px) 112px, 128px"
-                        priority
-                      />
-                    ) : (
-                      <Mic className="text-white" size={80} />
-                    )}
-                  </div>
-                </div>
+<div className="relative grid grid-cols-[auto,1fr] gap-4 md:gap-6">
+  {/* Foto penyiar / artwork dengan fallback Mic + judul */}
+  <div className="relative w-24 sm:w-28 md:w-32 aspect-square md:aspect-auto md:self-stretch">
+    <div
+      className="absolute inset-0 rounded-2xl overflow-hidden border border-white/10 shadow-lg
+                 bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center"
+      aria-label={current?.show || "Program TJRadio"}
+    >
+      {imgOk && current?.image ? (
+        <Image
+          src={current.image}
+          alt={current?.host ?? current?.show ?? "Program TJRadio"}
+          fill
+          className="object-cover"
+          sizes="(max-width:768px) 112px, 128px"
+          priority
+          onError={() => setImgOk(false)}  // jika 404 ⇒ fallback
+        />
+      ) : (
+        <div className="flex flex-col items-center justify-center px-2 text-center">
+          <Mic className="text-white/90 mb-1" size={28} aria-hidden="true" />
+          <span className="text-[10px] md:text-xs font-medium text-white/95 leading-tight line-clamp-2">
+            {current?.show ?? "TJRadio"}
+          </span>
+        </div>
+      )}
+    </div>
+  </div>
 
                 {/* Detail program */}
                 <div className="min-w-0">

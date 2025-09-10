@@ -61,6 +61,32 @@ function imageForHost(host?: string) {
   return undefined;
 }
 
+const SHOW_IMAGE: Record<string, string> = {
+  "Musik Malam TJ": "/shows/musik-malam.jpg",
+  "Opening Pre-Event & Pengantar Soft Launching": "/shows/opening.jpg",
+  "Info TJ (#JagaJakarta)": "/shows/info-tj.jpg",
+  "Sambungan Balai Kota": "/shows/balai-kota.jpg",
+  "PERESMIAN TJ Radio oleh Gubernur Jakarta": "/shows/peresmian.jpg",
+  "Narasumber TransJakarta & Update Lapangan": "/shows/narasumber-tj.jpg",
+
+  "Jakarta Kota Global & Traffic Update Monas": "/shows/kota-global.jpg",
+  "Sesi WAGUB — Q&A 500 Tahun Jakarta & Peresmian TJ Radio": "/shows/wagub.jpg",
+
+  "Kuliner Jakarta & IG Foods": "/shows/kuliner.jpg",
+  "Ayo Naik Transport Umum": "/shows/fasum-angkutan.jpg",
+
+  "Traffic & Cerita Penumpang": "/shows/drive-opening.jpg",
+  "Ngobrol Bareng Sopir • Satu Halte, Satu Cerita": "/shows/drive-sopir-halte.jpg",
+  "Jakarta Malam": "/shows/jakarta-malam.jpg",
+
+  "Spesial The Limpa": "/shows/the-limpa.jpg",
+  "Transformasi Radio": "/shows/transformasi.jpg",
+};
+
+function imageForShowTitle(title?: string): string | undefined {
+  return title ? SHOW_IMAGE[title] : undefined;
+}
+
 // ========== Soft Launch Day ==========
 const OFFICIAL_SOFT_DATE = (process.env.SOFT_OPENING_START ?? "2025-09-11T00:00:00+07:00").slice(0, 10);
 const TEST_MODE = process.env.SOFT_OPENING_TEST_MODE === "1";
@@ -72,41 +98,136 @@ export const isSoftLaunchDay = (isoDate: string) => {
   return false;
 };
 
-// ========== Jadwal Soft Launch (ringkas, 24 jam utuh) ==========
 function buildSoftLaunch(): Seg[] {
+  // SOFT LAUNCHING — Kamis, 11 Sep 2025 (WIB)
+  // Ringkas: satu topik = satu show. Tanpa "lagu/promo".
   const segs: Seg[] = [
     { start: "00:00", end: "06:00", show: "Musik Malam TJ" },
+    // ===== 06:00–10:00 — PAGI =====
+    {
+      start: "06:00",
+      end: "06:15",
+      show: "Opening Pre-Event & Pengantar Soft Launching",
+      host: "Irwan",
+      live: true,
+      desc: "Pembuka penuh semangat, pantun hangat, dan teaser agenda besar pagi ini."
+    },
+    {
+      start: "06:15",
+      end: "08:00",
+      show: "Info TJ (#JagaJakarta)",
+      host: "Irwan, Denny Chandra, Risan, Abi, Nayla",
+      live: true,
+      desc: "Sambungan langsung dari jalanan Jakarta: update lapangan, cerita penumpang, dan fakta layanan TransJakarta."
+    },
+    {
+      start: "08:00",
+      end: "08:30",
+      show: "Sambungan Balai Kota",
+      host: "Irwan",
+      live: true,
+      desc: "Countdown menuju momen bersejarah—sapaan dari Balai Kota bersama trio komedian & Dirut TJ."
+    },
+    {
+      start: "08:30",
+      end: "08:55",
+      show: "PERESMIAN TJ Radio oleh Gubernur Jakarta",
+      host: "Gubernur Jakarta, Teh Indy, Mo Sidik, Cak Lontong, Dirut TJ",
+      live: true,
+      desc: "Gubernur menekan tombol, TJ Radio resmi mengudara menjadi Teman Perjalanan Jakarta!"
+    },
+    {
+      start: "08:55",
+      end: "10:00",
+      show: "Narasumber TransJakarta & Update Lapangan",
+      host: "Irwan & Denny Chandra",
+      live: true,
+      desc: "Kupas tuntas inovasi TJ"
+    },
 
-    { start: "06:00", end: "06:03", show: "Jam Pertama (Pre-Event)", host: "Pemandu Studio", live: true, desc: "Pembukaan" },
-    { start: "06:03", end: "06:15", show: "Musik & Informasi" },
-    { start: "06:15", end: "06:18", show: "Talk: Reporter & On-Bus", host: "Patricia & OT", live: true },
-    { start: "06:18", end: "06:30", show: "Musik & Informasi" },
+    // ===== 10:00–12:00 — TEH INDY & MO SIDIK =====
+    {
+      start: "10:00",
+      end: "11:00",
+      show: "Jakarta Kota Global & Traffic Update Monas",
+      host: "Teh Indy & Mo Sidik",
+      live: true,
+      desc: "Jakarta sebagai kota global, traffic update Monas bersama Patricia"
+    },
+    {
+      start: "11:00",
+      end: "12:00",
+      show: "Sesi WAGUB — Q&A 500 Tahun Jakarta & Peresmian TJ Radio",
+      host: "Teh Indy, Mo Sidik, Wakil Gubernur Jakarta",
+      live: true,
+      desc: "Dialog santai namun bermakna: visi 500 Tahun Jakarta, peran radio, dan harapan untuk warganya."
+    },
 
-    { start: "06:30", end: "07:18", show: "TJ Morning Vibes", host: "Indy & Irwan (+Eko via telp)", live: true },
-    { start: "07:18", end: "08:30", show: "Musik Pagi" },
-    { start: "08:30", end: "08:48", show: "Lunch Talk TJ", host: "Hatma & Patricia", live: true },
-    { start: "08:48", end: "10:00", show: "Musik Menjelang Siang" },
+    // ===== 12:00–14:00 — LUNCH TALK T =====
+    {
+      start: "12:00",
+      end: "13:00",
+      show: "Kuliner Jakarta & IG Foods",
+      host: "Akbar, Pak Yaser & Hatma",
+      live: true,
+      desc: "Tur kuliner sore-sore: Blok M, Petak Sembilan, Pasar Baru—plus tren makanan viral versi warganet."
+    },
+    {
+      start: "13:00",
+      end: "14:00",
+      show: "Ayo Naik Transport Umum",
+      host: "Akbar, Pak Yaser & Hatma",
+      live: true,
+      desc: "Kenapa fasum harus dijaga, manfaat naik kendaraan umum, ditutup pantun penyemangat siang."
+    },
 
-    { start: "10:00", end: "12:18", show: "Sapa Pendengar", host: "Risan & Hatma", live: true },
-    { start: "12:18", end: "14:00", show: "Musik Siang" },
+    // ===== 17:00–20:00 — DRIVE TIME =====
+    {
+      start: "17:00",
+      end: "18:00",
+      show: "Traffic & Cerita Penumpang",
+      host: "Mc Danny & Reno",
+      live: true,
+      desc: "Jam pulang kerja ditemani update lalu lintas dan kisah lucu-hangat dari penumpang TJ."
+    },
+    {
+      start: "18:00",
+      end: "19:00",
+      show: "Ngobrol Bareng Sopir • Satu Halte, Satu Cerita",
+      host: "Mc Danny & Reno",
+      live: true,
+      desc: "Obrolan inspiratif bersama sopir dan cerita halte ikonik."
+    },
+    {
+      start: "19:00",
+      end: "20:00",
+      show: "Jakarta Malam",
+      host: "Mc Danny & Reno",
+      live: true,
+      desc: "Suasana kota jelang malam, salam dari pendengar, dan rangkuman highlight perjalanan hari ini."
+    },
 
-    { start: "14:00", end: "14:03", show: "Jakarte, Ape Kabar?", host: "Eko Kuntadhi", live: true },
-    { start: "14:03", end: "17:00", show: "Musik & Info Sore" },
-
-    { start: "17:00", end: "17:03", show: "Sore di Bis Bareng", host: "Reno & MC Danny", live: true },
-    { start: "17:03", end: "20:00", show: "Drive Time Playlist" },
-
-    { start: "20:00", end: "20:03", show: "Talk 1 – Kenangan Radio", host: "Cing Abdel & Akbar", live: true },
-    { start: "20:03", end: "20:30", show: "Musik" },
-    { start: "20:30", end: "20:33", show: "Talk 2 – Radio & Komedi", host: "Cak Lontong & Mazdjopray", live: true },
-    { start: "20:33", end: "20:45", show: "Musik" },
-    { start: "20:45", end: "20:48", show: "Talk 3 – Radio & Publik", host: "Denny & Cing Abdel", live: true },
-    { start: "20:48", end: "21:00", show: "Musik" },
-    { start: "21:00", end: "21:03", show: "Talk 4 – Transformasi", host: "All Crew (host Mazdjopray)", live: true },
-    { start: "21:03", end: "24:00", show: "Musik Malam TJ" },
+    // ===== 20:00–22:00 — SPESIAL MALAM =====
+    {
+      start: "20:00",
+      end: "21:00",
+      show: "Spesial The Limpa",
+      host: "Kang Denny, Cing Abdel, Akbar Kobar, Cak Lontong, Mazdjopray",
+      live: true,
+      desc: "Reuni hangat para idola: kisah awal siaran, tawa khas radio, dan momen paling menyentuh bareng pendengar."
+    },
+    {
+      start: "21:00",
+      end: "22:00",
+      show: "Transformasi Radio",
+      host: "TJ Radio Jakarta All Stars",
+      live: true,
+      desc: "Obrolan reflektif tentang masa depan radio Jakarta, cerita pribadi, dan pesan untuk generasi berikutnya."
+    },
   ];
 
-  return segs.map((s) => (s.image ? s : { ...s, image: imageForHost(s.host) }));
+  // Otomatis isi image jika ada pemetaan host -> foto (opsional).
+  return segs.map((s) => ({ ...s, image: imageForShowTitle(s.show) }));
 }
 
 // ========== Jadwal Rutin ==========
