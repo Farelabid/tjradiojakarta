@@ -9,6 +9,11 @@ import SoftOpeningMarquee from "@/components/SoftOpeningMarquee";
 import Countdown from "@/components/Countdown";
 import SoftOpeningLaunchButton from "@/components/SoftOpeningLaunchButton";
 
+const WA_LINK =
+  "https://wa.me/6282234534570?text=" +
+  encodeURIComponent("Halo TJRadio! Saya ingin request lagu / kirim salam");
+
+const IG_LINK = "https://www.instagram.com/tjradio.jakarta/";
 
 
 function NewsLoadingSkeleton() {
@@ -81,9 +86,24 @@ async function NewsSection() {
 export default function HomePage() {
   const menuItems = [
     { icon: TrendingUp, title: 'Traffic Report', description: 'Laporan lalu lintas terkini', href: '/traffic' },
-    { icon: Mic, title: 'Music Requests', description: 'Request lagu favorit', href: '/request' },
-    { icon: Users, title: 'Listener Club', description: 'Komunitas pendengar', href: '/community' },
-    { icon: ShoppingBag, title: 'Official Merch', description: 'Merchandise resmi', href: '/merch' }
+    {
+    icon: Mic,
+    title: "Music Requests",
+    description: "Request lagu favorit",
+    href: WA_LINK, 
+  },
+  {
+    icon: Users,
+    title: "Listener Club",
+    description: "Komunitas pendengar",
+    href: IG_LINK, 
+  },
+  {
+    icon: ShoppingBag,
+    title: "Official Merch",
+    description: "Merchandise resmi",
+    href: IG_LINK,
+  },
   ];
 
   return (

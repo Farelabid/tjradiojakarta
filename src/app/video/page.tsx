@@ -1,34 +1,13 @@
 // app/video/page.tsx
 import LiveVideoEmbed from "@/components/LiveVideoEmbed";
 
-/** Placeholder box untuk slot iklan */
-function AdBox({
-  label = "IKLAN",
-  note,
-  className = "",
-}: {
-  label?: string;
-  note?: string;
-  className?: string;
-}) {
-  return (
-    <div
-      className={[
-        "rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm",
-        "flex items-center justify-center text-center text-white/80",
-        className,
-      ].join(" ")}
-      aria-label="Placeholder Iklan"
-    >
-      <div>
-        <div className="text-xs tracking-widest font-semibold text-orange-300">
-          {label}
-        </div>
-        {note && <div className="text-[11px] mt-1 text-white/60">{note}</div>}
-      </div>
-    </div>
-  );
-}
+
+const AD = {
+  href: "https://www.transjakarta.co.id/", // Ganti ke URL sponsor
+  imgDesktop: "/ads/Desktop.png", // bisa .png
+  imgMobile: "/ads/Mobile.jpg",     // bisa .png
+  alt: "Iklan Sponsor",
+};
 
 export default function VideoPage() {
   return (
@@ -40,17 +19,15 @@ export default function VideoPage() {
             <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
             <span className="text-red-400 font-bold text-sm">LIVE STREAMING</span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
-            Live Video
-          </h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">Live Video</h1>
           <p className="text-white/70 max-w-2xl mx-auto">
             Saksikan siaran langsung TJRadio Jakarta dalam format video.
           </p>
         </div>
 
-        {/* Grid utama: Video + Sidebar iklan */}
+        {/* Grid utama: Video (kiri) + Sidebar Iklan (kanan saat desktop) */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Kolom kiri: video */}
+          {/* Kolom kiri: video & deskripsi */}
           <div className="lg:col-span-3">
             <div className="card-gradient rounded-2xl p-3">
               <LiveVideoEmbed />
@@ -61,22 +38,49 @@ export default function VideoPage() {
                   TJRadio Jakarta — Live Stream
                 </h2>
                 <p className="text-white/70">
-                  Nikmati pengalaman mendengarkan radio yang lebih interaktif
-                  dengan tayangan live video kami.
+                  Nikmati pengalaman mendengarkan radio yang lebih interaktif dengan tayangan live video kami.
                 </p>
               </div>
             </div>
 
-            {/* Banner iklan (hanya mobile/tablet) */}
+            {/* IKLAN MOBILE (< lg): pindah ke bawah player, 300×250 */}
             <div className="mt-4 lg:hidden">
-              <AdBox note="728×90 / 320×100" className="h-24" />
+              <a
+                href={AD.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Iklan Sponsor"
+                className="block w-full"
+              >
+                <img
+                  src={AD.imgMobile}
+                  alt={AD.alt}
+                  width={300}
+                  height={250}
+                  loading="lazy"
+                  className="w-full max-w-[300px] mx-auto rounded-xl ring-1 ring-white/10"
+                />
+              </a>
             </div>
           </div>
 
-          {/* Kolom kanan: ganti live chat dengan slot iklan */}
-          <aside className="space-y-4">
-            <AdBox note="300×250" className="h-[250px]" />
-            <AdBox note="300×600" className="h-[600px] hidden md:flex" />
+          {/* Kolom kanan (≥ lg): 1 slot iklan 300×600 */}
+          <aside className="hidden lg:block lg:col-span-1">
+            <a
+              href={AD.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Iklan Sponsor"
+              className="block"
+            >
+              <img
+                src={AD.imgDesktop}
+                alt={AD.alt}
+                width={300}
+                height={600}
+                className="w-full max-w-[300px] rounded-2xl ring-1 ring-white/10"
+              />
+            </a>
           </aside>
         </div>
       </div>

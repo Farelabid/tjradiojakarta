@@ -13,7 +13,7 @@ function diff(target: Date) {
 }
 
 export default function Countdown({
-  target = "2025-09-11T09:45:00+07:00",
+  target = "2025-09-11T08:30:00+07:00",
 }: {
   target?: string;
 }) {

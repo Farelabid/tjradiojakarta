@@ -1,9 +1,8 @@
 "use client";
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
-// Stream URL: gunakan milik Samcloud yang sudah ada pada versi sebelumnya.
 const STREAM_URL =
-  "https://samcloud.spacial.com/api/listen?rid=302822&sid=142968&f=aac";
+  "https://stream-eu-nc.arenastreaming.com:5450/stream";
 
 // Kunci penyimpanan lokal
 const LS_VOLUME = "tj_v2_volume";
