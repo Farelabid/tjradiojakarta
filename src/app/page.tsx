@@ -172,8 +172,6 @@ export default function HomePage() {
         Teman Perjalanan Jakarta
       </p>
       <div className="mb-6">
-  <Countdown target="2025-09-11T09:45:00+07:00" />
-  <SoftOpeningLaunchButton />
 </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
