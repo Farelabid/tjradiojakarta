@@ -107,7 +107,7 @@ export default function HomePage() {
   return (
     <div className="pb-20 md:pb-8">
       <SoftOpeningMarquee
-  dateText="Segera Mengudara 11 September 2025"
+  dateText="TJ RADIO JAKARTA - SUDAH MENGUDARA!"
   hosts={[
     "Cak Lontong",
     "Reno Fenady",
