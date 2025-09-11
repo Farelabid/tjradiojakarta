@@ -90,12 +90,6 @@ export default function SoftOpeningLaunchButton() {
     <>
       {visible && (
         <div className="flex flex-col items-center gap-2 my-4">
-          {mode === "test" && (
-            <span className="px-3 py-1 rounded-full text-xs font-semibold text-sky-300 ring-1 ring-sky-400/30 bg-sky-500/10">
-              TEST MODE (uji coba)
-            </span>
-          )}
-
           <button
             onClick={handleClick}
             disabled={loading}
