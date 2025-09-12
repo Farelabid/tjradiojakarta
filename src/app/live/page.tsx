@@ -80,7 +80,7 @@ export default function LivePage() {
   const waLink =
     "https://wa.me/6288973077301?text=" +
     encodeURIComponent(
-      "Halo TJRadio! Saya ingin request lagu / kirim salam"
+      "Halo TJ Radio! Saya ingin berbagi info / request lagu / curhat😄"
     );
 
   const pageTitle ="Live Radio";

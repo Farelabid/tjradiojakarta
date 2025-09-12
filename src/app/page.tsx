@@ -11,7 +11,7 @@ import SoftOpeningLaunchButton from "@/components/SoftOpeningLaunchButton";
 
 const WA_LINK =
   "https://wa.me/6288973077301?text=" +
-  encodeURIComponent("Halo TJRadio! Saya ingin request lagu / kirim salam");
+  encodeURIComponent("Halo TJ Radio! Saya ingin berbagi info / request lagu / curhat😄");
 
 const IG_LINK = "https://www.instagram.com/tjradio.jakarta/";
 
