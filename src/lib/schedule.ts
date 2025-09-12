@@ -236,30 +236,139 @@ function buildRoutine(isoDate: string): Seg[] {
   const dayStr = new Intl.DateTimeFormat("en-US", { timeZone: TZ, weekday: "short" }).format(jsDate);
   const isWeekend = dayStr === "Sat" || dayStr === "Sun";
 
-  const head: Seg[] = [{ start: "00:00", end: "06:00", show: "Musik Malam TJ" }];
-  const tail: Seg[] = [{ start: "21:00", end: "24:00", show: "Musik Malam TJ" }];
+  // Head: 00:00–06:00 Shift Malam (non-live)
+  const head: Seg[] = [
+    {
+      start: "00:00",
+      end: "06:00",
+      show: "Shift Malam",
+      host: "",
+      live: false,
+      desc: "Teman malam: obrolan ringan & playlist nyaman.",
+      image: imageForShowTitle("Shift Malam"),
+    },
+  ];
+
+  // Tail start disesuaikan agar tidak bentrok dengan slot 20–22 The Limpa (weekday)
+  const tailStart = isWeekend ? "21:00" : "22:00";
+  const tail: Seg[] = [
+    {
+      start: tailStart,
+      end: "24:00",
+      show: "Shift Malam",
+      host: "",
+      live: false,
+      desc: "Teman malam: obrolan ringan & playlist nyaman.",
+      image: imageForShowTitle("Shift Malam"),
+    },
+  ];
 
   if (!isWeekend) {
-    const isThuOrFri = dayStr === "Thu" || dayStr === "Fri";
-    const lunchHost = isThuOrFri ? "Hatma & Patricia" : "Risan & Hatma";
-
+    // ===== WEEKDAY CORE (host & jam TERBARU) =====
     const core: Seg[] = [
-      { start: "06:00", end: "10:00", show: "TJ Morning Vibes", host: "Indy & Irwan", live: true },
-      { start: "10:00", end: "14:00", show: "Lunch Talk TJ", host: lunchHost, live: true },
-      { start: "14:00", end: "17:00", show: "Jakarte, Ape Kabar?", host: "Eko Kuntadhi", live: true },
-      { start: "17:00", end: "21:00", show: "Sore di Bis Bareng", host: "Reno & MC Danny", live: true },
+      {
+        start: "06:00",
+        end: "10:00",
+        show: "TJ Morning Vibes",
+        host: "Indy & Irwan",
+        live: true,
+        desc: "Pagi berenergi, update info & musik asyik.",
+        image: imageForShowTitle("TJ Morning Vibes"),
+      },
+      {
+        start: "10:00",
+        end: "12:00",
+        show: "Lunch Talk TJ",
+        host: "Hatma, Abi & Pak Yaser",
+        live: true,
+        desc: "Ngobrol santai jelang siang, info kota & request.",
+        image: imageForShowTitle("Lunch Talk TJ"),
+      },
+      {
+        start: "12:00",
+        end: "15:00",
+        show: "Jakarte, Ape Kabar?",
+        host: "OT Syech & Nayla",
+        live: true,
+        desc: "Ngulik isu & cerita Jakarta bareng narasumber.",
+        image: imageForShowTitle("Jakarte, Ape Kabar?"),
+      },
+      {
+        start: "15:00",
+        end: "17:00",
+        show: "Jakarte, Ape Kabar?",
+        host: "Risan & Patricia",
+        live: true,
+        desc: "Ngulik isu & cerita Jakarta bareng narasumber.",
+        image: imageForShowTitle("Jakarte, Ape Kabar?"),
+      },
+      {
+        start: "17:00",
+        end: "20:00",
+        show: "Sore di Bis Bareng",
+        host: "MC Danny & Reno",
+        live: true,
+        desc: "Teman sore pulang kerja, info lalu lintas & lagu.",
+        image: imageForShowTitle("Sore di Bis Bareng"),
+      },
+      {
+        start: "20:00",
+        end: "22:00",
+        show: "The Limpa",
+        host: "",
+        live: true,
+        desc: "Obrolan santai khas The Limpa untuk menutup hari.",
+        image: imageForShowTitle("The Limpa"),
+      },
     ];
-    return [...head, ...core.map((s) => ({ ...s, image: imageForHost(s.host) })), ...tail];
+
+    return [...head, ...core, ...tail];
   }
 
+  // ===== WEEKEND CORE (tetap seperti sebelumnya) =====
   const weekendCore: Seg[] = [
-    { start: "06:00", end: "10:00", show: "TJ Morning Vibes Weekend", host: "OT & Nayla", live: true },
-    { start: "10:00", end: "14:00", show: "Lunch Talk TJ Weekend", host: "Abi & Saodah", live: true },
-    { start: "14:00", end: "17:00", show: "Lagu Akhir Pekan" },
-    { start: "17:00", end: "21:00", show: "Weekend Drive", host: "OT & Nayla", live: true },
+    {
+      start: "06:00",
+      end: "10:00",
+      show: "TJ Morning Vibes Weekend",
+      host: "OT & Nayla",
+      live: true,
+      desc: "Pagi akhir pekan yang ringan & fun.",
+      image: imageForShowTitle("TJ Morning Vibes Weekend"),
+    },
+    {
+      start: "10:00",
+      end: "14:00",
+      show: "Lunch Talk TJ Weekend",
+      host: "Abi & Saodah",
+      live: true,
+      desc: "Obrolan santai saat santap siang weekend.",
+      image: imageForShowTitle("Lunch Talk TJ Weekend"),
+    },
+    {
+      start: "14:00",
+      end: "17:00",
+      show: "Lagu Akhir Pekan",
+      host: "",
+      live: false,
+      desc: "Playlist akhir pekan untuk semua suasana.",
+      image: imageForShowTitle("Lagu Akhir Pekan"),
+    },
+    {
+      start: "17:00",
+      end: "21:00",
+      show: "Weekend Drive",
+      host: "OT & Nayla",
+      live: true,
+      desc: "Menemani jalan sore akhir pekan di Jakarta.",
+      image: imageForShowTitle("Weekend Drive"),
+    },
   ];
-  return [...head, ...weekendCore.map((s) => ({ ...s, image: imageForHost(s.host) })), ...tail];
+
+  return [...head, ...weekendCore, ...tail];
 }
+
+
 
 // ========== Penentu Acara Aktif ==========
 function normalizeRanges(segs: Seg[]) {
