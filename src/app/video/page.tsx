@@ -1,6 +1,6 @@
 // app/video/page.tsx
 import LiveVideoEmbed from "@/components/LiveVideoEmbed";
-
+import { Analytics } from "@vercel/analytics/next"
 
 const AD = {
   href: "https://www.transjakarta.co.id/", // Ganti ke URL sponsor
@@ -8,7 +8,7 @@ const AD = {
   imgMobile: "/ads/Mobile.jpg",     // bisa .png
   alt: "Iklan Sponsor",
 };
-
+  <Analytics/>
 export default function VideoPage() {
   return (
     <div className="py-8 pb-[calc(env(safe-area-inset-bottom)+96px)] md:pb-8">

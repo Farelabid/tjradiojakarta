@@ -5,11 +5,12 @@ import { fetchNews } from '@/lib/api';
 import Link from 'next/link';
 import { TrendingUp } from 'lucide-react';
 import type { Metadata } from 'next';
+import { Analytics } from "@vercel/analytics/next"
 
 interface NewsPageProps {
   searchParams: { category?: string };
 }
-
+  <Analytics/>
 function NewsLoadingSkeleton() {
   return (
     <div className="space-y-8">

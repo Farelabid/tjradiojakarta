@@ -13,6 +13,7 @@ import {
   type Seg,
 } from "@/lib/schedule";
 import React from "react";
+import { Analytics } from "@vercel/analytics/next"
 
 export default function LivePage() {
   const { setExpanded, isPlaying, togglePlay } = usePlayer();
@@ -88,7 +89,8 @@ export default function LivePage() {
 
   const [imgOk, setImgOk] = React.useState(Boolean(current?.image));
   React.useEffect(() => setImgOk(Boolean(current?.image)), [current?.image]);
-  
+  <Analytics/>
+
   return (
     <div className="py-8 pb-[calc(env(safe-area-inset-bottom)+96px)] md:pb-8">
       <div className="container mx-auto px-4">

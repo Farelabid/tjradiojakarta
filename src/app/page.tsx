@@ -192,6 +192,7 @@ export default function HomePage() {
   </div>
 </section>
 
+<Analytics/>
 
       <section className="py-8">
         <div className="container mx-auto px-4">
@@ -211,7 +212,7 @@ export default function HomePage() {
       <Suspense fallback={<NewsLoadingSkeleton />}>
         <NewsSection />
       </Suspense>
-      <Analytics/>
+      
       {/* NowPlayingPlayer tidak lagi dipanggil di sini, karena sudah ada di layout */}
     </div>
   );
