@@ -26,9 +26,9 @@ import React, {
    ENV & Util
    ============================== */
 
-const env = {
-  primary: process.env.NEXT_PUBLIC_STREAM_PRIMARY || "",
-  backup: process.env.NEXT_PUBLIC_STREAM_BACKUP || "",
+const env = {  
+  primary: "https://stream-us-rd.arenastreaming.com:5973/stream" || "",
+  backup: "http://i.klikhost.com/8088/stream" || "",
   debug: (process.env.NEXT_PUBLIC_PLAYER_DEBUG || "0") === "1",
 
   // Deteksi & timing (lebih longgar default-nya)
