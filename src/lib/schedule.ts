@@ -1,412 +1,220 @@
-// lib/schedule.ts
+// src/lib/schedule.ts
+// ======================================================
+// TJRadio Jakarta – Jadwal Rutin (pasca Soft Launch)
+// Catatan: Tidak ada lagi jadwal khusus Soft Launching.
+// Fungsi helper `isSoftLaunchDay` tetap dipertahankan karena
+// masih mungkin dipakai UI (mis. untuk banner/pin),
+// namun tidak lagi mengubah jadwal siaran.
+// ======================================================
+
 export const TZ = "Asia/Jakarta";
 
-// ========== Utils Waktu ==========
+export type Seg = {
+  start: string; // "HH:MM"
+  end: string;   // "HH:MM"
+  show: string;  // nama acara/slot
+  host?: string; // nama penyiar (opsional)
+  live?: boolean; // true jika mic-on/siaran langsung
+  image?: string; // URL gambar (opsional)
+  desc?: string;  // deskripsi singkat (opsional)
+};
+
+// ---------- Util dasar ----------
 export const PAD = (n: number) => n.toString().padStart(2, "0");
+
 export const toMin = (hhmm: string) => {
   const [h, m] = hhmm.split(":").map(Number);
   return (h % 24) * 60 + (m % 60);
 };
-export const fmtRange = (a: string, b: string) => `${a}–${b} WIB`;
 
-function fmtDateLabel(d: Date) {
-  const hari = new Intl.DateTimeFormat("id-ID", { timeZone: TZ, weekday: "long" }).format(d);
-  const tgl = new Intl.DateTimeFormat("id-ID", { timeZone: TZ, day: "2-digit", month: "long", year: "numeric" }).format(d);
-  return `${hari}, ${tgl}`;
-}
+export const fmtRange = (a: string, b: string) => `${a}–${b} WIB`;
 
 export function nowJakarta() {
   const d = new Date();
-  const isoDate = new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" }).format(d); // YYYY-MM-DD
-  const hhmmLocal = new Intl.DateTimeFormat("id-ID", { timeZone: TZ, hour: "2-digit", minute: "2-digit", hour12: false }).format(d); // "HH.MM" or "HH. MM" on some locales
-  const hhmm = hhmmLocal.replace(".", ":").replace(" ", "");
-  const minutes = toMin(hhmm);
-  const fullDateLabel = fmtDateLabel(d);
-  return { isoDate, hhmm, minutes, fullDateLabel };
+  const isoDate = new Intl.DateTimeFormat("en-CA", {
+    timeZone: TZ,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(d); // YYYY-MM-DD
+
+  const hhmmLocal = new Intl.DateTimeFormat("id-ID", {
+    timeZone: TZ,
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(d);
+
+  const minutes = toMin(hhmmLocal);
+
+  const fullDateLabel = new Intl.DateTimeFormat("id-ID", {
+    timeZone: TZ,
+    weekday: "long",
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  }).format(d);
+
+  return { isoDate, minutes, fullDateLabel };
 }
 
-// ========== Tipe & Foto Host ==========
-export type Seg = {
-  start: string; // "HH:MM"
-  end: string;   // "HH:MM"
-  show: string;
-  host?: string;
-  live?: boolean;
-  desc?: string;
-  image?: string; // path ke /public
-};
+// ---------- Soft Launch helper (dipertahankan untuk kompatibilitas UI) ----------
+/**
+ * Mengembalikan true jika hari ini berada dalam window Soft Opening.
+ * Fungsi ini TIDAK dipakai untuk mengubah jadwal lagi, hanya untuk UI.
+ * Variabel env (opsional):
+ * - SOFT_OPENING_START: ISO string, mis. "2025-09-11T09:45:00+07:00"
+ * - SOFT_OPENING_WINDOW_MS: durasi window dalam ms (default 2 jam)
+ * - SOFT_OPENING_TEST_MODE: "1" untuk mengaktifkan mode test
+ * - SOFT_OPENING_TEST_START: ISO string start test
+ * - SOFT_OPENING_TEST_WINDOW_MS: durasi window test ms
+ */
+export function isSoftLaunchDay(isoDate?: string): boolean {
+  try {
+    const envStart = process.env.SOFT_OPENING_START;
+    const envWindow = Number(process.env.SOFT_OPENING_WINDOW_MS || 7_200_000); // 2 jam default
 
-// Foto yang tersedia. Simpan file di /public/hosts/ (case sensitive).
-const HOST_IMG: Record<string, string> = {
-  indy: "/hosts/indy.jpg",
-  irwan: "/hosts/irwan.jpg",
-  eko: "/hosts/eko.jpg",
-  reno: "/hosts/reno.jpg",
-  mcdanny: "/hosts/mcdanny.jpg",
-  "mc dany": "/hosts/mcdanny.jpg",
-  caklontong: "/hosts/caklontong.jpg",
-  "cak lontong": "/hosts/caklontong.jpg",
-  mazdjopray: "/hosts/mazdjopray.jpg",
-  akbar: "/hosts/akbar.jpg",
-  denny: "/hosts/denny.jpg",
-  mosidik: "/hosts/mosidik.jpg",
-};
+    const testOn = process.env.SOFT_OPENING_TEST_MODE === "1";
+    const testStart = process.env.SOFT_OPENING_TEST_START;
+    const testWindow = Number(process.env.SOFT_OPENING_TEST_WINDOW_MS || 3_600_000); // 1 jam default
 
-function imageForHost(host?: string) {
-  if (!host) return undefined;
-  const slug = host.toLowerCase();
-  for (const key of Object.keys(HOST_IMG)) {
-    if (slug.includes(key)) return HOST_IMG[key];
-  }
-  return undefined;
-}
+    if (!envStart && !(testOn && testStart)) return false;
 
-const SHOW_IMAGE: Record<string, string> = {
-  "Musik Malam TJ": "/shows/musik-malam.jpg",
-  "Opening Pre-Event & Pengantar Soft Launching": "/shows/opening.jpg",
-  "Info TJ (#JagaJakarta)": "/shows/info-tj.jpg",
-  "Sambungan Balai Kota": "/shows/balai-kota.jpg",
-  "PERESMIAN TJ Radio oleh Gubernur Jakarta": "/shows/peresmian.jpg",
-  "Narasumber TransJakarta & Update Lapangan": "/shows/narasumber-tj.jpg",
+    const baseDate = isoDate
+      ? new Date(`${isoDate}T12:00:00+07:00`)
+      : new Date();
 
-  "Jakarta Kota Global & Traffic Update Monas": "/shows/kota-global.jpg",
-  "Sesi WAGUB — Q&A 500 Tahun Jakarta & Peresmian TJ Radio": "/shows/wagub.jpg",
-
-  "Kuliner Jakarta & IG Foods": "/shows/kuliner.jpg",
-  "Ayo Naik Transport Umum": "/shows/fasum-angkutan.jpg",
-
-  "Traffic & Cerita Penumpang": "/shows/drive-opening.jpg",
-  "Ngobrol Bareng Sopir • Satu Halte, Satu Cerita": "/shows/drive-sopir-halte.jpg",
-  "Jakarta Malam": "/shows/jakarta-malam.jpg",
-
-  "Spesial The Limpa": "/shows/the-limpa.jpg",
-  "Transformasi Radio": "/shows/transformasi.jpg",
-};
-
-function imageForShowTitle(title?: string): string | undefined {
-  return title ? SHOW_IMAGE[title] : undefined;
-}
-
-// ========== Soft Launch Day ==========
-const OFFICIAL_SOFT_DATE = (process.env.SOFT_OPENING_START ?? "2025-09-11T00:00:00+07:00").slice(0, 10);
-const TEST_MODE = process.env.SOFT_OPENING_TEST_MODE === "1";
-const TEST_START = process.env.SOFT_OPENING_TEST_START ?? "";
-
-export const isSoftLaunchDay = (isoDate: string) => {
-  if (isoDate === OFFICIAL_SOFT_DATE) return true;
-  if (TEST_MODE && TEST_START) return isoDate === TEST_START.slice(0, 10);
-  return false;
-};
-
-function buildSoftLaunch(): Seg[] {
-  // SOFT LAUNCHING — Kamis, 11 Sep 2025 (WIB)
-  // Ringkas: satu topik = satu show. Tanpa "lagu/promo".
-  const segs: Seg[] = [
-    { start: "00:00", end: "06:00", show: "Musik Malam TJ" },
-    // ===== 06:00–10:00 — PAGI =====
-    {
-      start: "06:00",
-      end: "06:15",
-      show: "Opening Pre-Event & Pengantar Soft Launching",
-      host: "Irwan",
-      live: true,
-      desc: "Pembuka penuh semangat, pantun hangat, dan teaser agenda besar pagi ini."
-    },
-    {
-      start: "06:15",
-      end: "08:00",
-      show: "Info TJ (#JagaJakarta)",
-      host: "Irwan, Denny Chandra, Risan, Abi, Nayla",
-      live: true,
-      desc: "Sambungan langsung dari jalanan Jakarta: update lapangan, cerita penumpang, dan fakta layanan TransJakarta."
-    },
-    {
-      start: "08:00",
-      end: "08:30",
-      show: "Sambungan Balai Kota",
-      host: "Irwan",
-      live: true,
-      desc: "Countdown menuju momen bersejarah—sapaan dari Balai Kota bersama trio komedian & Dirut TJ."
-    },
-    {
-      start: "08:30",
-      end: "08:55",
-      show: "PERESMIAN TJ Radio oleh Gubernur Jakarta",
-      host: "Gubernur Jakarta, Teh Indy, Mo Sidik, Cak Lontong, Dirut TJ",
-      live: true,
-      desc: "Gubernur menekan tombol, TJ Radio resmi mengudara menjadi Teman Perjalanan Jakarta!"
-    },
-    {
-      start: "08:55",
-      end: "10:00",
-      show: "Narasumber TransJakarta & Update Lapangan",
-      host: "Irwan & Denny Chandra",
-      live: true,
-      desc: "Kupas tuntas inovasi TJ"
-    },
-
-    // ===== 10:00–12:00 — TEH INDY & MO SIDIK =====
-    {
-      start: "10:00",
-      end: "11:00",
-      show: "Jakarta Kota Global & Traffic Update Monas",
-      host: "Teh Indy & Mo Sidik",
-      live: true,
-      desc: "Jakarta sebagai kota global, traffic update Monas bersama Patricia"
-    },
-    {
-      start: "11:00",
-      end: "12:00",
-      show: "Sesi WAGUB — Q&A 500 Tahun Jakarta & Peresmian TJ Radio",
-      host: "Teh Indy, Mo Sidik, Wakil Gubernur Jakarta",
-      live: true,
-      desc: "Dialog santai namun bermakna: visi 500 Tahun Jakarta, peran radio, dan harapan untuk warganya."
-    },
-
-    // ===== 12:00–14:00 — LUNCH TALK T =====
-    {
-      start: "12:00",
-      end: "13:00",
-      show: "Kuliner Jakarta & IG Foods",
-      host: "Akbar, Pak Yaser & Hatma",
-      live: true,
-      desc: "Tur kuliner sore-sore: Blok M, Petak Sembilan, Pasar Baru—plus tren makanan viral versi warganet."
-    },
-    {
-      start: "13:00",
-      end: "14:00",
-      show: "Ayo Naik Transport Umum",
-      host: "Akbar, Pak Yaser & Hatma",
-      live: true,
-      desc: "Kenapa fasum harus dijaga, manfaat naik kendaraan umum, ditutup pantun penyemangat siang."
-    },
-
-    // ===== 17:00–20:00 — DRIVE TIME =====
-    {
-      start: "17:00",
-      end: "18:00",
-      show: "Traffic & Cerita Penumpang",
-      host: "Mc Danny & Reno",
-      live: true,
-      desc: "Jam pulang kerja ditemani update lalu lintas dan kisah lucu-hangat dari penumpang TJ."
-    },
-    {
-      start: "18:00",
-      end: "19:00",
-      show: "Ngobrol Bareng Sopir • Satu Halte, Satu Cerita",
-      host: "Mc Danny & Reno",
-      live: true,
-      desc: "Obrolan inspiratif bersama sopir dan cerita halte ikonik."
-    },
-    {
-      start: "19:00",
-      end: "20:00",
-      show: "Jakarta Malam",
-      host: "Mc Danny & Reno",
-      live: true,
-      desc: "Suasana kota jelang malam, salam dari pendengar, dan rangkuman highlight perjalanan hari ini."
-    },
-
-    // ===== 20:00–22:00 — SPESIAL MALAM =====
-    {
-      start: "20:00",
-      end: "21:00",
-      show: "Spesial The Limpa",
-      host: "Kang Denny, Cing Abdel, Akbar Kobar, Cak Lontong, Mazdjopray",
-      live: true,
-      desc: "Reuni hangat para idola: kisah awal siaran, tawa khas radio, dan momen paling menyentuh bareng pendengar."
-    },
-    {
-      start: "21:00",
-      end: "22:00",
-      show: "Transformasi Radio",
-      host: "TJ Radio Jakarta All Stars",
-      live: true,
-      desc: "Obrolan reflektif tentang masa depan radio Jakarta, cerita pribadi, dan pesan untuk generasi berikutnya."
-    },
-  ];
-
-  // Otomatis isi image jika ada pemetaan host -> foto (opsional).
-  return segs.map((s) => ({ ...s, image: imageForShowTitle(s.show) }));
-}
-
-// ========== Jadwal Rutin ==========
-function buildRoutine(isoDate: string): Seg[] {
-  const jsDate = new Date(isoDate + "T00:00:00+07:00");
-  const dayStr = new Intl.DateTimeFormat("en-US", { timeZone: TZ, weekday: "short" }).format(jsDate);
-  const isWeekend = dayStr === "Sat" || dayStr === "Sun";
-
-  // Head: 00:00–06:00 Shift Malam (non-live)
-  const head: Seg[] = [
-    {
-      start: "00:00",
-      end: "06:00",
-      show: "Shift Malam",
-      host: "",
-      live: false,
-      desc: "Teman malam: obrolan ringan & playlist nyaman.",
-      image: imageForShowTitle("Shift Malam"),
-    },
-  ];
-
-  // Tail start disesuaikan agar tidak bentrok dengan slot 20–22 The Limpa (weekday)
-  const tailStart = isWeekend ? "21:00" : "22:00";
-  const tail: Seg[] = [
-    {
-      start: tailStart,
-      end: "24:00",
-      show: "Shift Malam",
-      host: "",
-      live: false,
-      desc: "Teman malam: obrolan ringan & playlist nyaman.",
-      image: imageForShowTitle("Shift Malam"),
-    },
-  ];
-
-  if (!isWeekend) {
-    // ===== WEEKDAY CORE (host & jam TERBARU) =====
-    const core: Seg[] = [
-      {
-        start: "06:00",
-        end: "10:00",
-        show: "TJ Morning Vibes",
-        host: "Indy & Irwan",
-        live: true,
-        desc: "Pagi berenergi, update info & musik asyik.",
-        image: imageForShowTitle("TJ Morning Vibes"),
-      },
-      {
-        start: "10:00",
-        end: "12:00",
-        show: "Lunch Talk TJ",
-        host: "Hatma, Abi & Pak Yaser",
-        live: true,
-        desc: "Ngobrol santai jelang siang, info kota & request.",
-        image: imageForShowTitle("Lunch Talk TJ"),
-      },
-      {
-        start: "12:00",
-        end: "15:00",
-        show: "Jakarte, Ape Kabar?",
-        host: "OT Syech & Nayla",
-        live: true,
-        desc: "Ngulik isu & cerita Jakarta bareng narasumber.",
-        image: imageForShowTitle("Jakarte, Ape Kabar?"),
-      },
-      {
-        start: "15:00",
-        end: "17:00",
-        show: "Jakarte, Ape Kabar?",
-        host: "Risan & Patricia",
-        live: true,
-        desc: "Ngulik isu & cerita Jakarta bareng narasumber.",
-        image: imageForShowTitle("Jakarte, Ape Kabar?"),
-      },
-      {
-        start: "17:00",
-        end: "20:00",
-        show: "Sore di Bis Bareng",
-        host: "MC Danny & Reno",
-        live: true,
-        desc: "Teman sore pulang kerja, info lalu lintas & lagu.",
-        image: imageForShowTitle("Sore di Bis Bareng"),
-      },
-      {
-        start: "20:00",
-        end: "22:00",
-        show: "The Limpa",
-        host: "",
-        live: true,
-        desc: "Obrolan santai khas The Limpa untuk menutup hari.",
-        image: imageForShowTitle("The Limpa"),
-      },
-    ];
-
-    return [...head, ...core, ...tail];
-  }
-
-  // ===== WEEKEND CORE (tetap seperti sebelumnya) =====
-  const weekendCore: Seg[] = [
-    {
-      start: "06:00",
-      end: "10:00",
-      show: "TJ Radio Pagi",
-      host: "Mpo Odah & Abi Saan",
-      live: true,
-      desc: "Pagi akhir pekan yang ringan & fun.",
-      image: imageForShowTitle("TJ Radio Pagi"),
-    },
-    {
-      start: "10:00",
-      end: "12:00",
-      show: "Lagu Akhir Pekan",
-      host: "",
-      live: false,
-      desc: "Playlist akhir pekan untuk semua suasana.",
-      image: imageForShowTitle("Lagu Akhir Pekan"),
-    },
-    {
-      start: "12:00",
-      end: "15:00",
-      show: "TJ Radio Siang",
-      host: "Risan & Opet",
-      live: true,
-      desc: "Obrolan santai & info kota di siang hari.",
-      image: imageForShowTitle("TJ Radio Siang"),
-    },
-    {
-      start: "15:00",
-      end: "17:00",
-      show: "Lagu Akhir Pekan",
-      host: "",
-      live: false,
-      desc: "Playlist akhir pekan untuk semua suasana.",
-      image: imageForShowTitle("Lagu Akhir Pekan"),
-    },
-    {
-      start: "17:00",
-      end: "20:00",
-      show: "TJ Radio Sore",
-      host: "Hatma & OT Syech",
-      live: true,
-      desc: "Menemani jalan sore akhir pekan di Jakarta.",
-      image: imageForShowTitle("TJ Radio Sore"),
-    },
-  ];
-
-  return [...head, ...weekendCore, ...tail];
-}
-
-
-
-// ========== Penentu Acara Aktif ==========
-function normalizeRanges(segs: Seg[]) {
-  return segs.map((s) => {
-    const sMin = toMin(s.start);
-    let eMin = toMin(s.end);
-    if (eMin <= sMin) eMin += 1440; // lintas tengah malam
-    return { ...s, sMin, eMin };
-  });
-}
-
-export function findCurrent(isoDate: string, nowMin: number, segments: Seg[]) {
-  if (!segments.length) return { idx: -1, current: undefined as Seg | undefined };
-  const ranges = normalizeRanges(segments);
-  const candidates = [nowMin, nowMin + 1440];
-  let idx = -1;
-  for (let i = 0; i < ranges.length; i++) {
-    for (const t of candidates) {
-      if (t >= ranges[i].sMin && t < ranges[i].eMin) {
-        idx = i;
-        break;
-      }
+    if (envStart) {
+      const start = new Date(envStart);
+      const end = new Date(start.getTime() + envWindow);
+      if (baseDate >= start && baseDate <= end) return true;
     }
-    if (idx >= 0) break;
+    if (testOn && testStart) {
+      const s = new Date(testStart);
+      const e = new Date(s.getTime() + testWindow);
+      if (baseDate >= s && baseDate <= e) return true;
+    }
+  } catch {
+    // abaikan error parsing
   }
-  return { idx, current: idx >= 0 ? segments[idx] : undefined };
+  return false;
 }
 
-// ========== Public API ==========
+// ---------- Jadwal Harian Rutin ----------
+/**
+ * Penamaan program:
+ * - Slot umum pagi/siang/sore menggunakan nama: "TJ Radio Pagi/Siang/Sore".
+ * - Blok musik umum: "Musik Malam TJ" (00:00–06:00 & 22:00–24:00).
+ * - Slot khusus tabel: "THE LIMPA" dan "TJ Radio Lagu" (untuk blok LAGU 10–12 akhir pekan).
+ * - `live` diset true untuk slot mic-on; blok musik/lagu dibiarkan undefined/false.
+ *
+ * Tabel (SENIN–JUMAT) sesuai gambar terbaru:
+ * 06:00–10:00  Indy & Irwan
+ * 10:00–13:00  (Mon–Wed) Yaser, Abi & Hatma | (Thu) Mo sidik & ... | (Fri) eko kuntadhi
+ * 13:00–16:00  (Mon–Wed) Patricia & Risan    | (Thu–Fri) OT & NAYLA
+ * 16:00–20:00  Reno & Mc Dany
+ * 20:00–22:00  THE LIMPA
+ *
+ * SABTU:
+ * 06:00–10:00  Abi & Mpok odah
+ * 10:00–12:00  LAGU (TJ Radio Lagu)
+ * 12:00–15:00  Risan & Patricia
+ * 15:00–20:00  Hatma & OT Syech
+ * 20:00–22:00  THE LIMPA
+ *
+ * MINGGU:
+ * 06:00–10:00  Rio & Mpok odah
+ * 10:00–12:00  LAGU (TJ Radio Lagu)
+ * 12:00–15:00  OT & NAYLA
+ * 15:00–20:00  (tidak disebut di tabel) → gunakan "TJ Radio Sore" tanpa host
+ * 20:00–22:00  THE LIMPA
+ */
 export function getSchedule(isoDate: string): Seg[] {
-  return isSoftLaunchDay(isoDate) ? buildSoftLaunch() : buildRoutine(isoDate);
+  const jsDate = new Date(`${isoDate}T00:00:00+07:00`);
+  const dayStr = new Intl.DateTimeFormat("en-US", {
+    timeZone: TZ,
+    weekday: "short",
+  }).format(jsDate); // Mon..Sun
+
+  // Kepala & ekor agar 24 jam penuh
+  const head: Seg[] = [{ start: "00:00", end: "06:00", show: "Musik Malam TJ" }];
+  const tail: Seg[] = [{ start: "22:00", end: "24:00", show: "Musik Malam TJ" }];
+
+  const buildWeekday = (opts: { mid10_13: string; mid13_16: string }): Seg[] => [
+    { start: "06:00", end: "10:00", show: "TJ Radio Pagi", host: "Indy & Irwan", live: true },
+    { start: "10:00", end: "13:00", show: "TJ Radio Siang", host: opts.mid10_13, live: true },
+    { start: "13:00", end: "16:00", show: "TJ Radio Siang", host: opts.mid13_16, live: true },
+    { start: "16:00", end: "20:00", show: "TJ Radio Sore", host: "Reno & Mc Dany", live: true },
+    { start: "20:00", end: "22:00", show: "THE LIMPA", host: "THE LIMPA", live: true },
+  ];
+
+  let core: Seg[] = [];
+
+  switch (dayStr) {
+    case "Mon":
+    case "Tue":
+    case "Wed":
+      core = buildWeekday({
+        mid10_13: "Yaser, Abi & Hatma",
+        mid13_16: "Patricia & Risan",
+      });
+      break;
+    case "Thu":
+      core = buildWeekday({
+        mid10_13: "Mo sidik & ...",
+        mid13_16: "OT & NAYLA",
+      });
+      break;
+    case "Fri":
+      core = buildWeekday({
+        mid10_13: "eko kuntadhi",
+        mid13_16: "OT & NAYLA",
+      });
+      break;
+    case "Sat":
+      core = [
+        { start: "06:00", end: "10:00", show: "TJ Radio Pagi", host: "Abi & Mpok Odah", live: true },
+        { start: "10:00", end: "12:00", show: "TJ Radio Lagu" },
+        { start: "12:00", end: "15:00", show: "TJ Radio Siang", host: "Risan & Patricia", live: true },
+        { start: "15:00", end: "20:00", show: "TJ Radio Sore", host: "Hatma & OT Syech", live: true },
+        { start: "20:00", end: "22:00", show: "THE LIMPA", host: "THE LIMPA", live: true },
+      ];
+      break;
+    case "Sun":
+      core = [
+        { start: "06:00", end: "10:00", show: "TJ Radio Pagi", host: "Rio & Mpok odah", live: true },
+        { start: "10:00", end: "12:00", show: "TJ Radio Lagu" },
+        { start: "12:00", end: "15:00", show: "TJ Radio Siang", host: "OT & NAYLA", live: true },
+        { start: "15:00", end: "20:00", show: "TJ Radio Sore" }, // generic tanpa host
+        { start: "20:00", end: "22:00", show: "THE LIMPA", host: "THE LIMPA", live: true },
+      ];
+      break;
+  }
+
+  return [...head, ...core, ...tail];
+}
+
+// ---------- Cari segmen berjalan ----------
+export function findCurrent(
+  isoDate: string,
+  minutesNow: number,
+  schedule: Seg[]
+) {
+  if (!schedule || schedule.length === 0)
+    return { idx: -1 as const, current: undefined as Seg | undefined };
+
+  const mins = schedule.map((s) => ({ s: toMin(s.start), e: toMin(s.end) }));
+
+  // dukung rentang yang melewati tengah malam (jika ada)
+  const idx = schedule.findIndex((_seg, i) => {
+    const { s, e } = mins[i];
+    if (e >= s) {
+      return minutesNow >= s && minutesNow < e;
+    } else {
+      // contoh 22:00–02:00
+      return minutesNow >= s || minutesNow < e;
+    }
+  });
+
+  return { idx, current: idx >= 0 ? schedule[idx] : undefined };
 }
