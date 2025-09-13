@@ -2,15 +2,7 @@
 
 /**
  * TJRadio PlayerContext — Active-Passive Failover (Production Hardened)
- * - UI TETAP: API hook sama persis (isPlaying, togglePlay, dll.)
- * - Conservative switching untuk mencegah "putus-putus":
- *   • Grace period setelah start/switch (abaikan stall sementara)
- *   • Multi-strike stall (harus X kali berturut-turut)
- *   • Recovery bertahap: nudge → softReload (rate-limited) → failover
- *   • Connect-timeout lebih longgar (default 15s)
- *   • Anti false-failover saat tab hidden
- *   • Sticky di backup + verifikasi balik ke primary
- *   • Persist volume/mute, event bridge dengan video
+ * UI TETAP sama; URL stream DIHARDCODE.
  */
 
 import React, {
@@ -23,25 +15,28 @@ import React, {
 } from "react";
 
 /* ==============================
-   ENV & Util
+   URL STREAM DIHARDCODE
    ============================== */
+const PRIMARY = "https://stream-us-rd.arenastreaming.com:5973/stream";
+const BACKUP  = "http://i.klikhost.com/8088/stream"; // ⚠️ HTTP bisa diblok jika site via HTTPS
 
-const env = {  
-  primary: "https://stream-us-rd.arenastreaming.com:5973/stream" || "",
-  backup: "http://i.klikhost.com/8088/stream" || "",
+/* ==============================
+   ENV untuk TUNING (opsional)
+   ============================== */
+const env = {
   debug: (process.env.NEXT_PUBLIC_PLAYER_DEBUG || "0") === "1",
 
-  // Deteksi & timing (lebih longgar default-nya)
-  stallMs: clampInt(process.env.NEXT_PUBLIC_PLAYER_STALL_MS, 15000, 5000, 60000), // default 15s
-  connectTimeoutMs: clampInt(process.env.NEXT_PUBLIC_PLAYER_CONNECT_TIMEOUT_MS, 15000, 5000, 60000), // default 15s
-  stickyMs: clampInt(process.env.NEXT_PUBLIC_PLAYER_STICKY_MS, 5 * 60_000, 10_000, 30 * 60_000), // default 5m
-  retryPrimaryMs: clampInt(process.env.NEXT_PUBLIC_PLAYER_RETRY_PRIMARY_MS, 120_000, 20_000, 10 * 60_000), // default 120s
-  verifyPrimaryMs: clampInt(process.env.NEXT_PUBLIC_PLAYER_VERIFY_MS, 6000, 1000, 30000), // default 6s
+  // Angka “santai”
+  stallMs: clampInt(process.env.NEXT_PUBLIC_PLAYER_STALL_MS, 30000, 5000, 60000),            // 30s tanpa progress ⇒ stall
+  connectTimeoutMs: clampInt(process.env.NEXT_PUBLIC_PLAYER_CONNECT_TIMEOUT_MS, 15000, 5000, 60000), // 15s pra-playing
+  stickyMs: clampInt(process.env.NEXT_PUBLIC_PLAYER_STICKY_MS, 350000, 10000, 30 * 60_000), // 350s di backup
+  retryPrimaryMs: clampInt(process.env.NEXT_PUBLIC_PLAYER_RETRY_PRIMARY_MS, 95000, 20000, 10 * 60_000), // 95s
+  verifyPrimaryMs: clampInt(process.env.NEXT_PUBLIC_PLAYER_VERIFY_MS, 9000, 1000, 30000),    // 9s
 
   // Anti thrash
-  stallStrikes: clampInt(process.env.NEXT_PUBLIC_PLAYER_STALL_STRIKES, 2, 1, 5), // perlu 2 kali deteksi stall beruntun
-  graceAfterSwitchMs: clampInt(process.env.NEXT_PUBLIC_PLAYER_GRACE_MS, 12000, 2000, 30000), // abaikan stall 12s setelah switch
-  softReloadCooldownMs: clampInt(process.env.NEXT_PUBLIC_PLAYER_RELOAD_COOLDOWN_MS, 10000, 2000, 60000), // min 10s antar softReload
+  stallStrikes: clampInt(process.env.NEXT_PUBLIC_PLAYER_STALL_STRIKES, 3, 1, 5),             // 3x deteksi
+  graceAfterSwitchMs: clampInt(process.env.NEXT_PUBLIC_PLAYER_GRACE_MS, 20000, 2000, 30000), // 20s grace
+  softReloadCooldownMs: clampInt(process.env.NEXT_PUBLIC_PLAYER_RELOAD_COOLDOWN_MS, 20000, 2000, 60000), // 20s cooldown
 };
 
 function clampInt(src: string | undefined, def: number, min: number, max: number) {
@@ -87,7 +82,6 @@ function lsSet<T>(key: string, v: T) {
 /* ==============================
    Types & Context
    ============================== */
-
 type ServerRole = "primary" | "backup";
 
 type PlayerContextValue = {
@@ -113,10 +107,9 @@ const PlayerContext = createContext<PlayerContextValue | null>(null);
 /* ==============================
    Provider
    ============================== */
-
 export function PlayerProvider({ children }: { children: React.ReactNode }) {
-  if (!env.primary || !env.backup) {
-    log.warn("NEXT_PUBLIC_STREAM_PRIMARY & NEXT_PUBLIC_STREAM_BACKUP harus diisi.");
+  if (!PRIMARY || !BACKUP) {
+    log.warn("PRIMARY & BACKUP URL harus terisi.");
   }
 
   // State dasar
@@ -156,9 +149,12 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const activeUrl = useMemo(() => (activeServer === "primary" ? env.primary : env.backup), [activeServer]);
+  const activeUrl = useMemo(
+    () => (activeServer === "primary" ? PRIMARY : BACKUP),
+    [activeServer]
+  );
 
-  // Connect-timeout helpers
+  // Connect-timeout
   const clearConnectTO = () => clearTO(connectTimeoutRef);
   const armConnectTO = () => {
     clearConnectTO();
@@ -172,14 +168,13 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     }, env.connectTimeoutMs);
   };
 
-  // Reset counters on progress
   const markProgress = () => {
     lastProgressTsRef.current = Date.now();
     stallStrikesRef.current = 0;
     recoverAttemptsRef.current = 0;
   };
 
-  /* ===== Create <audio> once ===== */
+  /* ===== Buat <audio> ===== */
   useEffect(() => {
     if (audioRef.current) return;
 
@@ -193,9 +188,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     document.body.appendChild(a);
     audioRef.current = a;
 
-    const onPlay = () => {
-      setPlaying(true); // optimistic UI
-    };
+    const onPlay = () => setPlaying(true); // optimistic
     const onPlaying = () => {
       setPlaying(true);
       markProgress();
@@ -208,12 +201,11 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     };
     const onTimeUpdate = () => markProgress();
     const onWaiting = () => {
-      // Jangan langsung switch; biarkan recovery bekerja.
       log.info("waiting… (buffering)");
       nudgePlayback();
     };
     const onStalled = () => {
-      log.info("stalled event");
+      log.info("stalled");
       nudgePlayback();
     };
     const onError = () => {
@@ -230,17 +222,10 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     a.addEventListener("stalled", onStalled);
     a.addEventListener("error", onError);
 
-    const onVideoPlay = () => {
-      try {
-        a.pause();
-      } catch {}
-    };
+    const onVideoPlay = () => { try { a.pause(); } catch {} };
     window.addEventListener("tj:video-play", onVideoPlay);
 
-    const onOnline = () => {
-      log.info("Back online → softReload()");
-      softReload();
-    };
+    const onOnline = () => { log.info("Back online → softReload()"); softReload(); };
     window.addEventListener("online", onOnline);
 
     return () => {
@@ -253,16 +238,12 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
       a.removeEventListener("error", onError);
       window.removeEventListener("tj:video-play", onVideoPlay);
       window.removeEventListener("online", onOnline);
-      try {
-        a.src = "";
-        a.load();
-        a.remove();
-      } catch {}
+      try { a.src = ""; a.load(); a.remove(); } catch {}
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /* ===== Persist mute/volume ===== */
+  /* ===== Persist ===== */
   useEffect(() => {
     if (audioRef.current) audioRef.current.muted = muted;
     if (typeof window !== "undefined") lsSet("tj:muted", muted);
@@ -272,7 +253,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     if (typeof window !== "undefined") lsSet("tj:vol", clamp01(volume));
   }, [volume]);
 
-  /* ===== Apply src on server change ===== */
+  /* ===== Switch server: set src ===== */
   useEffect(() => {
     const a = audioRef.current;
     if (!a || !activeUrl) return;
@@ -283,16 +264,13 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
       a.src = cacheBust(activeUrl);
       a.load();
 
-      // Grace setelah switch: abaikan stall sementara
-      lastSwitchAtRef.current = Date.now();
+      lastSwitchAtRef.current = Date.now(); // grace setelah switch
       stallStrikesRef.current = 0;
       recoverAttemptsRef.current = 0;
 
       if (wasPlaying) {
         armConnectTO();
-        void a.play().catch(() => {
-          // butuh gesture; diamkan
-        });
+        void a.play().catch(() => {});
       }
       window.dispatchEvent(new CustomEvent("tj:server-changed", { detail: { server: activeServer } }));
       log.info("Switch server →", activeServer);
@@ -302,7 +280,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeUrl]);
 
-  /* ===== Watchdog (stall multi-strike, grace aware) ===== */
+  /* ===== Watchdog: stall multi-strike + grace ===== */
   useEffect(() => {
     clearInt(stallIntervalRef);
     stallIntervalRef.current = window.setInterval(() => {
@@ -312,11 +290,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
       if (document.visibilityState !== "visible") return;
 
       const now = Date.now();
-
-      // Grace setelah switch/start
-      if (now - lastSwitchAtRef.current < env.graceAfterSwitchMs) {
-        return;
-      }
+      if (now - lastSwitchAtRef.current < env.graceAfterSwitchMs) return;
 
       const delta = now - lastProgressTsRef.current;
       const stalled = delta > env.stallMs;
@@ -330,12 +304,10 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
       log.warn(`Stall strike ${stallStrikesRef.current}/${env.stallStrikes} (Δ=${delta}ms)`);
 
       if (stallStrikesRef.current < env.stallStrikes) {
-        // beri kesempatan sampai strikes terpenuhi
         nudgePlayback();
         return;
       }
 
-      // Strikes terpenuhi → recovery bertahap
       if (recoverAttemptsRef.current === 0) {
         recoverAttemptsRef.current++;
         log.warn("Recovery #1: nudgePlayback()");
@@ -350,15 +322,14 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      // Recovery gagal → failover
       log.warn("Recovery gagal → failover ke BACKUP");
       failoverToBackup("stall");
-    }, 2000); // interval 2s
+    }, 2000);
 
     return () => clearInt(stallIntervalRef);
   }, [isPlaying, activeServer]);
 
-  /* ===== On BACKUP: periodically try to return to PRIMARY (sticky) ===== */
+  /* ===== Di BACKUP: coba balik ke PRIMARY (sticky + periodik) ===== */
   useEffect(() => {
     clearInt(retryIntervalRef);
     if (activeServer !== "backup") return;
@@ -380,16 +351,15 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   }, [activeServer, isPlaying, lastFailoverAt]);
 
   /* =========================
-     Public Controls (UI API)
+     API ke UI (TETAP)
      ========================= */
-
   const play = async () => {
     const a = audioRef.current;
     if (!a) return;
     if (!a.src) {
       a.src = cacheBust(activeUrl);
       a.load();
-      lastSwitchAtRef.current = Date.now(); // grace di start pertama
+      lastSwitchAtRef.current = Date.now(); // grace saat start pertama
     }
     armConnectTO();
     try {
@@ -407,7 +377,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     if (!a) return;
     try {
       a.pause();
-      setPlaying(false); // immediate UI
+      setPlaying(false);
       clearConnectTO();
       window.dispatchEvent(new Event("tj:radio-pause"));
     } catch {}
@@ -424,13 +394,11 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   const setVolume = (v: number) => _setVolume(clamp01(v));
 
   /* =========================
-     Recovery & Failover Logic
+     Recovery & Failover
      ========================= */
-
   function nudgePlayback() {
     const a = audioRef.current;
     if (!a) return;
-    // Coba "kick" ringan: panggil play() ulang; di Safari kadang membantu
     void a.play().catch(() => {});
   }
 
@@ -450,15 +418,12 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
       a.src = cacheBust(activeUrl);
       a.load();
 
-      // reset counters + grace singkat setelah reload
-      lastSwitchAtRef.current = Date.now();
+      lastSwitchAtRef.current = Date.now(); // grace singkat setelah reload
       stallStrikesRef.current = 0;
 
       if (wasPlaying) {
         armConnectTO();
-        setTimeout(() => {
-          void a.play().catch(() => {});
-        }, 200);
+        setTimeout(() => { void a.play().catch(() => {}); }, 200);
       }
     } catch {}
   }
@@ -470,7 +435,6 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     if (!a) return;
 
     if (activeServer === "backup") {
-      // sudah di backup: hanya softReload (rate-limited)
       log.warn(`Backup ${reason} → softReload()`);
       softReload();
       return;
@@ -482,7 +446,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
       clearConnectTO();
       setActiveServer("backup");
       setLastFailoverAt(Date.now());
-      // src diganti via effect activeUrl
+      // src terganti via effect
     } finally {
       setTimeout(() => (switchingRef.current = false), 300);
     }
@@ -490,7 +454,6 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 
   function tryReturnToPrimary() {
     if (switchingRef.current) return;
-    if (!env.primary) return;
 
     const a = audioRef.current;
     if (!a) return;
@@ -502,15 +465,13 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     const prev = activeServer;
 
     let verified = false;
-    const onTU = () => {
-      verified = true;
-    };
+    const onTU = () => { verified = true; };
 
     try {
       a.removeEventListener("timeupdate", onTU);
       a.addEventListener("timeupdate", onTU);
 
-      setActiveServer("primary"); // trigger switch
+      setActiveServer("primary");
       setTimeout(() => {
         if (wasPlaying) {
           armConnectTO();
@@ -526,7 +487,6 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
           log.info("PRIMARY OK. Tetap di PRIMARY.");
           clearConnectTO();
           setPlaying(true);
-          // Grace setelah balik primary
           lastSwitchAtRef.current = Date.now();
         } else {
           log.warn("PRIMARY belum OK. Balik ke BACKUP (reset sticky).");
@@ -534,9 +494,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
           setLastFailoverAt(Date.now());
           if (wasPlaying) {
             armConnectTO();
-            setTimeout(() => {
-              void a.play().catch(() => {});
-            }, 80);
+            setTimeout(() => { void a.play().catch(() => {}); }, 80);
           }
         }
         setTimeout(() => (switchingRef.current = false), 120);
@@ -547,18 +505,15 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
       setActiveServer(prev);
       if (wasPlaying) {
         armConnectTO();
-        setTimeout(() => {
-          void a.play().catch(() => {});
-        }, 80);
+        setTimeout(() => { void a.play().catch(() => {}); }, 80);
       }
       setTimeout(() => (switchingRef.current = false), 120);
     }
   }
 
   /* =========================
-     Value untuk UI
+     Value ke UI
      ========================= */
-
   const value: PlayerContextValue = {
     isPlaying,
     play,
@@ -572,8 +527,8 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     setExpanded,
 
     activeServer,
-    primaryUrl: env.primary,
-    backupUrl: env.backup,
+    primaryUrl: PRIMARY,
+    backupUrl: BACKUP,
     lastFailoverAt,
   };
 
