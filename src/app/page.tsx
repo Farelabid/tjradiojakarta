@@ -8,6 +8,7 @@ import { Suspense } from 'react';
 import SoftOpeningMarquee from "@/components/SoftOpeningMarquee";
 import Countdown from "@/components/Countdown";
 import SoftOpeningLaunchButton from "@/components/SoftOpeningLaunchButton";
+import { Analytics } from "@vercel/analytics/next"
 
 const WA_LINK =
   "https://wa.me/6288973077301?text=" +
@@ -210,7 +211,7 @@ export default function HomePage() {
       <Suspense fallback={<NewsLoadingSkeleton />}>
         <NewsSection />
       </Suspense>
-      
+      <Analytics/>
       {/* NowPlayingPlayer tidak lagi dipanggil di sini, karena sudah ada di layout */}
     </div>
   );
