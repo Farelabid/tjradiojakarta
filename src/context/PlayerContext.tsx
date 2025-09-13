@@ -2,7 +2,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 const STREAM_URL =
-  "https://stream-eu-nc.arenastreaming.com:5450/stream";
+  "http://i.klikhost.com/8088/stream";
 
 // Kunci penyimpanan lokal
 const LS_VOLUME = "tj_v2_volume";
