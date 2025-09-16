@@ -74,7 +74,7 @@ const MiniBar: React.FC = () => {
     : "Streaming TJ RADIO Jakarta";
 
   return (
-    <div className="fixed left-0 right-0 bottom-0 z-player-safe px-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
+    <div className="fixed left-0 right-0 bottom-0 z-player-safe pb-[calc(env(safe-area-inset-bottom)+12px)]">
       <div className="mx-auto max-w-5xl">
         <div className="rounded-2xl bg-white text-slate-900 border border-slate-200 shadow-2xl flex items-center gap-3 px-4 py-3.5 md:px-5 md:py-4">
           {/* Play/Pause (ORANYE) */}

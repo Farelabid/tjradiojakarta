@@ -66,8 +66,7 @@ export default function ProgramToday() {
 
 
   return (
-  <section className="rounded-2xl border border-white/10 bg-white/5 p-5 md:p-6">
-    {/* lembutkan background seperti di live */}
+  <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-5 md:p-6">
     <div className="pointer-events-none absolute -top-16 -right-16 h-56 w-56 rounded-full bg-orange-500/10 blur-2xl" />
 
     {/* GRID: mobile 2 kolom (gambar | detail) + baris CTA di bawah (col-span-2).
