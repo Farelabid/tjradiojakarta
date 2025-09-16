@@ -152,7 +152,7 @@ function buildSaturday(): Seg[] {
     { start: "10:00", end: "13:00", show: "TJ HORE (HAPPY HOUR)", host: "Abi & Hatma", live: true },
     { start: "13:00", end: "16:00", show: "JAKARTA MOVE", host: "OT Syech & Nayla", live: true },
     { start: "16:00", end: "20:00", show: "DRiveTime", host: "Opet & Risan", live: true },
-    { start: "20:00", end: "24:00", show: "TAPPING THE LIMPA", host: "THE LIMPA", live: true },
+    { start: "20:00", end: "24:00", show: "THE LIMPA", host: "THE LIMPA", live: true },
   ]);
 }
 
@@ -165,7 +165,7 @@ function buildSunday(): Seg[] {
     { start: "10:00", end: "13:00", show: "TJ HORE (HAPPY HOUR)", host: "Abi & Hatma", live: true },
     { start: "13:00", end: "16:00", show: "JAKARTA MOVE", host: "OT Syech & Nayla", live: true },
     { start: "16:00", end: "20:00", show: "DRiveTime", host: "Opet & Risan", live: true },
-    { start: "20:00", end: "24:00", show: "TAPPING THE LIMPA", host: "THE LIMPA", live: true },
+    { start: "20:00", end: "24:00", show: "THE LIMPA", host: "THE LIMPA", live: true },
   ]);
 }
 
