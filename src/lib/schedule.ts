@@ -9,16 +9,15 @@ export type Seg = {
   show: string;
   host?: string;
   desc?: string;
-  image?: string;       // cover gambar (opsional – akan diisi otomatis)
-  live?: boolean;       // true = siaran berpenyiar, false = blok lagu
+  image?: string;       // cover (otomatis dari nama acara)
+  live?: boolean;       // true = berpenyiar, false = blok lagu
 };
 
 export const TZ = "Asia/Jakarta";
 
-/** Pad 2 digit */
+// Util format & waktu
 export const PAD = (n: number) => n.toString().padStart(2, "0");
 
-/** "HH:MM" -> menit sejak 00:00 (0..1439). Tahan "HH.MM" juga. */
 export const toMin = (hhmm: string) => {
   const clean = hhmm.replace(".", ":");
   const [hhRaw, mmRaw] = clean.split(":");
@@ -31,55 +30,33 @@ export const toMin = (hhmm: string) => {
 
 export const fmtRange = (a: string, b: string) => `${a}–${b} WIB`;
 
-/** Waktu WIB saat ini (stabil lintas browser) */
 export function nowJakarta() {
   const d = new Date();
-
   const isoDate = new Intl.DateTimeFormat("en-CA", {
-    timeZone: TZ,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
+    timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit"
   }).format(d); // YYYY-MM-DD
-
   const timeStr = new Intl.DateTimeFormat("id-ID", {
-    timeZone: TZ,
-    hour12: false,
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(d); // "HH:MM" atau kadang "HH.MM"
-
+    timeZone: TZ, hour12: false, hour: "2-digit", minute: "2-digit"
+  }).format(d); // "HH:MM" kadang "HH.MM"
   const minutes = toMin(timeStr);
-
   const fullDateLabel = new Intl.DateTimeFormat("id-ID", {
-    timeZone: TZ,
-    weekday: "long",
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
+    timeZone: TZ, weekday: "long", day: "2-digit", month: "long", year: "numeric"
   }).format(d);
-
   return { isoDate, minutes, fullDateLabel };
 }
 
-/** Soft-launch day check (dipakai header /live) */
 export function isSoftLaunchDay(isoDate: string) {
-  const startEnv = process.env.SOFT_OPENING_START; // "2025-09-11T09:45:00+07:00"
+  const startEnv = process.env.SOFT_OPENING_START; // contoh: "2025-09-11T09:45:00+07:00"
   if (!startEnv) return false;
   const startDateStr = new Intl.DateTimeFormat("en-CA", {
-    timeZone: TZ,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
+    timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit"
   }).format(new Date(startEnv));
   return isoDate === startDateStr;
 }
 
-/* =========================================================
-   COVER OTOMATIS BERDASARKAN NAMA ACARA
-   - Satu sumber mapping supaya tidak ada duplikasi function.
-   - Aturan slug: huruf kecil, non-alfanumerik → '-', trim '-'.
-   ========================================================= */
+// =====================================================
+// Cover otomatis: slug judul acara -> /shows/<slug>.jpg
+// =====================================================
 function slugifyTitle(t: string) {
   return (t || "")
     .toLowerCase()
@@ -88,122 +65,146 @@ function slugifyTitle(t: string) {
     .replace(/-{2,}/g, "-")
     .replace(/^-|-$/g, "");
 }
-
 export function imageForShowTitle(title?: string) {
   if (!title) return "";
-  const slug = slugifyTitle(title);
-  return `/shows/${slug}.jpg`;
+  return `/shows/${slugifyTitle(title)}.jpg`;
 }
-
 function withCovers(list: Seg[]): Seg[] {
   return list.map((s) => ({ ...s, image: s.image ?? imageForShowTitle(s.show) }));
 }
 
-/* =========================================================
-   JADWAL PER HARI (Mon..Sun)
-   - Nama acara konsisten agar gambar by-title tetap bekerja.
-   - Selalu menutup penuh 00:00–24:00.
-   ========================================================= */
+// =====================================================
+// JADWAL PER HARI (Mon..Sun) — sesuai tabel final
+// Tambahan 00:00–06:00 "Musik Malam TJ" agar 24 jam tertutup
+// =====================================================
 
-/** SENIN — sesuai instruksi terbaru */
+// Senin
 function buildMonday(): Seg[] {
-  return [
+  return withCovers([
     { start: "00:00", end: "06:00", show: "Musik Malam TJ", desc: "Nonstop hits malam", live: false },
 
-    { start: "06:00", end: "10:00", show: "TJ Radio Pagi", host: "Indy & Irwan", live: true },
-    { start: "10:00", end: "13:00", show: "TJ Radio Lagu", desc: "Lagu", live: false },
-    { start: "13:00", end: "16:00", show: "TJ Radio Siang", host: "Yaser & Nayla", live: true },
-    { start: "16:00", end: "20:00", show: "TJ Radio Sore", host: "Reno & MC Dany", live: true },
-    { start: "20:00", end: "22:00", show: "THE LIMPA", host: "THE LIMPA", live: true },
-
-    { start: "22:00", end: "24:00", show: "Musik Malam TJ", desc: "Nonstop hits malam", live: false },
-  ];
+    { start: "06:00", end: "10:00", show: "ONEDEE MORNING", host: "Indy & Irwan", live: true },
+    { start: "10:00", end: "13:00", show: "TJ HORE (HAPPY HOUR)", host: "Odah & Rio", live: true },
+    { start: "13:00", end: "16:00", show: "JAKARTA MOVE", host: "OT Syech & Nayla", live: true },
+    { start: "16:00", end: "20:00", show: "DRiveTime", host: "Reno & MC Dany", live: true },
+    { start: "20:00", end: "24:00", show: "SHIFT MALAM", host: "Mazdjo Pray & Eko Kuntadhi", live: true },
+  ]);
 }
 
-/** Default weekday pattern (Selasa–Jumat) — mengikuti yang sekarang */
-function buildWeekdayDefault(): Seg[] {
-  return [
+// Selasa
+function buildTuesday(): Seg[] {
+  return withCovers([
     { start: "00:00", end: "06:00", show: "Musik Malam TJ", desc: "Nonstop hits malam", live: false },
 
-    { start: "06:00", end: "10:00", show: "TJ Radio Pagi", host: "Indy & Irwan", live: true },
-    { start: "10:00", end: "12:00", show: "TJ Radio Siang", host: "Hatma, Abi & Pak Yaser", live: true },
-    { start: "12:00", end: "15:00", show: "TJ Radio Siang", host: "OT Syech & Nayla", live: true },
-    { start: "15:00", end: "17:00", show: "TJ Radio Sore", host: "Risan & Patricia", live: true },
-    { start: "17:00", end: "20:00", show: "TJ Radio Sore", host: "MC Danny & Reno", live: true },
-    { start: "20:00", end: "22:00", show: "THE LIMPA", host: "THE LIMPA", live: true },
-
-    { start: "22:00", end: "24:00", show: "Musik Malam TJ", desc: "Nonstop hits malam", live: false },
-  ];
+    { start: "06:00", end: "10:00", show: "ONEDEE MORNING", host: "Indy & Irwan", live: true },
+    { start: "10:00", end: "13:00", show: "TJ HORE (HAPPY HOUR)", host: "Odah & Rio", live: true },
+    { start: "13:00", end: "16:00", show: "JAKARTA MOVE", host: "Opet & Risan", live: true },
+    { start: "16:00", end: "20:00", show: "DRiveTime", host: "Reno & MC Dany", live: true },
+    { start: "20:00", end: "24:00", show: "SHIFT MALAM", host: "Akbar & Cak Lontong", live: true },
+  ]);
 }
 
-/** Sabtu */
+// Rabu
+function buildWednesday(): Seg[] {
+  return withCovers([
+    { start: "00:00", end: "06:00", show: "Musik Malam TJ", desc: "Nonstop hits malam", live: false },
+
+    { start: "06:00", end: "10:00", show: "ONEDEE MORNING", host: "Indy & Irwan", live: true },
+    { start: "10:00", end: "13:00", show: "TJ HORE (HAPPY HOUR)", host: "Odah & Rio", live: true },
+    { start: "13:00", end: "16:00", show: "JAKARTA MOVE", host: "Opet & Risan", live: true },
+    { start: "16:00", end: "20:00", show: "DRiveTime", host: "Reno & MC Dany", live: true },
+    { start: "20:00", end: "24:00", show: "SHIFT MALAM", host: "Mo Sidik & Denny Chandra", live: true },
+  ]);
+}
+
+// Kamis
+function buildThursday(): Seg[] {
+  return withCovers([
+    { start: "00:00", end: "06:00", show: "Musik Malam TJ", desc: "Nonstop hits malam", live: false },
+
+    { start: "06:00", end: "10:00", show: "ONEDEE MORNING", host: "Indy & Irwan", live: true },
+    { start: "10:00", end: "13:00", show: "TJ HORE (HAPPY HOUR)", host: "Abi & Hatma", live: true },
+    { start: "13:00", end: "16:00", show: "JAKARTA MOVE", host: "Opet & Risan", live: true },
+    { start: "16:00", end: "20:00", show: "DRiveTime", host: "Reno & MC Dany", live: true },
+    { start: "20:00", end: "24:00", show: "SHIFT MALAM", host: "Mo Sidik & Denny Chandra", live: true },
+  ]);
+}
+
+// Jumat
+function buildFriday(): Seg[] {
+  return withCovers([
+    { start: "00:00", end: "06:00", show: "Musik Malam TJ", desc: "Nonstop hits malam", live: false },
+
+    { start: "06:00", end: "10:00", show: "ONEDEE MORNING", host: "Indy & Irwan", live: true },
+    { start: "10:00", end: "13:00", show: "TJ HORE (HAPPY HOUR)", host: "Abi & Hatma", live: true },
+    { start: "13:00", end: "16:00", show: "JAKARTA MOVE", host: "OT Syech & Nayla", live: true },
+    { start: "16:00", end: "20:00", show: "DRiveTime", host: "Reno & MC Dany", live: true },
+    { start: "20:00", end: "24:00", show: "SHIFT MALAM", host: "Mo Sidik & Denny Chandra", live: true },
+  ]);
+}
+
+// Sabtu
 function buildSaturday(): Seg[] {
-  return [
+  return withCovers([
     { start: "00:00", end: "06:00", show: "Musik Malam TJ", desc: "Nonstop hits malam", live: false },
 
-    { start: "06:00", end: "10:00", show: "TJ Radio Pagi", host: "Mpok Odah & Abi Saan", live: true },
-    { start: "10:00", end: "12:00", show: "TJ Radio Lagu", desc: "Lagu pilihan akhir pekan", live: false },
-    { start: "12:00", end: "15:00", show: "TJ Radio Siang", host: "Risan & Opet", live: true },
-    { start: "15:00", end: "17:00", show: "TJ Radio Sore", desc: "Blok Lagu", live: false },
-    { start: "17:00", end: "20:00", show: "TJ Radio Sore", host: "Hatma & OT Syech", live: true },
-
-    { start: "20:00", end: "24:00", show: "TJ Radio Malam", desc: "Blok Lagu", live: false },
-  ];
+    { start: "06:00", end: "10:00", show: "ONEDEE MORNING", host: "Rio & Odah", live: true },
+    { start: "10:00", end: "13:00", show: "TJ HORE (HAPPY HOUR)", host: "Abi & Hatma", live: true },
+    { start: "13:00", end: "16:00", show: "JAKARTA MOVE", host: "OT Syech & Nayla", live: true },
+    { start: "16:00", end: "20:00", show: "DRiveTime", host: "Opet & Risan", live: true },
+    { start: "20:00", end: "24:00", show: "TAPPING THE LIMPA", host: "THE LIMPA", live: true },
+  ]);
 }
 
-/** Minggu */
+// Minggu
 function buildSunday(): Seg[] {
-  return buildSaturday(); // sama sementara
+  return withCovers([
+    { start: "00:00", end: "06:00", show: "Musik Malam TJ", desc: "Nonstop hits malam", live: false },
+
+    { start: "06:00", end: "10:00", show: "ONEDEE MORNING", host: "Rio & Odah", live: true },
+    { start: "10:00", end: "13:00", show: "TJ HORE (HAPPY HOUR)", host: "Abi & Hatma", live: true },
+    { start: "13:00", end: "16:00", show: "JAKARTA MOVE", host: "OT Syech & Nayla", live: true },
+    { start: "16:00", end: "20:00", show: "DRiveTime", host: "Opet & Risan", live: true },
+    { start: "20:00", end: "24:00", show: "TAPPING THE LIMPA", host: "THE LIMPA", live: true },
+  ]);
 }
 
-/** Map hari -> jadwal */
+// Helper hari
 function getDayKey(isoDate: string): "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat" | "Sun" {
   const jsDate = new Date(`${isoDate}T00:00:00`);
   return new Intl.DateTimeFormat("en-US", { timeZone: TZ, weekday: "short" }).format(jsDate) as any;
 }
 
-/** Ambil jadwal untuk tanggal (WIB) tertentu */
+// API utama jadwal
 export function getSchedule(isoDate: string): Seg[] {
   const day = getDayKey(isoDate);
-  let base: Seg[];
   switch (day) {
-    case "Mon": base = buildMonday(); break;
-    case "Tue": base = buildWeekdayDefault(); break;
-    case "Wed": base = buildWeekdayDefault(); break;
-    case "Thu": base = buildWeekdayDefault(); break;
-    case "Fri": base = buildWeekdayDefault(); break;
-    case "Sat": base = buildSaturday(); break;
-    case "Sun": base = buildSunday(); break;
-    default:     base = buildWeekdayDefault(); break;
+    case "Mon": return buildMonday();
+    case "Tue": return buildTuesday();
+    case "Wed": return buildWednesday();
+    case "Thu": return buildThursday();
+    case "Fri": return buildFriday();
+    case "Sat": return buildSaturday();
+    case "Sun": return buildSunday();
+    default:    return buildMonday();
   }
-  return withCovers(base);
 }
 
-/**
- * Cari segmen yang sedang berjalan pada menit ke-`minutes` (0..1439)
- * Aman untuk segmen lintas tengah malam (mis. 21:00–02:00).
- */
+// Cari segmen aktif (mendukung lintas tengah malam)
 export function findCurrent(
   _isoDate: string,
   minutes: number,
   schedule: Seg[]
 ): { idx: number; current: Seg | null } {
   let found = -1;
-
   for (let i = 0; i < schedule.length; i++) {
     const s = toMin(schedule[i].start);
     const e = toMin(schedule[i].end);
-
     const spansMidnight = e <= s;
     const inRange = spansMidnight
       ? minutes >= s || minutes < e
       : minutes >= s && minutes < e;
-
-    if (inRange) {
-      found = i;
-      break;
-    }
+    if (inRange) { found = i; break; }
   }
-
   return { idx: found, current: found >= 0 ? schedule[found] : null };
 }
