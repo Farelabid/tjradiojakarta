@@ -112,7 +112,7 @@ export default function LivePage() {
           {/* Kolom kiri: Kartu program aktif + CTA Request */}
           <div className="lg:col-span-2 space-y-6">
             {/* KARTU PROGRAM AKTIF — layout seragam dengan ProgramToday */}
-            <div className="relative rounded-2xl border border-white/10 bg-white/5 p-5 md:p-6">
+            <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-5 md:p-6">
               <div className="pointer-events-none absolute -top-16 -right-16 h-56 w-56 rounded-full bg-orange-500/10 blur-2xl" />
 
               {/* GRID: mobile 2 kolom (foto | detail) + baris CTA di bawah (col-span-2) */}

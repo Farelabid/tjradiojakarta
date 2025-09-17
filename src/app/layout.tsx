@@ -17,13 +17,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="id">
+    <html lang="id" className="antialiased">
       <head>
         {/* Preconnect untuk percepat handshake stream */}
         <link rel="preconnect" href="https://samcloud.spacial.com" />
         <link rel="dns-prefetch" href="https://samcloud.spacial.com" />
       </head>
-      <body className="min-h-dvh bg-gradient-to-b from-primary-950 via-primary-900 to-primary-900 text-white font-jakarta relative">
+      <body className="min-h-dvh bg-gradient-to-b from-primary-950 via-primary-900 to-primary-900 text-white font-jakarta relative overflow-x-clip">
         {/* Dekorasi background */}
         <BackgroundFX />
 
