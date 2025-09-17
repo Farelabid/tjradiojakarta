@@ -70,9 +70,8 @@ const MiniBar: React.FC = () => {
     : "Streaming TJ RADIO Jakarta";
 
   return (
-    // CHANGED: wrapper safe-area + tidak full-bleed + klik hanya di kartu
     <div
-      className="fixed inset-x-0 bottom-0 z-player-safe pointer-events-none"
+      className="fixed inset-x-0 bottom-0 z-player-safe"
       style={{
         paddingLeft: "max(env(safe-area-inset-left), 12px)",
         paddingRight: "max(env(safe-area-inset-right), 12px)",
@@ -80,11 +79,9 @@ const MiniBar: React.FC = () => {
       }}
       aria-live="polite"
     >
-      {/* CHANGED: batasi lebar & center */}
-      <div className="pointer-events-auto mx-auto max-w-[680px] md:max-w-[840px]">
-        {/* CHANGED: kartu lebih elegan + compact spacing */}
+      <div className="mx-auto max-w-[680px] md:max-w-[840px]">
         <div
-          className="flex items-center justify-between gap-3
+          className="flex items-center justify-between gap-3 select-none
                      rounded-3xl px-3 py-3 md:px-4 md:py-3
                      bg-white/95 text-slate-900
                      ring-1 ring-black/10 shadow-2xl shadow-black/20
@@ -92,12 +89,13 @@ const MiniBar: React.FC = () => {
         >
           {/* Play/Pause (oranye) */}
           <button
-            className="shrink-0 inline-flex items-center justify-center w-11 h-11 rounded-full
-                       bg-orange-600 text-white shadow-md hover:bg-orange-500 transition"
-            onPointerUp={(e) => {
-              e.preventDefault();
-              void togglePlay();
-            }}
+            type="button"
+            className="relative z-10 shrink-0 inline-flex items-center justify-center
+                       w-11 h-11 rounded-full bg-orange-600 text-white shadow-md
+                       hover:bg-orange-500 active:scale-[0.98] transition"
+            onClick={() => { void togglePlay(); }}        // Satu handler saja
+            style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}
+            aria-pressed={isPlaying}
             aria-label={isPlaying ? "Pause" : "Play"}
           >
             {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
@@ -109,26 +107,24 @@ const MiniBar: React.FC = () => {
             <p className="text-xs text-slate-500 truncate">{sub}</p>
           </div>
 
-          {/* Tombol Buka (biru, tap-target nyaman) */}
+          {/* Tombol Buka (biru) */}
           <button
-            className="shrink-0 inline-flex items-center justify-center gap-1.5
-                       h-10 min-w-[84px] px-3 md:px-4 rounded-full
-                       bg-primary-600 text-white hover:bg-primary-500 transition
-                       text-sm font-semibold"
-            onPointerUp={(e) => {
-              e.preventDefault();
-              setExpanded(true);
-            }}
-            aria-label="Expand player"
+            type="button"
+            className="flex items-center gap-2 rounded-full bg-primary-600 text-white px-5 py-3"
+            onClick={() => setExpanded(true)}             // Satu handler saja
+            style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}
+            aria-expanded="false"
+            aria-controls="tj-player-expanded"
           >
             <ChevronUp className="w-5 h-5" />
-            <span className="hidden xs:inline">Buka</span>
+            Buka
           </button>
         </div>
       </div>
     </div>
   );
 };
+
 
 /* ===========================
  * Expanded Overlay (portal)
@@ -153,7 +149,7 @@ const ExpandedOverlay: React.FC = () => {
   if (!isExpanded || !target) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[70]">
+     <div id="tj-player-expanded" className="fixed inset-0 z-[70]">
       {/* backdrop */}
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
