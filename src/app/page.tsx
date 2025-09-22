@@ -158,7 +158,7 @@ export default function HomePage() {
   <div className="container mx-auto px-4">
     <div className="flex justify-center">
       <Image
-        src="/logoneon.png"
+        src="/newlogo.png"
         alt="TJRadio Jakarta"
         width={1280}
         height={640}
