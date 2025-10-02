@@ -9,7 +9,7 @@ export type Seg = {
   show: string;
   host?: string;
   desc?: string;
-  image?: string;       // cover (otomatis dari nama acara)
+  image?: string;       // path manual per segment
   live?: boolean;       // true = berpenyiar, false = blok lagu
 };
 
@@ -55,118 +55,407 @@ export function isSoftLaunchDay(isoDate: string) {
 }
 
 // =====================================================
-// Cover otomatis: slug judul acara -> /shows/<slug>.jpg
-// =====================================================
-function slugifyTitle(t: string) {
-  return (t || "")
-    .toLowerCase()
-    .normalize("NFKD")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/-{2,}/g, "-")
-    .replace(/^-|-$/g, "");
-}
-export function imageForShowTitle(title?: string) {
-  if (!title) return "";
-  return `/shows/${slugifyTitle(title)}.jpg`;
-}
-function withCovers(list: Seg[]): Seg[] {
-  return list.map((s) => ({ ...s, image: s.image ?? imageForShowTitle(s.show) }));
-}
-
-// =====================================================
-// JADWAL PER HARI (Mon..Sun) — sesuai tabel final
-// Tambahan 00:00–06:00 "Musik Malam TJ" agar 24 jam tertutup
+// JADWAL PER HARI (Mon..Sun) – sesuai jadwal terbaru
+// Image manual per segment (bisa disesuaikan per hari)
 // =====================================================
 
 // Senin
 function buildMonday(): Seg[] {
-  return withCovers([
-    { start: "00:00", end: "06:00", show: "Musik Malam TJ", desc: "Nonstop hits malam", live: false },
-
-    { start: "06:00", end: "10:00", show: "ONEDEE MORNING", host: "Indy & Irwan", desc: "Irwan & Indy Di Pagi TJ RADIO", live: true },
-    { start: "10:00", end: "13:00", show: "TJ HORE", host: "Odah & Rio", desc: "Happy Hour", live: true },
-    { start: "13:00", end: "16:00", show: "JAKARTA MOVE", host: "OT Syech & Nayla", live: true },
-    { start: "16:00", end: "20:00", show: "DRiveTime", host: "Reno & McDanny", desc: "Danny - Reno Time", live: true },
-    { start: "20:00", end: "24:00", show: "SHIFT MALAM", host: "Mazdjo Pray & Eko Kuntadhi", live: true },
-  ]);
+  return [
+    { 
+      start: "00:00", 
+      end: "06:00", 
+      show: "Musik Malam TJ", 
+      desc: "Nonstop hits malam", 
+      image: "/shows/musik-malamusik-malam-tjg",
+      live: false 
+    },
+    { 
+      start: "06:00", 
+      end: "10:00", 
+      show: "ONEDEE MORNING", 
+      host: "Indy & Irwan", 
+      desc: "Irwan & Indy Di Pagi TJ RADIO", 
+      image: "/shows/onedee-morning.jpg",
+      live: true 
+    },
+    { 
+      start: "10:00", 
+      end: "13:00", 
+      show: "TJ HORE", 
+      host: "Luvi & Rio", 
+      desc: "Happy Hour", 
+      image: "/shows/tj-hore-luvi-rio.jpg",
+      live: true 
+    },
+    { 
+      start: "13:00", 
+      end: "16:00", 
+      show: "JAKARTA MOVE", 
+      host: "OT Syech & Nayla", 
+      image: "/shows/jakarta-move.jpg",
+      live: true 
+    },
+    { 
+      start: "16:00", 
+      end: "20:00", 
+      show: "DRiveTime", 
+      host: "Reno & McDanny", 
+      desc: "Dani - Reno Time", 
+      image: "/shows/drivetime.jpg",
+      live: true 
+    },
+    { 
+      start: "20:00", 
+      end: "24:00", 
+      show: "SHIFT MALAM", 
+      host: "Mazdjo Pray & Eko Kuntadhi", 
+      image: "/shows/shift-malam.jpg",
+      live: true 
+    },
+  ];
 }
 
 // Selasa
 function buildTuesday(): Seg[] {
-  return withCovers([
-    { start: "00:00", end: "06:00", show: "Musik Malam TJ", desc: "Nonstop hits malam", live: false },
-
-    { start: "06:00", end: "10:00", show: "ONEDEE MORNING", host: "Indy & Irwan", desc: "Irwan & Indy Di Pagi TJ RADIO", live: true },
-    { start: "10:00", end: "13:00", show: "TJ HORE", host: "Odah & Rio", desc: "Happy Hour", live: true },
-    { start: "13:00", end: "16:00", show: "JAKARTA MOVE", host: "Opet & Risan", live: true },
-    { start: "16:00", end: "20:00", show: "DRiveTime", host: "Reno & McDanny", desc: "Danny - Reno Time", live: true },
-    { start: "20:00", end: "24:00", show: "SHIFT MALAM", host: "Akbar & Cak Lontong", live: true },
-  ]);
+  return [
+    { 
+      start: "00:00", 
+      end: "06:00", 
+      show: "Musik Malam TJ", 
+      desc: "Nonstop hits malam", 
+      image: "/shows/musik-malam-tj.jpg",
+      live: false 
+    },
+    { 
+      start: "06:00", 
+      end: "10:00", 
+      show: "ONEDEE MORNING", 
+      host: "Indy & Irwan", 
+      desc: "Irwan & Indy Di Pagi TJ RADIO", 
+      image: "/shows/onedee-morning.jpg",
+      live: true 
+    },
+    { 
+      start: "10:00", 
+      end: "13:00", 
+      show: "TJ HORE", 
+      host: "Odah & Rio", 
+      desc: "Happy Hour", 
+      image: "/shows/tj-hore.jpg",
+      live: true 
+    },
+    { 
+      start: "13:00", 
+      end: "16:00", 
+      show: "JAKARTA MOVE", 
+      host: "Abi & Risan", 
+      image: "/shows/jakarta-move.jpg",
+      live: true 
+    },
+    { 
+      start: "16:00", 
+      end: "20:00", 
+      show: "DRiveTime", 
+      host: "Reno & McDanny", 
+      desc: "Dani - Reno Time", 
+      image: "/shows/drivetime.jpg",
+      live: true 
+    },
+    { 
+      start: "20:00", 
+      end: "24:00", 
+      show: "SHIFT MALAM", 
+      host: "Akbar & Cak Lontong", 
+      image: "/shows/shift-malam.jpg",
+      live: true 
+    },
+  ];
 }
 
 // Rabu
 function buildWednesday(): Seg[] {
-  return withCovers([
-    { start: "00:00", end: "06:00", show: "Musik Malam TJ", desc: "Nonstop hits malam", live: false },
-
-    { start: "06:00", end: "10:00", show: "ONEDEE MORNING", host: "Indy & Irwan", desc: "Irwan & Indy Di Pagi TJ RADIO", live: true },
-    { start: "10:00", end: "13:00", show: "TJ HORE", host: "Odah & Rio", desc: "Happy Hour", live: true },
-    { start: "13:00", end: "16:00", show: "JAKARTA MOVE", host: "Opet & Risan", live: true },
-    { start: "16:00", end: "20:00", show: "DRiveTime", host: "Reno & McDanny", desc: "Danny - Reno Time", live: true },
-    { start: "20:00", end: "24:00", show: "SHIFT MALAM", host: "Mo Sidik & Denny Chandra", live: true },
-  ]);
+  return [
+    { 
+      start: "00:00", 
+      end: "06:00", 
+      show: "Musik Malam TJ", 
+      desc: "Nonstop hits malam", 
+      image: "/shows/musik-malam-tj.jpg",
+      live: false 
+    },
+    { 
+      start: "06:00", 
+      end: "10:00", 
+      show: "ONEDEE MORNING", 
+      host: "Indy & Irwan", 
+      desc: "Irwan & Indy Di Pagi TJ RADIO", 
+      image: "/shows/onedee-morning.jpg",
+      live: true 
+    },
+    { 
+      start: "10:00", 
+      end: "13:00", 
+      show: "TJ HORE", 
+      host: "Odah & Yaser", 
+      desc: "Happy Hour", 
+      image: "/shows/tj-hore-odah-yaser.jpg",
+      live: true 
+    },
+    { 
+      start: "13:00", 
+      end: "16:00", 
+      show: "JAKARTA MOVE", 
+      host: "Abi & Risan", 
+      image: "/shows/jakarta-move.jpg",
+      live: true 
+    },
+    { 
+      start: "16:00", 
+      end: "20:00", 
+      show: "DRiveTime", 
+      host: "Reno & McDanny", 
+      desc: "Dani - Reno Time", 
+      image: "/shows/drivetime.jpg",
+      live: true 
+    },
+    { 
+      start: "20:00", 
+      end: "24:00", 
+      show: "SHIFT MALAM", 
+      host: "Mo Sidik & Denny Chandra", 
+      image: "/shows/shift-malam.jpg",
+      live: true 
+    },
+  ];
 }
 
 // Kamis
 function buildThursday(): Seg[] {
-  return withCovers([
-    { start: "00:00", end: "06:00", show: "Musik Malam TJ", desc: "Nonstop hits malam", live: false },
-
-    { start: "06:00", end: "10:00", show: "ONEDEE MORNING", host: "Indy & Irwan", desc: "Irwan & Indy Di Pagi TJ RADIO", live: true },
-    { start: "10:00", end: "13:00", show: "TJ HORE Happy Hour", host: "Abi & Hatma", desc: "Happy Hour", live: true },
-    { start: "13:00", end: "16:00", show: "JAKARTA MOVE", host: "Opet & Risan", live: true },
-    { start: "16:00", end: "20:00", show: "DRiveTime", host: "Reno & McDanny", desc: "Danny - Reno Time", live: true },
-    { start: "20:00", end: "24:00", show: "SHIFT MALAM", host: "Mo Sidik & Denny Chandra", live: true },
-  ]);
+  return [
+    { 
+      start: "00:00", 
+      end: "06:00", 
+      show: "Musik Malam TJ", 
+      desc: "Nonstop hits malam", 
+      image: "/shows/musik-malam-tj.jpg",
+      live: false 
+    },
+    { 
+      start: "06:00", 
+      end: "10:00", 
+      show: "ONEDEE MORNING", 
+      host: "Indy & Irwan", 
+      desc: "Irwan & Indy Di Pagi TJ RADIO", 
+      image: "/shows/onedee-morning.jpg",
+      live: true 
+    },
+    { 
+      start: "10:00", 
+      end: "13:00", 
+      show: "TJ HORE", 
+      host: "Hatma & Luvi", 
+      desc: "Happy Hour", 
+      image: "/shows/tj-hore-hatma-luvi.jpg",
+      live: true 
+    },
+    { 
+      start: "13:00", 
+      end: "16:00", 
+      show: "JAKARTA MOVE", 
+      host: "Opet & Risan", 
+      image: "/shows/jakarta-move.jpg",
+      live: true 
+    },
+    { 
+      start: "16:00", 
+      end: "20:00", 
+      show: "DRiveTime", 
+      host: "Reno & McDanny", 
+      desc: "Dani - Reno Time", 
+      image: "/shows/drivetime.jpg",
+      live: true 
+    },
+    { 
+      start: "20:00", 
+      end: "24:00", 
+      show: "SHIFT MALAM", 
+      host: "Mo Sidik & Denny Chandra", 
+      image: "/shows/shift-malam.jpg",
+      live: true 
+    },
+  ];
 }
 
 // Jumat
 function buildFriday(): Seg[] {
-  return withCovers([
-    { start: "00:00", end: "06:00", show: "Musik Malam TJ", desc: "Nonstop hits malam", live: false },
-
-    { start: "06:00", end: "10:00", show: "ONEDEE MORNING", host: "Indy & Irwan", desc: "Irwan & Indy Di Pagi TJ RADIO", live: true },
-    { start: "10:00", end: "13:00", show: "TJ HORE Happy Hour", host: "Abi & Hatma", desc: "Happy Hour", live: true },
-    { start: "13:00", end: "16:00", show: "JAKARTA MOVE", host: "OT Syech & Nayla", live: true },
-    { start: "16:00", end: "20:00", show: "DRiveTime", host: "Reno & McDanny", desc: "Danny - Reno Time", live: true },
-    { start: "20:00", end: "24:00", show: "SHIFT MALAM", host: "Mo Sidik & Denny Chandra", live: true },
-  ]);
+  return [
+    { 
+      start: "00:00", 
+      end: "06:00", 
+      show: "Musik Malam TJ", 
+      desc: "Nonstop hits malam", 
+      image: "/shows/musik-malam-tj.jpg",
+      live: false 
+    },
+    { 
+      start: "06:00", 
+      end: "10:00", 
+      show: "ONEDEE MORNING", 
+      host: "Indy & Irwan", 
+      desc: "Irwan & Indy Di Pagi TJ RADIO", 
+      image: "/shows/onedee-morning.jpg",
+      live: true 
+    },
+    { 
+      start: "10:00", 
+      end: "13:00", 
+      show: "TJ HORE", 
+      host: "Hatma & Luvi", 
+      desc: "Happy Hour", 
+      image: "/shows/tj-hore-hatma-luvi.jpg",
+      live: true 
+    },
+    { 
+      start: "13:00", 
+      end: "16:00", 
+      show: "JAKARTA MOVE", 
+      host: "OT Syech & Opet", 
+      image: "/shows/jakarta-move.jpg",
+      live: true 
+    },
+    { 
+      start: "16:00", 
+      end: "20:00", 
+      show: "DRiveTime", 
+      host: "Reno & McDanny", 
+      desc: "Dani - Reno Time", 
+      image: "/shows/drivetime.jpg",
+      live: true 
+    },
+    { 
+      start: "20:00", 
+      end: "24:00", 
+      show: "SHIFT MALAM", 
+      host: "Mo Sidik & Denny Chandra", 
+      image: "/shows/shift-malam.jpg",
+      live: true 
+    },
+  ];
 }
 
 // Sabtu
 function buildSaturday(): Seg[] {
-  return withCovers([
-    { start: "00:00", end: "06:00", show: "Musik Malam TJ", desc: "Nonstop hits malam", live: false },
-
-    { start: "06:00", end: "10:00", show: "ONEDEE MORNING Weekend", host: "Rio & Odah", desc: "Rio & Odah Di Pagi TJ RADIO", live: true },
-    { start: "10:00", end: "13:00", show: "TJ HORE Happy Hour", host: "Abi & Hatma", desc: "Happy Hour", live: true },
-    { start: "13:00", end: "16:00", show: "JAKARTA MOVE", host: "OT Syech & Nayla", live: true },
-    { start: "16:00", end: "20:00", show: "DRiveTime Weekend", host: "Opet & Risan", live: true },
-    { start: "20:00", end: "24:00", show: "THE LIMPA", host: "THE LIMPA", desc: "Shift Malam bersama THE LIMPA", live: true },
-  ]);
+  return [
+    { 
+      start: "00:00", 
+      end: "06:00", 
+      show: "Musik Malam TJ", 
+      desc: "Nonstop hits malam", 
+      image: "/shows/musik-malam-tj.jpg",
+      live: false 
+    },
+    { 
+      start: "06:00", 
+      end: "10:00", 
+      show: "ONEDEE MORNING Weekend", 
+      host: "Rio & Odah", 
+      desc: "Rio & Odah Di Pagi TJ RADIO", 
+      image: "/shows/onedee-morning-weekend.jpg",
+      live: true 
+    },
+    { 
+      start: "10:00", 
+      end: "13:00", 
+      show: "TJ HORE", 
+      host: "Opet & Hatma", 
+      desc: "Happy Hour", 
+      image: "/shows/tj-hore-opet-hatma.jpg",
+      live: true 
+    },
+    { 
+      start: "13:00", 
+      end: "16:00", 
+      show: "JAKARTA MOVE", 
+      host: "Abi & Risan", 
+      image: "/shows/jakarta-move.jpg",
+      live: true 
+    },
+    { 
+      start: "16:00", 
+      end: "20:00", 
+      show: "DRiveTime Weekend", 
+      host: "OT Syech & Nayla", 
+      image: "/shows/drivetime-weekend.jpg",
+      live: true 
+    },
+    { 
+      start: "20:00", 
+      end: "24:00", 
+      show: "SHIFT MALAM", 
+      host: "THE LIMPA", 
+      desc: "Shift Malam bersama THE LIMPA", 
+      image: "/shows/the-limpa.jpg",
+      live: true 
+    },
+  ];
 }
 
 // Minggu
 function buildSunday(): Seg[] {
-  return withCovers([
-    { start: "00:00", end: "06:00", show: "Musik Malam TJ", desc: "Nonstop hits malam", live: false },
-
-    { start: "06:00", end: "10:00", show: "ONEDEE MORNING Weekend", host: "Rio & Odah", desc: "Rio & Odah Di Pagi TJ RADIO", live: true },
-    { start: "10:00", end: "13:00", show: "TJ HORE Happy Hour", host: "Abi & Hatma", desc: "Happy Hour", live: true },
-    { start: "13:00", end: "16:00", show: "JAKARTA MOVE", host: "OT Syech & Nayla", live: true },
-    { start: "16:00", end: "20:00", show: "DRiveTime Weekend", host: "Opet & Risan", live: true },
-    { start: "20:00", end: "24:00", show: "THE LIMPA", host: "THE LIMPA", desc: "Shift Malam bersama THE LIMPA", live: true },
-  ]);
+  return [
+    { 
+      start: "00:00", 
+      end: "06:00", 
+      show: "Musik Malam TJ", 
+      desc: "Nonstop hits malam", 
+      image: "/shows/musik-malam-tj.jpg",
+      live: false 
+    },
+    { 
+      start: "06:00", 
+      end: "10:00", 
+      show: "ONEDEE MORNING Weekend", 
+      host: "Rio & Odah", 
+      desc: "Rio & Odah Di Pagi TJ RADIO", 
+      image: "/shows/onedee-morning-weekend.jpg",
+      live: true 
+    },
+    { 
+      start: "10:00", 
+      end: "13:00", 
+      show: "TJ HORE", 
+      host: "Opet & Hatma", 
+      desc: "Happy Hour", 
+      image: "/shows/tj-hore-opet-hatma.jpg",
+      live: true 
+    },
+    { 
+      start: "13:00", 
+      end: "16:00", 
+      show: "JAKARTA MOVE", 
+      host: "Abi & Risan", 
+      image: "/shows/jakarta-move.jpg",
+      live: true 
+    },
+    { 
+      start: "16:00", 
+      end: "20:00", 
+      show: "DRiveTime Weekend", 
+      host: "OT Syech & Nayla", 
+      image: "/shows/drivetime-weekend.jpg",
+      live: true 
+    },
+    { 
+      start: "20:00", 
+      end: "24:00", 
+      show: "SHIFT MALAM", 
+      host: "THE LIMPA", 
+      desc: "Shift Malam bersama THE LIMPA", 
+      image: "/shows/the-limpa.jpg",
+      live: true 
+    },
+  ];
 }
 
 // Helper hari
