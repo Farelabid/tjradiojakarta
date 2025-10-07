@@ -16,6 +16,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${data.title} - Opini TJ Radio Jakarta`,
     description: data.body.replace(/\s+/g, " ").slice(0, 160),
+    // -- TAMBAHKAN INI --
+    alternates: {
+      canonical: `/opini/${data.slug}`,
+    },
+    // --------------------
   };
 }
 

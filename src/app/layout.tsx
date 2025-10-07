@@ -8,11 +8,43 @@ import BackgroundFX from '@/components/BackgroundFX';
 
 export const metadata: Metadata = {
   title: 'TJ Radio Jakarta - Teman Perjalanan Jakarta',
-  description: 'Radio Jakarta adalah teman setia perjalanan Anda di ibu kota. Nikmati musik terkini, berita terpercaya, dan program menarik setiap hari.',
-  keywords: 'radio jakarta, tj radio, radio online, berita jakarta, musik indonesia',
+  description: 'TJ Radio Jakarta adalah teman setia perjalanan Anda di Jakarta. Nikmati musik terkini, berita terpercaya, dan program menarik setiap hari.',
+  keywords: 'tjradio, radio jakarta, tj radio, radio online, berita jakarta, musik indonesia, teman perjalanan jakarta',
+  authors: [{ name: 'TJ Radio Jakarta' }],
+  creator: 'TJ Radio Jakarta',
+  publisher: 'TJ Radio Jakarta',
+  metadataBase: new URL('https://tjradiojakarta.com'),
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: 'TJ Radio Jakarta - Teman Perjalanan Jakarta',
+    description: 'Nikmati musik terkini, berita terpercaya, dan program menarik setiap hari.',
+    url: 'https://tjradiojakarta.com',
+    siteName: 'TJ Radio Jakarta',
+    images: [
+      {
+        url: '/newlogo.png', // Pastikan path ini benar
+        width: 1280,
+        height: 640,
+        alt: 'Logo TJ Radio Jakarta',
+      },
+    ],
+    locale: 'id_ID',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'TJ Radio Jakarta - Teman Perjalanan Jakarta',
+    description: 'Nikmati musik terkini, berita terpercaya, dan program menarik setiap hari.',
+    images: ['/newlogo.png'], // Pastikan path ini benar
+  },
   icons: {
     icon: '/favicon.ico',
+    shortcut: '/favicon-16x16.png',
+    apple: '/apple-touch-icon.png',
   },
+  manifest: '/site.webmanifest', // Anda perlu membuat file manifest ini
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

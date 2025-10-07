@@ -22,13 +22,17 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   return {
     title: `${ev.title} - Event TJ Radio Jakarta`,
     description: desc,
+    // -- TAMBAHKAN INI --
+    alternates: {
+      canonical: `/event/${ev.slug}`,
+    },
+    // --------------------
     openGraph: {
       title: ev.title,
       description: desc,
       images: images.length ? images : undefined,
       type: "article",
     },
-    alternates: { canonical: `/event/${ev.slug}` },
   };
 }
 
