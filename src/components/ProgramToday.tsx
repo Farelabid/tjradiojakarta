@@ -57,7 +57,7 @@ export default function ProgramToday() {
   const title = current?.show ?? "TJRadio Jakarta";
   const host = current?.host ?? "TJRadio";
   const timeLabel = current ? `${current.start} - ${current.end} WIB` : "—";
-  const desc = "Teman Perjalanan Jakarta";
+  const desc = current?.desc ?? "Teman Perjalanan Jakarta";
 
   const [imgOk, setImgOk] = React.useState(Boolean(current?.image));
   React.useEffect(() => {
@@ -123,7 +123,7 @@ export default function ProgramToday() {
             {title}
           </h3>
           <p className="mt-1 font-semibold text-orange-300">dengan {host}</p>
-          <p className="mt-2 text-sm text-white/80">{desc}</p>
+          <p className="text-sm text-white/80">{desc}</p>
         </div>
 
         {/* BARIS CTA + PROGRESS

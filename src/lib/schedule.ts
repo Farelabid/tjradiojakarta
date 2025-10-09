@@ -65,54 +65,64 @@ function buildMonday(): Seg[] {
     { 
       start: "00:00", 
       end: "06:00", 
-      show: "Musik Malam TJ", 
-      desc: "Nonstop hits malam", 
-      image: "/shows/musik-malamusik-malam-tjg",
+      show: "Night Flow", 
+      desc: "Playlist santai buat temani malam hingga subuh.", 
+      image: "/shows/nightflow.jpg",
       live: false 
     },
     { 
       start: "06:00", 
       end: "10:00", 
-      show: "ONEDEE MORNING", 
+      show: "Good Morning Jakarta", 
       host: "Indy & Irwan", 
-      desc: "Irwan & Indy Di Pagi TJ RADIO", 
-      image: "/shows/onedee-morning.jpg",
+      desc: "Semangat pagi Jakarta! Dengerin musik hits, info traffic, dan berita terkini.", 
+      image: "/shows/goodmorningjakarta.jpg",
       live: true 
     },
     { 
       start: "10:00", 
       end: "13:00", 
-      show: "TJ HORE", 
+      show: "Office Hour", 
       host: "Luvi & Rio", 
-      desc: "Happy Hour", 
-      image: "/shows/tj-hore-luvi-rio.jpg",
+      desc: "Teman kerja paling pas. Lagu-lagu terbaru hits Indo & manca, plus request via WA/TikTok.", 
+      image: "/shows/officehour-luvi-rio.jpg",
       live: true 
     },
     { 
       start: "13:00", 
       end: "16:00", 
-      show: "JAKARTA MOVE", 
+      show: "Coffee Break", 
       host: "OT Syech & Nayla", 
-      image: "/shows/jakarta-move.jpg",
+      desc: "Waktunya rehat sejenak. Obrolan santai seputar komunitas, budaya, dan info giat Pemprov.", 
+      image: "/shows/coffee-break.jpg",
       live: true 
     },
     { 
       start: "16:00", 
       end: "20:00", 
-      show: "DRiveTime", 
+      show: "Drive Time Jakarta", 
       host: "Reno & McDanny", 
-      desc: "Dani - Reno Time", 
+      desc: "Teman perjalanan pulang. Musik hits sore, update traffic, dan info seputar TransJakarta.", 
       image: "/shows/drivetime.jpg",
       live: true 
     },
     { 
       start: "20:00", 
-      end: "24:00", 
-      show: "SHIFT MALAM", 
+      end: "22:00", 
+      show: "Shift Malam", 
       host: "Mazdjo Pray & Eko Kuntadhi", 
-      image: "/shows/shift-malam.jpg",
+      desc: "Obrolan malam yang ringan dan menghibur. Ada info penting, podcast mingguan, dan komedi.", 
+      image: "/shows/Shiftmalam.jpg",
       live: true 
     },
+    {
+      start: "22:00",
+      end: "24:00",
+      show: "Yesterday Hits",
+      desc: "Memutar kembali kenangan lewat lagu nostalgia 80-90an, Indo & barat.",
+      image: "/shows/yesterday-hits.jpg",
+      live: false
+    }
   ];
 }
 
@@ -122,54 +132,64 @@ function buildTuesday(): Seg[] {
     { 
       start: "00:00", 
       end: "06:00", 
-      show: "Musik Malam TJ", 
-      desc: "Nonstop hits malam", 
-      image: "/shows/musik-malam-tj.jpg",
+      show: "Night Flow", 
+      desc: "Playlist santai buat temani malam hingga subuh.", 
+      image: "/shows/nightflow.jpg",
       live: false 
     },
     { 
       start: "06:00", 
       end: "10:00", 
-      show: "ONEDEE MORNING", 
+      show: "Good Morning Jakarta", 
       host: "Indy & Irwan", 
-      desc: "Irwan & Indy Di Pagi TJ RADIO", 
-      image: "/shows/onedee-morning.jpg",
+      desc: "Semangat pagi Jakarta! Dengerin musik hits, info traffic, dan berita terkini.", 
+      image: "/shows/goodmorningjakarta.jpg",
       live: true 
     },
     { 
       start: "10:00", 
       end: "13:00", 
-      show: "TJ HORE", 
+      show: "Office Hour", 
       host: "Odah & Rio", 
-      desc: "Happy Hour", 
-      image: "/shows/tj-hore.jpg",
+      desc: "Teman kerja paling pas. Lagu-lagu terbaru hits Indo & manca, plus request via WA/TikTok.", 
+      image: "/shows/officehour-odah-rio.jpg",
       live: true 
     },
     { 
       start: "13:00", 
       end: "16:00", 
-      show: "JAKARTA MOVE", 
+      show: "Coffee Break", 
       host: "Abi & Risan", 
-      image: "/shows/jakarta-move.jpg",
+      desc: "Waktunya rehat sejenak. Obrolan santai seputar komunitas, budaya, dan info giat Pemprov.", 
+      image: "/shows/coffee-break.jpg",
       live: true 
     },
     { 
       start: "16:00", 
       end: "20:00", 
-      show: "DRiveTime", 
+      show: "Drive Time Jakarta", 
       host: "Reno & McDanny", 
-      desc: "Dani - Reno Time", 
+      desc: "Teman perjalanan pulang. Musik hits sore, update traffic, dan info seputar TransJakarta.", 
       image: "/shows/drivetime.jpg",
       live: true 
     },
     { 
       start: "20:00", 
-      end: "24:00", 
-      show: "SHIFT MALAM", 
+      end: "22:00", 
+      show: "Shift Malam", 
       host: "Akbar & Cak Lontong", 
-      image: "/shows/shift-malam.jpg",
+      desc: "Obrolan malam yang ringan dan menghibur. Ada info penting, podcast mingguan, dan komedi.", 
+      image: "/shows/Shiftmalam.jpg",
       live: true 
     },
+    {
+      start: "22:00",
+      end: "24:00",
+      show: "Yesterday Hits",
+      desc: "Memutar kembali kenangan lewat lagu nostalgia 80-90an, Indo & barat.",
+      image: "/shows/yesterday-hits.jpg",
+      live: false
+    }
   ];
 }
 
@@ -179,54 +199,64 @@ function buildWednesday(): Seg[] {
     { 
       start: "00:00", 
       end: "06:00", 
-      show: "Musik Malam TJ", 
-      desc: "Nonstop hits malam", 
-      image: "/shows/musik-malam-tj.jpg",
+      show: "Night Flow", 
+      desc: "Playlist santai buat temani malam hingga subuh.", 
+      image: "/shows/nightflow.jpg",
       live: false 
     },
     { 
       start: "06:00", 
       end: "10:00", 
-      show: "ONEDEE MORNING", 
+      show: "Good Morning Jakarta", 
       host: "Indy & Irwan", 
-      desc: "Irwan & Indy Di Pagi TJ RADIO", 
-      image: "/shows/onedee-morning.jpg",
+      desc: "Semangat pagi Jakarta! Dengerin musik hits, info traffic, dan berita terkini.", 
+      image: "/shows/goodmorningjakarta.jpg",
       live: true 
     },
     { 
       start: "10:00", 
       end: "13:00", 
-      show: "TJ HORE", 
+      show: "Office Hour", 
       host: "Odah & Yaser", 
-      desc: "Happy Hour", 
-      image: "/shows/tj-hore-odah-yaser.jpg",
+      desc: "Teman kerja paling pas. Lagu-lagu terbaru hits Indo & manca, plus request via WA/TikTok.", 
+      image: "/shows/officehour-odah-yaser.jpg",
       live: true 
     },
     { 
       start: "13:00", 
       end: "16:00", 
-      show: "JAKARTA MOVE", 
+      show: "Coffee Break", 
       host: "Abi & Risan", 
-      image: "/shows/jakarta-move.jpg",
+      desc: "Waktunya rehat sejenak. Obrolan santai seputar komunitas, budaya, dan info giat Pemprov.", 
+      image: "/shows/coffee-break.jpg",
       live: true 
     },
     { 
       start: "16:00", 
       end: "20:00", 
-      show: "DRiveTime", 
+      show: "Drive Time Jakarta", 
       host: "Reno & McDanny", 
-      desc: "Dani - Reno Time", 
+      desc: "Teman perjalanan pulang. Musik hits sore, update traffic, dan info seputar TransJakarta.", 
       image: "/shows/drivetime.jpg",
       live: true 
     },
     { 
       start: "20:00", 
-      end: "24:00", 
-      show: "SHIFT MALAM", 
+      end: "22:00", 
+      show: "Shift Malam", 
       host: "Mo Sidik & Denny Chandra", 
-      image: "/shows/shift-malam.jpg",
+      desc: "Obrolan malam yang ringan dan menghibur. Ada info penting, podcast mingguan, dan komedi.", 
+      image: "/shows/Shiftmalam.jpg",
       live: true 
     },
+    {
+      start: "22:00",
+      end: "24:00",
+      show: "Yesterday Hits",
+      desc: "Memutar kembali kenangan lewat lagu nostalgia 80-90an, Indo & barat.",
+      image: "/shows/yesterday-hits.jpg",
+      live: false
+    }
   ];
 }
 
@@ -236,54 +266,64 @@ function buildThursday(): Seg[] {
     { 
       start: "00:00", 
       end: "06:00", 
-      show: "Musik Malam TJ", 
-      desc: "Nonstop hits malam", 
-      image: "/shows/musik-malam-tj.jpg",
+      show: "Night Flow", 
+      desc: "Playlist santai buat temani malam hingga subuh.", 
+      image: "/shows/nightflow.jpg",
       live: false 
     },
     { 
       start: "06:00", 
       end: "10:00", 
-      show: "ONEDEE MORNING", 
+      show: "Good Morning Jakarta", 
       host: "Indy & Irwan", 
-      desc: "Irwan & Indy Di Pagi TJ RADIO", 
-      image: "/shows/onedee-morning.jpg",
+      desc: "Semangat pagi Jakarta! Dengerin musik hits, info traffic, dan berita terkini.", 
+      image: "/shows/goodmorningjakarta.jpg",
       live: true 
     },
     { 
       start: "10:00", 
       end: "13:00", 
-      show: "TJ HORE", 
+      show: "Office Hour", 
       host: "Hatma & Luvi", 
-      desc: "Happy Hour", 
-      image: "/shows/tj-hore-hatma-luvi.jpg",
+      desc: "Teman kerja paling pas. Lagu-lagu terbaru hits Indo & manca, plus request via WA/TikTok.", 
+      image: "/shows/officehour-hatma-luvi.jpg",
       live: true 
     },
     { 
       start: "13:00", 
       end: "16:00", 
-      show: "JAKARTA MOVE", 
+      show: "Coffee Break", 
       host: "Opet & Risan", 
-      image: "/shows/jakarta-move.jpg",
+      desc: "Waktunya rehat sejenak. Obrolan santai seputar komunitas, budaya, dan info giat Pemprov.", 
+      image: "/shows/coffee-break.jpg",
       live: true 
     },
     { 
       start: "16:00", 
       end: "20:00", 
-      show: "DRiveTime", 
+      show: "Drive Time Jakarta", 
       host: "Reno & McDanny", 
-      desc: "Dani - Reno Time", 
+      desc: "Teman perjalanan pulang. Musik hits sore, update traffic, dan info seputar TransJakarta.", 
       image: "/shows/drivetime.jpg",
       live: true 
     },
     { 
       start: "20:00", 
-      end: "24:00", 
-      show: "SHIFT MALAM", 
+      end: "22:00", 
+      show: "Shift Malam", 
       host: "Mo Sidik & Denny Chandra", 
-      image: "/shows/shift-malam.jpg",
+      desc: "Obrolan malam yang ringan dan menghibur. Ada info penting, podcast mingguan, dan komedi.", 
+      image: "/shows/Shiftmalam.jpg",
       live: true 
     },
+    {
+      start: "22:00",
+      end: "24:00",
+      show: "Yesterday Hits",
+      desc: "Memutar kembali kenangan lewat lagu nostalgia 80-90an, Indo & barat.",
+      image: "/shows/yesterday-hits.jpg",
+      live: false
+    }
   ];
 }
 
@@ -293,54 +333,64 @@ function buildFriday(): Seg[] {
     { 
       start: "00:00", 
       end: "06:00", 
-      show: "Musik Malam TJ", 
-      desc: "Nonstop hits malam", 
-      image: "/shows/musik-malam-tj.jpg",
+      show: "Night Flow", 
+      desc: "Playlist santai buat temani malam hingga subuh.", 
+      image: "/shows/nightflow.jpg",
       live: false 
     },
     { 
       start: "06:00", 
       end: "10:00", 
-      show: "ONEDEE MORNING", 
+      show: "Good Morning Jakarta", 
       host: "Indy & Irwan", 
-      desc: "Irwan & Indy Di Pagi TJ RADIO", 
-      image: "/shows/onedee-morning.jpg",
+      desc: "Semangat pagi Jakarta! Dengerin musik hits, info traffic, dan berita terkini.", 
+      image: "/shows/goodmorningjakarta.jpg",
       live: true 
     },
     { 
       start: "10:00", 
       end: "13:00", 
-      show: "TJ HORE", 
+      show: "Office Hour", 
       host: "Hatma & Luvi", 
-      desc: "Happy Hour", 
-      image: "/shows/tj-hore-hatma-luvi.jpg",
+      desc: "Teman kerja paling pas. Lagu-lagu terbaru hits Indo & manca, plus request via WA/TikTok.", 
+      image: "/shows/officehour-hatma-luvi.jpg",
       live: true 
     },
     { 
       start: "13:00", 
       end: "16:00", 
-      show: "JAKARTA MOVE", 
+      show: "Coffee Break", 
       host: "OT Syech & Opet", 
-      image: "/shows/jakarta-move.jpg",
+      desc: "Waktunya rehat sejenak. Obrolan santai seputar komunitas, budaya, dan info giat Pemprov.", 
+      image: "/shows/coffee-break.jpg",
       live: true 
     },
     { 
       start: "16:00", 
       end: "20:00", 
-      show: "DRiveTime", 
+      show: "Drive Time Jakarta", 
       host: "Reno & McDanny", 
-      desc: "Dani - Reno Time", 
+      desc: "Teman perjalanan pulang. Musik hits sore, update traffic, dan info seputar TransJakarta.", 
       image: "/shows/drivetime.jpg",
       live: true 
     },
     { 
       start: "20:00", 
-      end: "24:00", 
-      show: "SHIFT MALAM", 
+      end: "22:00", 
+      show: "Shift Malam", 
       host: "Mo Sidik & Denny Chandra", 
-      image: "/shows/shift-malam.jpg",
+      desc: "Obrolan malam yang ringan dan menghibur. Ada info penting, podcast mingguan, dan komedi.", 
+      image: "/shows/Shiftmalam.jpg",
       live: true 
     },
+    {
+      start: "22:00",
+      end: "24:00",
+      show: "Yesterday Hits",
+      desc: "Memutar kembali kenangan lewat lagu nostalgia 80-90an, Indo & barat.",
+      image: "/shows/yesterday-hits.jpg",
+      live: false
+    }
   ];
 }
 
@@ -350,54 +400,64 @@ function buildSaturday(): Seg[] {
     { 
       start: "00:00", 
       end: "06:00", 
-      show: "Musik Malam TJ", 
-      desc: "Nonstop hits malam", 
-      image: "/shows/musik-malam-tj.jpg",
+      show: "Night Flow", 
+      desc: "Playlist santai buat temani malam hingga subuh.", 
+      image: "/shows/nightflow.jpg",
       live: false 
     },
     { 
       start: "06:00", 
       end: "10:00", 
-      show: "ONEDEE MORNING Weekend", 
+      show: "Good Morning Jakarta Weekend", 
       host: "Rio & Odah", 
-      desc: "Rio & Odah Di Pagi TJ RADIO", 
-      image: "/shows/onedee-morning-weekend.jpg",
+      desc: "Menemani akhir pekanmu dengan musik hits, info lalu lintas, dan berita ringan Jakarta.", 
+      image: "/shows/goodmorningjakarta-weekend.jpg",
       live: true 
     },
     { 
       start: "10:00", 
       end: "13:00", 
-      show: "TJ HORE", 
+      show: "Office Hour", 
       host: "Opet & Hatma", 
-      desc: "Happy Hour", 
-      image: "/shows/tj-hore-opet-hatma.jpg",
+      desc: "Teman kerja paling pas. Lagu-lagu terbaru hits Indo & manca, plus request via WA/TikTok.", 
+      image: "/shows/officehour-opet-hatma.jpg",
       live: true 
     },
     { 
       start: "13:00", 
       end: "16:00", 
-      show: "JAKARTA MOVE", 
+      show: "Coffee Break", 
       host: "Abi & Risan", 
-      image: "/shows/jakarta-move.jpg",
+      desc: "Waktunya rehat sejenak. Obrolan santai seputar komunitas, budaya, dan info giat Pemprov.", 
+      image: "/shows/coffee-break.jpg",
       live: true 
     },
     { 
       start: "16:00", 
       end: "20:00", 
-      show: "DRiveTime Weekend", 
+      show: "Drive Time Jakarta Weekend", 
       host: "OT Syech & Nayla", 
+      desc: "Menemani sore akhir pekanmu di jalan. Dengerin musik hits sambil dapet update info lalu lintas.", 
       image: "/shows/drivetime-weekend.jpg",
       live: true 
     },
     { 
       start: "20:00", 
-      end: "24:00", 
-      show: "SHIFT MALAM", 
+      end: "22:00", 
+      show: "Shift Malam", 
       host: "THE LIMPA", 
-      desc: "Shift Malam bersama THE LIMPA", 
-      image: "/shows/the-limpa.jpg",
+      desc: "Malam mingguan makin seru bareng THE LIMPA! Obrolan ngalor-ngidul yang penting tapi santai.", 
+      image: "/shows/Shiftmalam.jpg",
       live: true 
     },
+    {
+      start: "22:00",
+      end: "24:00",
+      show: "Yesterday Hits",
+      desc: "Memutar kembali kenangan lewat lagu nostalgia 80-90an, Indo & barat.",
+      image: "/shows/yesterday-hits.jpg",
+      live: false
+    }
   ];
 }
 
@@ -407,54 +467,64 @@ function buildSunday(): Seg[] {
     { 
       start: "00:00", 
       end: "06:00", 
-      show: "Musik Malam TJ", 
-      desc: "Nonstop hits malam", 
-      image: "/shows/musik-malam-tj.jpg",
+      show: "Night Flow", 
+      desc: "Playlist santai buat temani malam hingga subuh.", 
+      image: "/shows/nightflow.jpg",
       live: false 
     },
     { 
       start: "06:00", 
       end: "10:00", 
-      show: "ONEDEE MORNING Weekend", 
+      show: "Good Morning Jakarta Weekend", 
       host: "Rio & Odah", 
-      desc: "Rio & Odah Di Pagi TJ RADIO", 
-      image: "/shows/onedee-morning-weekend.jpg",
+      desc: "Menemani akhir pekanmu dengan musik hits, info lalu lintas, dan berita ringan Jakarta.", 
+      image: "/shows/goodmorningjakarta-weekend.jpg",
       live: true 
     },
     { 
       start: "10:00", 
       end: "13:00", 
-      show: "TJ HORE", 
+      show: "Office Hour", 
       host: "Opet & Hatma", 
-      desc: "Happy Hour", 
-      image: "/shows/tj-hore-opet-hatma.jpg",
+      desc: "Teman kerja paling pas. Lagu-lagu terbaru hits Indo & manca, plus request via WA/TikTok.", 
+      image: "/shows/officehour-opet-hatma.jpg",
       live: true 
     },
     { 
       start: "13:00", 
       end: "16:00", 
-      show: "JAKARTA MOVE", 
+      show: "Coffee Break", 
       host: "Abi & Risan", 
-      image: "/shows/jakarta-move.jpg",
+      desc: "Waktunya rehat sejenak. Obrolan santai seputar komunitas, budaya, dan info giat Pemprov.", 
+      image: "/shows/coffee-break.jpg",
       live: true 
     },
     { 
       start: "16:00", 
       end: "20:00", 
-      show: "DRiveTime Weekend", 
+      show: "Drive Time Jakarta Weekend", 
       host: "OT Syech & Nayla", 
+      desc: "Menemani sore akhir pekanmu di jalan. Dengerin musik hits sambil dapet update info lalu lintas.", 
       image: "/shows/drivetime-weekend.jpg",
       live: true 
     },
     { 
       start: "20:00", 
-      end: "24:00", 
-      show: "SHIFT MALAM", 
+      end: "22:00", 
+      show: "Shift Malam", 
       host: "THE LIMPA", 
-      desc: "Shift Malam bersama THE LIMPA", 
-      image: "/shows/the-limpa.jpg",
+      desc: "Malam mingguan makin seru bareng THE LIMPA! Obrolan ngalor-ngidul yang penting tapi santai.", 
+      image: "/shows/Shiftmalam.jpg",
       live: true 
     },
+    {
+      start: "22:00",
+      end: "24:00",
+      show: "Yesterday Hits",
+      desc: "Memutar kembali kenangan lewat lagu nostalgia 80-90an, Indo & barat.",
+      image: "/shows/yesterday-hits.jpg",
+      live: false
+    }
   ];
 }
 
