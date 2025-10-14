@@ -108,20 +108,12 @@ function buildMonday(): Seg[] {
     },
     { 
       start: "20:00", 
-      end: "23:00", 
+      end: "24:00", 
       show: "Shift Malam", 
       host: "Denny CH & Eko Kuntadhi", 
       desc: "Obrolan malam yang ringan dan menghibur. Ada info penting, podcast mingguan, dan komedi.", 
       image: "/shows/Shiftmalam.jpg",
       live: true 
-    },
-    {
-      start: "23:00",
-      end: "24:00",
-      show: "Yesterday Hits",
-      desc: "Memutar kembali kenangan lewat lagu nostalgia 80-90an, Indo & barat.",
-      image: "/shows/yesterday-hits.jpg",
-      live: false
     }
   ];
 }
@@ -175,20 +167,12 @@ function buildTuesday(): Seg[] {
     },
     { 
       start: "20:00", 
-      end: "23:00", 
+      end: "24:00", 
       show: "Shift Malam", 
       host: "Mazdjo Pray & Eko Kuntadhi", 
       desc: "Obrolan malam yang ringan dan menghibur. Ada info penting, podcast mingguan, dan komedi.", 
       image: "/shows/Shiftmalam.jpg",
       live: true 
-    },
-    {
-      start: "23:00",
-      end: "24:00",
-      show: "Yesterday Hits",
-      desc: "Memutar kembali kenangan lewat lagu nostalgia 80-90an, Indo & barat.",
-      image: "/shows/yesterday-hits.jpg",
-      live: false
     }
   ];
 }
@@ -242,20 +226,12 @@ function buildWednesday(): Seg[] {
     },
     { 
       start: "20:00", 
-      end: "23:00", 
+      end: "24:00", 
       show: "Shift Malam", 
       host: "Mo Sidik & Denny Chandra", 
       desc: "Obrolan malam yang ringan dan menghibur. Ada info penting, podcast mingguan, dan komedi.", 
       image: "/shows/Shiftmalam.jpg",
       live: true 
-    },
-    {
-      start: "23:00",
-      end: "24:00",
-      show: "Yesterday Hits",
-      desc: "Memutar kembali kenangan lewat lagu nostalgia 80-90an, Indo & barat.",
-      image: "/shows/yesterday-hits.jpg",
-      live: false
     }
   ];
 }
@@ -309,20 +285,12 @@ function buildThursday(): Seg[] {
     },
     { 
       start: "20:00", 
-      end: "23:00", 
+      end: "24:00", 
       show: "Shift Malam", 
       host: "Eko Kuntadhi & Mazdjo Pray", 
       desc: "Obrolan malam yang ringan dan menghibur. Ada info penting, podcast mingguan, dan komedi.", 
       image: "/shows/Shiftmalam.jpg",
       live: true 
-    },
-    {
-      start: "23:00",
-      end: "24:00",
-      show: "Yesterday Hits",
-      desc: "Memutar kembali kenangan lewat lagu nostalgia 80-90an, Indo & barat.",
-      image: "/shows/yesterday-hits.jpg",
-      live: false
     }
   ];
 }
@@ -376,20 +344,12 @@ function buildFriday(): Seg[] {
     },
     { 
       start: "20:00", 
-      end: "23:00", 
+      end: "24:00", 
       show: "Shift Malam", 
       host: "Mo Sidik", 
       desc: "Obrolan malam yang ringan dan menghibur. Ada info penting, podcast mingguan, dan komedi.", 
       image: "/shows/Shiftmalam.jpg",
       live: true 
-    },
-    {
-      start: "23:00",
-      end: "24:00",
-      show: "Yesterday Hits",
-      desc: "Memutar kembali kenangan lewat lagu nostalgia 80-90an, Indo & barat.",
-      image: "/shows/yesterday-hits.jpg",
-      live: false
     }
   ];
 }
@@ -443,19 +403,11 @@ function buildSaturday(): Seg[] {
     },
     { 
       start: "20:00", 
-      end: "23:00", 
+      end: "24:00", 
       show: "Shift Malam", 
       desc: "Acara rekaman (tapping) program Shift Malam.", 
       image: "/shows/Shiftmalam.jpg",
       live: true 
-    },
-    {
-      start: "23:00",
-      end: "24:00",
-      show: "Yesterday Hits",
-      desc: "Memutar kembali kenangan lewat lagu nostalgia 80-90an, Indo & barat.",
-      image: "/shows/yesterday-hits.jpg",
-      live: false
     }
   ];
 }
@@ -509,19 +461,11 @@ function buildSunday(): Seg[] {
     },
     { 
       start: "20:00", 
-      end: "23:00", 
+      end: "24:00", 
       show: "Shift Malam", 
       desc: "Acara rekaman (tapping) program Shift Malam.", 
       image: "/shows/Shiftmalam.jpg",
       live: true 
-    },
-    {
-      start: "23:00",
-      end: "24:00",
-      show: "Yesterday Hits",
-      desc: "Memutar kembali kenangan lewat lagu nostalgia 80-90an, Indo & barat.",
-      image: "/shows/yesterday-hits.jpg",
-      live: false
     }
   ];
 }
