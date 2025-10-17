@@ -1,6 +1,9 @@
 import Link from 'next/link';
 import Image from "next/image";
-import { Play, Calendar, Mic, Users, ShoppingBag, TrendingUp } from 'lucide-react';
+// [START] Perubahan Icon
+import { Instagram, TrendingUp } from 'lucide-react';
+import { FaWhatsapp, FaTiktok } from 'react-icons/fa';
+// [END] Perubahan Icon
 import NewsCard from '@/components/NewsCard';
 import { fetchNews } from '@/lib/api';
 import ProgramToday from '@/components/ProgramToday';
@@ -83,27 +86,29 @@ async function NewsSection() {
 }
 
 export default function HomePage() {
+  // [START] Perubahan Menu Item
   const menuItems = [
     { icon: TrendingUp, title: 'Traffic Report', description: 'Laporan lalu lintas terkini', href: '/traffic' },
     {
-    icon: Mic,
-    title: "Music Requests",
-    description: "Request lagu favorit",
-    href: WA_LINK, 
-  },
-  {
-    icon: Users,
-    title: "Listener Club",
-    description: "Komunitas pendengar",
-    href: IG_LINK, 
-  },
-  {
-    icon: ShoppingBag,
-    title: "Official Merch",
-    description: "Merchandise resmi",
-    href: IG_LINK,
-  },
+      icon: FaWhatsapp,
+      title: "Music Requests",
+      description: "Request lagu favorit",
+      href: WA_LINK,
+    },
+    {
+      icon: FaTiktok,
+      title: "Live Tiktok",
+      description: "Tonton siaran live kami",
+      href: "https://www.tiktok.com/@tjradio.jakarta",
+    },
+    {
+      icon: Instagram,
+      title: "Instagram",
+      description: "Follow kami di Instagram",
+      href: IG_LINK,
+    },
   ];
+  // [END] Perubahan Menu Item
 
   return (
     <div className="pb-20 md:pb-8">
@@ -180,6 +185,8 @@ export default function HomePage() {
           <Link
             key={index}
             href={item.href}
+            target={item.href.startsWith("http") ? "_blank" : "_self"}
+            rel={item.href.startsWith("http") ? "noopener noreferrer" : ""}
             className="rounded-xl p-4 hover:scale-105 transition-transform bg-white/5 hover:bg-white/10 ring-1 ring-white/10 backdrop-blur-sm"
           >
             <item.icon className="w-8 h-8 text-orange-500 mx-auto mb-2" />

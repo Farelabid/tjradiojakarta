@@ -3,7 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Mic, Clock, Play, Pause, MessageCircle } from "lucide-react";
+// [START] Perubahan Icon
+import { Mic, Clock, Play, Pause } from "lucide-react";
+import { FaWhatsapp } from 'react-icons/fa';
+// [END] Perubahan Icon
 import { usePlayer } from "@/context/PlayerContext"; // sesuaikan jika lokasinya berbeda
 import {
   nowJakarta,
@@ -217,7 +220,7 @@ export default function LivePage() {
             >
               <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-orange-500/10 blur-xl" />
               <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center">
-                <MessageCircle className="w-6 h-6 text-orange-400" />
+                <FaWhatsapp className="w-6 h-6 text-orange-400" />
               </div>
               <div className="flex-1">
                 <div className="text-base font-semibold text-white">Request Lagu</div>
