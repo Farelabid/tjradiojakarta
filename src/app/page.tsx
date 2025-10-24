@@ -115,14 +115,22 @@ export default function HomePage() {
       <SoftOpeningMarquee
   dateText="TJ RADIO JAKARTA - SUDAH MENGUDARA!"
   hosts={[
-    "Cak Lontong",
-    "Reno Fenady",
-    "Eko Kuntadi",
     "Indy Rahmawati",
-    "Akbar Kobar",
-    "McDanny",
-    "Denny Chandra",
     "Irwan Ardian",
+    "Rio Octavianus", 
+    "Luviana Dewi",
+    "OT Syech", 
+    "Saodah", 
+    "Nayla Lestari",
+    "Almira Risanti",
+    "Abi Saat", 
+    "Hatma Prakoso", 
+    "McDanny",
+    "Reno Fenady",
+    "Cak Lontong",
+    "Eko Kuntadi",
+    "Akbar Kobar",
+    "Denny Chandra",
     "Mo Sidik",
     "MazdjoPray",
   ]}
