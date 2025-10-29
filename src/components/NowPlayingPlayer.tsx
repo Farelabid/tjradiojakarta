@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
+import Link from "next/link";
 import {
   Play,
   Pause,
@@ -32,7 +33,7 @@ function useCurrentProgram() {
     const t = setInterval(() => setClock(nowJakarta()), 30_000);
     return () => clearInterval(t);
   }, []);
-
+  const [isImageError, setIsImageError] = useState(false);
   const schedule: Seg[] = useMemo(() => getSchedule(isoDate), [isoDate]);
   const { current } = useMemo(
     () => findCurrent(isoDate, minutes, schedule),
@@ -143,6 +144,7 @@ const ExpandedOverlay: React.FC = () => {
 
   const { program, timeLabel } = useCurrentProgram();
   const target = usePortalTarget("player-portal");
+  const [isImageError, setIsImageError] = useState(false);
   const [imgOk, setImgOk] = React.useState(Boolean(program?.image));
   React.useEffect(() => setImgOk(Boolean(program?.image)), [program?.image]);
 
@@ -166,13 +168,29 @@ const ExpandedOverlay: React.FC = () => {
         {/* HEADER */}
         <div className="flex items-center justify-between p-4 border-b border-white/10 bg-white/5">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-orange-500/20 border border-orange-500/30">
-              <Radio className="w-5 h-5 text-orange-300" />
-            </div>
-            <div>
-              <p className="font-semibold">TJ Radio Jakarta</p>
-              <p className="text-xs text-white/60">Teman Perjalanan Jakarta</p>
-            </div>
+            {/* LEFT: logo */}
+          <div
+            className="flex items-center gap-2.5 select-none hover:opacity-90 transition-opacity duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-lg px-1 py-1"
+          >
+            {!isImageError ? (
+              <Image
+                src="/newlogo.png"
+                alt="TJRadio Jakarta"
+                width={320}
+                height={160}
+                className="h-8 w-auto md:h-9"
+                priority
+                onError={() => setIsImageError(true)}
+              />
+            ) : (
+              <div className="h-8 w-16 md:h-9 md:w-[4.5rem] bg-white/10 rounded flex items-center justify-center text-xs font-bold text-white/70">
+                TJ
+              </div>
+            )}
+            <span className="hidden md:inline font-semibold tracking-wide text-white/95">
+              TJRadio Jakarta
+            </span>
+          </div>
           </div>
           <button
             className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/10 hover:bg-white/20"
@@ -275,9 +293,8 @@ const ExpandedOverlay: React.FC = () => {
             />
           </div>
 
-          <div className="text-xs text-white/60">
-            Catatan: Jika audio tidak mulai, sentuh tombol Play (browser butuh gesture untuk memutar
-            audio).
+          <div className="text-xs text-white/50 text-center">
+            💡 Sentuh tombol Play untuk memulai streaming
           </div>
         </div>
       </div>
