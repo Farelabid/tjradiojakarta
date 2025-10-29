@@ -18,7 +18,7 @@ import React, {
    URL STREAM DIHARDCODE
    ============================== */
 const PRIMARY = "https://stream-eu-nc.arenastreaming.com:8847/stream";
-const BACKUP  = "http://i.klikhost.com/8088/stream"; // ⚠️ HTTP bisa diblok jika site via HTTPS
+const BACKUP  = "https://stream-eu-nc.arenastreaming.com:8847/stream"; // ⚠️ HTTP bisa diblok jika site via HTTPS
 
 /* ==============================
    ENV untuk TUNING (opsional)
