@@ -6,13 +6,13 @@
  * Menggunakan Framer Motion untuk animasi smooth
  */
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react"; // Added useRef
 import { motion } from "framer-motion";
 import { usePlayer } from "@/context/PlayerContext";
 
 /* ===========================
- * VARIAN 1: Smooth Bars (Framer Motion)
- * Animasi yang smooth dan natural
+ * VARIAN 1: Smooth Bars (Framer Motion) - Enhanced Variation
+ * Animasi yang smooth dan natural dengan variasi lebih
  * =========================== */
 export function SmoothWaveform({
   barCount = 32,
@@ -25,69 +25,104 @@ export function SmoothWaveform({
 }) {
   const { isPlaying } = usePlayer();
   const [bars, setBars] = useState<number[]>([]);
+  // Ref to store individual animation parameters for more variety
+  const barParamsRef = useRef<Array<{ speed: number; phase: number; noiseScale: number }>>([]);
 
+  // Initialize bars and parameters only once
   useEffect(() => {
-    // Generate initial random heights
-    setBars(Array.from({ length: barCount }, () => Math.random()));
+    setBars(Array.from({ length: barCount }, () => 0.2)); // Start low
+    barParamsRef.current = Array.from({ length: barCount }, () => ({
+      speed: 150 + Math.random() * 150, // Vary speed (150-300)
+      phase: Math.random() * Math.PI * 2, // Random starting phase
+      noiseScale: 0.1 + Math.random() * 0.2, // Vary noise influence (0.1-0.3)
+    }));
   }, [barCount]);
 
   useEffect(() => {
-    if (!isPlaying) return;
+    if (!isPlaying) {
+      // Smoothly animate bars down to minimum height when paused
+      const timeoutId = setTimeout(() => {
+         // Check if still paused after delay before setting to min height
+         // This prevents setting to min if play is quickly toggled
+         if (!isPlaying) {
+            setBars(Array.from({ length: barCount }, () => 0.15)); // Set to a minimal visible height
+         }
+      }, 150); // Small delay before animating down
+      return () => clearTimeout(timeoutId);
+    }
 
-    // Update bars with wave-like pattern
+    // Update bars with more complex wave pattern + noise + occasional spikes
     const interval = setInterval(() => {
       setBars((prev) =>
         prev.map((_, i) => {
-          const wave = Math.sin(Date.now() / 200 + i / 3) * 0.5 + 0.5;
-          const noise = Math.random() * 0.3;
-          return Math.min(0.95, Math.max(0.2, wave + noise));
+          const params = barParamsRef.current[i];
+          const time = Date.now();
+
+          // Base wave (slower)
+          const wave1 = Math.sin(time / (params.speed * 2) + params.phase + i / 4) * 0.3 + 0.3;
+          // Faster overlay wave
+          const wave2 = Math.sin(time / params.speed + params.phase * 2 + i / 2) * 0.15 + 0.15;
+          // Noise component
+          const noise = (Math.random() - 0.5) * params.noiseScale;
+
+          // Occasional spikes (e.g., 5% chance per bar per update)
+          const spike = Math.random() < 0.03 ? Math.random() * 0.3 : 0; // Adjust probability/intensity
+
+          // Combine components and clamp
+          const targetHeight = wave1 + wave2 + noise + spike;
+          return Math.min(0.95, Math.max(0.15, targetHeight)); // Keep a minimum height
         })
       );
-    }, 80);
+    }, 80); // Update interval remains the same
 
     return () => clearInterval(interval);
-  }, [isPlaying]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPlaying, barCount]); // isPlaying dependency added to handle pause animation correctly
 
-  if (!isPlaying && bars.every((b) => b === 0)) {
-    return (
-      <div
-        className={`flex items-end justify-center gap-1 ${className}`}
-        style={{ height: `${height}px` }}
-      >
-        {Array.from({ length: Math.min(12, barCount) }).map((_, i) => (
+
+  // Fallback visual when not playing (static bars of minimal height)
+  if (!isPlaying && bars.every(b => b <= 0.2)) {
+      return (
           <div
-            key={i}
-            className="w-1 bg-white/20 rounded-full"
-            style={{ height: `${20 + Math.random() * 30}%` }}
-          />
-        ))}
-      </div>
-    );
+              className={`flex items-end justify-center gap-1 ${className}`}
+              style={{ height: `${height}px` }}
+          >
+              {Array.from({ length: barCount }).map((_, i) => (
+                  <div
+                      key={i}
+                      className="w-1 bg-gradient-to-t from-orange-500/30 via-orange-400/20 to-yellow-300/10 rounded-full" // Use gradient with low opacity
+                      style={{ height: `15%` }} // Fixed minimal height
+                  />
+              ))}
+          </div>
+      );
   }
+
 
   return (
     <div
       className={`flex items-end justify-center gap-1 ${className}`}
       style={{ height: `${height}px` }}
     >
-      {bars.map((height, i) => (
+      {bars.map((barHeight, i) => (
         <motion.div
           key={i}
           className="w-1 rounded-full bg-gradient-to-t from-orange-500 via-orange-400 to-yellow-300"
-          initial={{ scaleY: 0.3 }}
+          initial={{ scaleY: 0.15 }} // Start from minimum height
           animate={{
-            scaleY: isPlaying ? height : 0.3,
-            opacity: isPlaying ? 0.8 + height * 0.2 : 0.4,
+            scaleY: isPlaying ? barHeight : 0.15, // Animate between active height and minimum height
+            opacity: isPlaying ? 0.6 + barHeight * 0.4 : 0.4, // Adjust opacity based on height when playing
           }}
           transition={{
-            duration: 0.15,
+            duration: 0.1, // Faster transition for more reactivity
             ease: "easeOut",
           }}
           style={{
             height: "100%",
             transformOrigin: "bottom",
+            // More subtle glow, tied to height
             boxShadow: isPlaying
-              ? `0 0 ${8 * height}px rgba(249, 115, 22, ${0.4 * height})`
+              ? `0 0 ${6 * barHeight}px rgba(249, 115, 22, ${0.3 * barHeight})`
               : "none",
           }}
         />
@@ -95,6 +130,8 @@ export function SmoothWaveform({
     </div>
   );
 }
+
+// ... (Kode untuk varian lain: BouncingDots, RippleWaveform, etc., tetap sama) ...
 
 /* ===========================
  * VARIAN 2: Bouncing Dots
@@ -121,8 +158,8 @@ export function BouncingDots({
           key={i}
           className="w-2 h-2 rounded-full"
           style={{
-            background: `linear-gradient(135deg, 
-              rgba(249, 115, 22, 0.9), 
+            background: `linear-gradient(135deg,
+              rgba(249, 115, 22, 0.9),
               rgba(251, 146, 60, 0.8))`,
           }}
           animate={
@@ -198,7 +235,7 @@ export function RippleWaveform({
           }}
         />
       ))}
-      
+
       {/* Center icon */}
       <motion.div
         className="absolute w-8 h-8 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center text-white text-xs font-bold"
@@ -417,8 +454,8 @@ export function SpectrumAnalyzer({
             className="rounded-t-sm"
             style={{
               width: `${100 / barCount}%`,
-              background: `linear-gradient(to top, 
-                hsl(${hue}, 95%, 50%), 
+              background: `linear-gradient(to top,
+                hsl(${hue}, 95%, 50%),
                 hsl(${hue + 20}, 95%, 60%))`,
               boxShadow: isPlaying
                 ? `0 0 ${10 * value}px hsla(${hue}, 95%, 50%, ${0.6 * value})`

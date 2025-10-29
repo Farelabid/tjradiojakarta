@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
-import Link from "next/link";
+// import Link from "next/link"; // Link is not used, removed import
 import {
   Play,
   Pause,
@@ -11,7 +11,7 @@ import {
   VolumeX,
   ChevronUp,
   X,
-  Radio,
+  Radio, // Radio icon is not used, but keep it for potential future use
   Mic,
 } from "lucide-react";
 import { usePlayer } from "@/context/PlayerContext"; // sesuaikan jika lokasinya berbeda
@@ -21,6 +21,8 @@ import {
   findCurrent,
   type Seg,
 } from "@/lib/schedule";
+// Import the REACTIVE waveform component (Framer Motion based)
+import { SmoothWaveform } from "./ReactiveWaveform"; // Use the non-synced, animated waveform
 
 /* ===========================
  * Hook: program saat ini (WIB)
@@ -33,7 +35,7 @@ function useCurrentProgram() {
     const t = setInterval(() => setClock(nowJakarta()), 30_000);
     return () => clearInterval(t);
   }, []);
-  const [isImageError, setIsImageError] = useState(false);
+  // Removed unused isImageError state
   const schedule: Seg[] = useMemo(() => getSchedule(isoDate), [isoDate]);
   const { current } = useMemo(
     () => findCurrent(isoDate, minutes, schedule),
@@ -111,7 +113,7 @@ const MiniBar: React.FC = () => {
           {/* Tombol Buka (biru) */}
           <button
             type="button"
-            className="flex items-center gap-2 rounded-full bg-primary-600 text-white px-5 py-3"
+            className="hidden sm:flex items-center gap-2 rounded-full bg-primary-600 text-white px-5 py-3 hover:bg-primary-500 transition-colors" // Added hover state
             onClick={() => setExpanded(true)}             // Satu handler saja
             style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}
             aria-expanded="false"
@@ -119,6 +121,18 @@ const MiniBar: React.FC = () => {
           >
             <ChevronUp className="w-5 h-5" />
             Buka
+          </button>
+          {/* Tombol Buka (biru) - Mobile (Icon Only) */}
+           <button
+            type="button"
+            className="sm:hidden flex items-center justify-center rounded-full bg-primary-600 text-white w-11 h-11 hover:bg-primary-500 transition-colors" // Icon only for mobile
+            onClick={() => setExpanded(true)}
+            style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}
+            aria-expanded="false"
+            aria-controls="tj-player-expanded"
+            aria-label="Buka Player"
+          >
+            <ChevronUp className="w-5 h-5" />
           </button>
         </div>
       </div>
@@ -144,14 +158,14 @@ const ExpandedOverlay: React.FC = () => {
 
   const { program, timeLabel } = useCurrentProgram();
   const target = usePortalTarget("player-portal");
-  const [isImageError, setIsImageError] = useState(false);
+  const [isImageError, setIsImageError] = useState(false); // Keep this for logo fallback
   const [imgOk, setImgOk] = React.useState(Boolean(program?.image));
   React.useEffect(() => setImgOk(Boolean(program?.image)), [program?.image]);
 
   if (!isExpanded || !target) return null;
 
   return createPortal(
-     <div id="tj-player-expanded" className="fixed inset-0 z-[70]">
+     <div id="tj-player-expanded" className="fixed inset-0 z-[70] flex items-center justify-center p-4"> {/* Use flex for centering */}
       {/* backdrop */}
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
@@ -159,14 +173,15 @@ const ExpandedOverlay: React.FC = () => {
       />
       {/* CARD */}
       <div
-        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
-                   w-[min(92vw,720px)] rounded-3xl
+        className="relative w-[min(92vw,720px)] rounded-3xl
                    bg-neutral-900/70 backdrop-blur-md
                    border border-white/15 text-white
-                   shadow-[0_20px_60px_rgba(0,0,0,0.5)] overflow-hidden"
+                   shadow-[0_20px_60px_rgba(0,0,0,0.5)] overflow-hidden
+                   flex flex-col max-h-[90vh]" // Added max-h for smaller screens
+        // No need for absolute positioning and translate here if using flex parent
       >
         {/* HEADER */}
-        <div className="flex items-center justify-between p-4 border-b border-white/10 bg-white/5">
+        <div className="flex items-center justify-between p-4 border-b border-white/10 bg-white/5 shrink-0"> {/* Added shrink-0 */}
           <div className="flex items-center gap-2">
             {/* LEFT: logo */}
           <div
@@ -194,15 +209,22 @@ const ExpandedOverlay: React.FC = () => {
           </div>
           <button
             className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/10 hover:bg-white/20"
-            onPointerUp={() => setExpanded(false)}
+            onClick={() => setExpanded(false)} // Changed from onPointerUp for better accessibility
             aria-label="Close"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
+        {/* === WAVEFORM VISUALIZATION (Using Reactive Framer Motion) === */}
+        <div className="py-4 px-6 border-b border-white/10"> {/* Added padding and border */}
+           {/* Replace AudioWaveformFull with SmoothWaveform */}
+          <SmoothWaveform height={50} barCount={48} className="w-full" />
+        </div>
+        {/* === END WAVEFORM === */}
+
         {/* BODY */}
-        <div className="p-6 flex flex-col gap-6">
+        <div className="p-6 flex flex-col gap-6 flex-1 overflow-y-auto"> {/* Added flex-1 and overflow */}
           {/* Info Program Realtime */}
           <div className="rounded-2xl bg-gradient-to-br from-primary-700/60 via-primary-600/40 to-orange-600/30 p-6 border border-white/10">
             <div className="flex flex-wrap items-center gap-2 text-xs text-white/80">
@@ -222,8 +244,8 @@ const ExpandedOverlay: React.FC = () => {
             <div className="mt-2 flex items-start gap-4">
               {/* Artwork / fallback */}
               <div
-                className="relative w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden border border-white/15 shadow
-                           bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center"
+                className="relative w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden border border-white/15 shadow shrink-0
+                           bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center" // Added shrink-0
                 aria-label={program?.show || "Program TJRadio"}
               >
                 {imgOk && program?.image ? (
@@ -255,16 +277,16 @@ const ExpandedOverlay: React.FC = () => {
                     dengan {program.host}
                   </p>
                 )}
-                {program?.desc && <p className="text-sm text-white/80 mt-2">{program.desc}</p>}
+                {program?.desc && <p className="text-sm text-white/80 mt-2 line-clamp-2">{program.desc}</p>} {/* Added line-clamp */}
               </div>
             </div>
           </div>
 
           {/* Controls */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 mt-auto"> {/* Added mt-auto to push controls down */}
             <button
-              className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-white/15 hover:bg-white/25"
-              onPointerUp={(e) => {
+              className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-white/15 hover:bg-white/25 transition-colors"
+              onClick={(e) => { // Changed from onPointerUp
                 e.preventDefault();
                 void togglePlay();
               }}
@@ -274,8 +296,8 @@ const ExpandedOverlay: React.FC = () => {
             </button>
 
             <button
-              className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white/10 hover:bg-white/20"
-              onPointerUp={() => setMuted(!muted)}
+              className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+              onClick={() => setMuted(!muted)} // Changed from onPointerUp
               aria-label={muted ? "Unmute" : "Mute"}
             >
               {muted ? <VolumeX className="w-6 h-6" /> : <Volume2 className="w-6 h-6" />}
@@ -287,15 +309,18 @@ const ExpandedOverlay: React.FC = () => {
               max={1}
               step={0.01}
               value={muted ? 0 : volume}
-              onChange={(e) => setVolume(Number(e.target.value))}
-              className="flex-1 h-2 rounded-lg bg-white/20 accent-orange-500 outline-none"
+              onChange={(e) => {
+                const newVolume = Number(e.target.value);
+                setVolume(newVolume);
+                if (newVolume > 0 && muted) { // Unmute if volume is adjusted up from 0
+                    setMuted(false);
+                }
+              }}
+              className="flex-1 h-2 rounded-lg bg-white/20 accent-orange-500 outline-none cursor-pointer" // Added cursor-pointer
               aria-label="Volume"
             />
           </div>
 
-          <div className="text-xs text-white/50 text-center">
-            💡 Sentuh tombol Play untuk memulai streaming
-          </div>
         </div>
       </div>
     </div>,
@@ -316,3 +341,4 @@ const NowPlayingPlayer: React.FC = () => {
 };
 
 export default NowPlayingPlayer;
+
