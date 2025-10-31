@@ -1,6 +1,7 @@
 // src/lib/schedule.ts
 // =====================================================
 // Jadwal & util real-time WIB untuk TJRadio Jakarta
+// UPDATED: Sesuai jadwal baru Oktober 2025
 // =====================================================
 
 export type Seg = {
@@ -55,8 +56,7 @@ export function isSoftLaunchDay(isoDate: string) {
 }
 
 // =====================================================
-// JADWAL PER HARI (Mon..Sun) – sesuai jadwal terbaru
-// Image manual per segment (bisa disesuaikan per hari)
+// JADWAL PER HARI (Mon..Sun) – UPDATED Oktober 2025
 // =====================================================
 
 // Senin
@@ -83,7 +83,7 @@ function buildMonday(): Seg[] {
       start: "10:00", 
       end: "13:00", 
       show: "Office Hour", 
-      host: "Rio", 
+      host: "Rio Octa", 
       desc: "Teman kerja paling pas. Lagu-lagu terbaru hits Indo & manca, plus request via WA/TikTok.", 
       image: "/shows/officehour-rio.jpg",
       live: true 
@@ -92,7 +92,7 @@ function buildMonday(): Seg[] {
       start: "13:00", 
       end: "16:00", 
       show: "Coffee Break", 
-      host: "OT Syech & Nayla", 
+      host: "OT Syech & Risan", 
       desc: "Waktunya rehat sejenak. Obrolan santai seputar komunitas, budaya, dan info giat Pemprov.", 
       image: "/shows/coffee-break2.jpg",
       live: true 
@@ -101,7 +101,7 @@ function buildMonday(): Seg[] {
       start: "16:00", 
       end: "20:00", 
       show: "Drive Time", 
-      host: "Reno & MC Dany", 
+      host: "Reno & McDanny", 
       desc: "Teman perjalanan pulang. Musik hits sore, update traffic, dan info seputar TransJakarta.", 
       image: "/shows/drivetime.jpg",
       live: true 
@@ -110,7 +110,7 @@ function buildMonday(): Seg[] {
       start: "20:00", 
       end: "24:00", 
       show: "Shift Malam", 
-      host: "Denny CH & Eko Kuntadhi", 
+      host: "Denny Chandra & Eko", 
       desc: "Obrolan malam yang ringan dan menghibur. Ada info penting, podcast mingguan, dan komedi.", 
       image: "/shows/Shiftmalam.jpg",
       live: true 
@@ -142,9 +142,9 @@ function buildTuesday(): Seg[] {
       start: "10:00", 
       end: "13:00", 
       show: "Office Hour", 
-      host: "Rio", 
+      host: "Odah", 
       desc: "Teman kerja paling pas. Lagu-lagu terbaru hits Indo & manca, plus request via WA/TikTok.", 
-      image: "/shows/officehour-rio.jpg",
+      image: "/shows/officehour-odah.jpg",
       live: true 
     },
     { 
@@ -160,7 +160,7 @@ function buildTuesday(): Seg[] {
       start: "16:00", 
       end: "20:00", 
       show: "Drive Time", 
-      host: "Reno & MC Dany", 
+      host: "Reno & McDanny", 
       desc: "Teman perjalanan pulang. Musik hits sore, update traffic, dan info seputar TransJakarta.", 
       image: "/shows/drivetime.jpg",
       live: true 
@@ -169,7 +169,7 @@ function buildTuesday(): Seg[] {
       start: "20:00", 
       end: "24:00", 
       show: "Shift Malam", 
-      host: "Mazdjo Pray & Eko Kuntadhi", 
+      host: "Mazdjo Pray & Eko", 
       desc: "Obrolan malam yang ringan dan menghibur. Ada info penting, podcast mingguan, dan komedi.", 
       image: "/shows/Shiftmalam.jpg",
       live: true 
@@ -201,9 +201,9 @@ function buildWednesday(): Seg[] {
       start: "10:00", 
       end: "13:00", 
       show: "Office Hour", 
-      host: "Luvi", 
+      host: "Odah", 
       desc: "Teman kerja paling pas. Lagu-lagu terbaru hits Indo & manca, plus request via WA/TikTok.", 
-      image: "/shows/officehour-luvi.jpg",
+      image: "/shows/officehour-odah.jpg",
       live: true 
     },
     { 
@@ -219,7 +219,7 @@ function buildWednesday(): Seg[] {
       start: "16:00", 
       end: "20:00", 
       show: "Drive Time", 
-      host: "Reno & Dany", 
+      host: "Reno & McDanny", 
       desc: "Teman perjalanan pulang. Musik hits sore, update traffic, dan info seputar TransJakarta.", 
       image: "/shows/drivetime.jpg",
       live: true 
@@ -278,7 +278,7 @@ function buildThursday(): Seg[] {
       start: "16:00", 
       end: "20:00", 
       show: "Drive Time", 
-      host: "Reno & Dany", 
+      host: "Reno & McDanny", 
       desc: "Teman perjalanan pulang. Musik hits sore, update traffic, dan info seputar TransJakarta.", 
       image: "/shows/drivetime.jpg",
       live: true 
@@ -287,7 +287,7 @@ function buildThursday(): Seg[] {
       start: "20:00", 
       end: "24:00", 
       show: "Shift Malam", 
-      host: "Eko Kuntadhi & Mazdjo Pray", 
+      host: "Mazdjo Pray & Eko", 
       desc: "Obrolan malam yang ringan dan menghibur. Ada info penting, podcast mingguan, dan komedi.", 
       image: "/shows/Shiftmalam.jpg",
       live: true 
@@ -337,7 +337,7 @@ function buildFriday(): Seg[] {
       start: "16:00", 
       end: "20:00", 
       show: "Drive Time", 
-      host: "Reno & Dany", 
+      host: "Reno & McDanny", 
       desc: "Teman perjalanan pulang. Musik hits sore, update traffic, dan info seputar TransJakarta.", 
       image: "/shows/drivetime.jpg",
       live: true 
@@ -369,28 +369,37 @@ function buildSaturday(): Seg[] {
       start: "06:00", 
       end: "10:00", 
       show: "Good Morning Jakarta Weekend", 
-      host: "OT & Odah", 
+      host: "OT Syech & Odah", 
       desc: "Menemani akhir pekanmu dengan musik hits, info lalu lintas, dan berita ringan Jakarta.", 
       image: "/shows/goodmorningjakarta-weekend.jpg",
       live: true 
     },
     { 
       start: "10:00", 
+      end: "12:00", 
+      show: "Rute Akhir Pekan", 
+      host: "Rio Octa", 
+      desc: "Program spesial weekend yang menemani perjalanan akhir pekanmu dengan musik hits dan informasi menarik.", 
+      image: "/shows/rute-akhirpekan.jpg",
+      live: true 
+    },
+    { 
+      start: "12:00", 
       end: "13:00", 
-      show: "Office Hour", 
-      host: "Rio", 
-      desc: "Teman kerja paling pas. Lagu-lagu terbaru hits Indo & manca, plus request via WA/TikTok.", 
-      image: "/shows/officehour-rio.jpg",
+      show: "Song on the Week", 
+      host: "TJ Radio Jakarta", 
+      desc: "Lagu-lagu hits pilihan minggu ini, spesial untuk weekend!", 
+      image: "/shows/song-on-theweek.jpg",
       live: true 
     },
     { 
       start: "13:00", 
       end: "16:00", 
-      show: "Coffee Break", 
-      host: "Abi & Hatma", 
+      show: "Coffee Break Weekend", 
+      host: "Putri & Hatma",
       desc: "Waktunya rehat sejenak. Obrolan santai seputar komunitas, budaya, dan info giat Pemprov.", 
       image: "/shows/coffee-break2.jpg",
-      live: true 
+      live: false 
     },
     { 
       start: "16:00", 
@@ -403,9 +412,17 @@ function buildSaturday(): Seg[] {
     },
     { 
       start: "20:00", 
+      end: "22:00", 
+      show: "Malming", 
+      desc: "Program spesial malam Minggu.", 
+      image: "/shows/malming.jpg",
+      live: true 
+    },
+    { 
+      start: "22:00", 
       end: "24:00", 
       show: "Shift Malam", 
-      desc: "Acara rekaman (tapping) program Shift Malam.", 
+      desc: "Obrolan malam yang ringan dan menghibur untuk menutup akhir pekan.", 
       image: "/shows/Shiftmalam.jpg",
       live: true 
     }
@@ -427,43 +444,61 @@ function buildSunday(): Seg[] {
       start: "06:00", 
       end: "10:00", 
       show: "Good Morning Jakarta Weekend", 
-      host: "OT & Odah", 
+      host: "OT Syech & Odah", 
       desc: "Menemani akhir pekanmu dengan musik hits, info lalu lintas, dan berita ringan Jakarta.", 
       image: "/shows/goodmorningjakarta-weekend.jpg",
       live: true 
     },
     { 
       start: "10:00", 
+      end: "12:00", 
+      show: "Rute Akhir Pekan", 
+      host: "Rio Octa", 
+      desc: "Program spesial weekend yang menemani perjalanan akhir pekanmu dengan musik hits dan informasi menarik.", 
+      image: "/shows/rute-akhirpekan.jpg",
+      live: true 
+    },
+    { 
+      start: "12:00", 
       end: "13:00", 
-      show: "Office Hour", 
-      host: "Rio", 
-      desc: "Teman kerja paling pas. Lagu-lagu terbaru hits Indo & manca, plus request via WA/TikTok.", 
-      image: "/shows/officehour-rio.jpg",
+      show: "Song on the Week", 
+      host: "TJ Radio Jakarta", 
+      desc: "Lagu-lagu hits pilihan minggu ini, spesial untuk weekend!", 
+      image: "/shows/song-on-theweek.jpg",
       live: true 
     },
     { 
       start: "13:00", 
       end: "16:00", 
-      show: "Coffee Break", 
-      host: "Risan & Audrey", 
+      show: "Coffee Break Weekend", 
+      host: "Putri & Abi",
       desc: "Waktunya rehat sejenak. Obrolan santai seputar komunitas, budaya, dan info giat Pemprov.", 
       image: "/shows/coffee-break2.jpg",
-      live: true 
+      live: false 
     },
     { 
       start: "16:00", 
       end: "20:00", 
       show: "Drive Time Weekend", 
-      host: "Nayla", 
+      host: "Risan & Nayla", 
       desc: "Menemani sore akhir pekanmu di jalan. Dengerin musik hits sambil dapet update info lalu lintas.", 
       image: "/shows/drivetime-weekend-2.jpg",
       live: true 
     },
     { 
       start: "20:00", 
+      end: "22:00", 
+      show: "Weekend Seru", 
+      desc: "Program spesial malam Minggu yang seru dan menghibur.", 
+      image: "/shows/weekend-seru.jpg",
+      live: true 
+    },
+    { 
+      start: "22:00", 
       end: "24:00", 
       show: "Shift Malam", 
-      desc: "Acara rekaman (tapping) program Shift Malam.", 
+      host: "Mazdjo Pray & Eko", 
+      desc: "Obrolan malam yang ringan dan menghibur untuk menutup akhir pekan.", 
       image: "/shows/Shiftmalam.jpg",
       live: true 
     }
