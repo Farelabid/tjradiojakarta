@@ -10,8 +10,6 @@ import SoftOpeningMarquee from "@/components/SoftOpeningMarquee";
 import { Analytics } from "@vercel/analytics/next";
 import { SmoothWaveform } from '@/components/ReactiveWaveform'; // <-- Import langsung dari file yang ada
 
-
-export const dynamic = 'force-dynamic';
 // Konstanta link
 const WA_LINK =
   "https://wa.me/6288973077301?text=" +

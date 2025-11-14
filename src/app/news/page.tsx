@@ -7,8 +7,6 @@ import { TrendingUp } from 'lucide-react';
 import type { Metadata } from 'next';
 import { Analytics } from "@vercel/analytics/next"
 
-export const dynamic = 'force-dynamic';
-
 interface NewsPageProps {
   searchParams: { category?: string };
 }
