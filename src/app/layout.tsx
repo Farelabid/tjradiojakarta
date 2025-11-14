@@ -8,6 +8,7 @@ import BackgroundFX from '@/components/BackgroundFX';
 import Script from 'next/script'; // <-- Import Next.js Script
 import { Analytics } from '@vercel/analytics/react'; // <-- Import Vercel Analytics
 import AnalyticsTracker from '@/components/AnalyticsTracker'; // <-- Import tracker kita
+import { Suspense } from 'react';
 
 export const metadata: Metadata = {
   title: 'TJ Radio Jakarta - Teman Perjalanan Jakarta',
@@ -99,7 +100,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
         {/* Komponen Client untuk melacak navigasi Google */}
-        <AnalyticsTracker />
+        <Suspense fallback={null}>
+          <AnalyticsTracker />
+        </Suspense>
       </body>
     </html>
   );
