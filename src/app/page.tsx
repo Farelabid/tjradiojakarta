@@ -1,5 +1,3 @@
-// Hapus "use client"; dari sini agar tetap jadi Server Component
-
 import Link from 'next/link';
 import Image from "next/image";
 import { Instagram, TrendingUp } from 'lucide-react';

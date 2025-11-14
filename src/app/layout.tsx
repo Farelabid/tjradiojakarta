@@ -5,6 +5,9 @@ import Footer from '@/components/Footer';
 import NowPlayingPlayer from '@/components/NowPlayingPlayer';
 import { PlayerProvider } from '@/context/PlayerContext';
 import BackgroundFX from '@/components/BackgroundFX';
+import Script from 'next/script'; // <-- Import Next.js Script
+import { Analytics } from '@vercel/analytics/react'; // <-- Import Vercel Analytics
+import AnalyticsTracker from '@/components/AnalyticsTracker'; // <-- Import tracker kita
 
 export const metadata: Metadata = {
   title: 'TJ Radio Jakarta - Teman Perjalanan Jakarta',
@@ -47,6 +50,8 @@ export const metadata: Metadata = {
   manifest: '/site.webmanifest', // Anda perlu membuat file manifest ini
 };
 
+const GA_MEASUREMENT_ID = 'G-913X6XFVQ3';
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="id" className="antialiased">
@@ -68,6 +73,33 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {/* Player global yang persisten */}
           <NowPlayingPlayer />
         </PlayerProvider>
+
+        {/* === ANALYTICS SCRIPTS === */}
+        
+        {/* 1. Vercel Analytics (TETAP ADA) */}
+        <Analytics />
+        
+        {/* 2. Google Analytics (GA4) (TAMBAHAN) */}
+        <Script
+          strategy="afterInteractive"
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+        />
+        <Script
+          id="ga-init"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${GA_MEASUREMENT_ID}', {
+                page_path: window.location.pathname,
+              });
+            `,
+          }}
+        />
+        {/* Komponen Client untuk melacak navigasi Google */}
+        <AnalyticsTracker />
       </body>
     </html>
   );
