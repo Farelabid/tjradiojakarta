@@ -210,7 +210,7 @@ function buildWednesday(): Seg[] {
       start: "13:00", 
       end: "16:00", 
       show: "Coffee Break", 
-      host: "Abi & Hatma", 
+      host: "Nayla & Hatma", 
       desc: "Waktunya rehat sejenak. Obrolan santai seputar komunitas, budaya, dan info giat Pemprov.", 
       image: "/shows/coffee-break2.jpg",
       live: true 
