@@ -210,7 +210,7 @@ function buildWednesday(): Seg[] {
       start: "13:00", 
       end: "16:00", 
       show: "Coffee Break", 
-      host: "Nayla & Hatma", 
+      host: "Abi & Hatma", 
       desc: "Waktunya rehat sejenak. Obrolan santai seputar komunitas, budaya, dan info giat Pemprov.", 
       image: "/shows/coffee-break2.jpg",
       live: true 
@@ -269,7 +269,7 @@ function buildThursday(): Seg[] {
       start: "13:00", 
       end: "16:00", 
       show: "Coffee Break", 
-      host: "Abi & Hatma", 
+      host: "Abi & OT", 
       desc: "Waktunya rehat sejenak. Obrolan santai seputar komunitas, budaya, dan info giat Pemprov.", 
       image: "/shows/coffee-break2.jpg",
       live: true 
