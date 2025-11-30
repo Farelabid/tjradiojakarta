@@ -1,7 +1,7 @@
 // src/lib/schedule.ts
 // =====================================================
 // Jadwal & util real-time WIB untuk TJRadio Jakarta
-// UPDATED: Sesuai jadwal baru Oktober 2025
+// UPDATED: Sesuai jadwal baru (Desember 2025 Special Logic)
 // =====================================================
 
 export type Seg = {
@@ -47,7 +47,7 @@ export function nowJakarta() {
 }
 
 export function isSoftLaunchDay(isoDate: string) {
-  const startEnv = process.env.SOFT_OPENING_START; // contoh: "2025-09-11T09:45:00+07:00"
+  const startEnv = process.env.SOFT_OPENING_START;
   if (!startEnv) return false;
   const startDateStr = new Intl.DateTimeFormat("en-CA", {
     timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit"
@@ -56,375 +56,286 @@ export function isSoftLaunchDay(isoDate: string) {
 }
 
 // =====================================================
-// JADWAL PER HARI (Mon..Sun) – UPDATED Oktober 2025
+// HELPER LOGIC SPESIAL (DESEMBER 2025)
+// =====================================================
+
+function getDriveTimeInfo(isoDate: string, defaultHost: string): { host: string, image: string } {
+  // Cek apakah bulan Desember 2025
+  if (isoDate.startsWith("2025-12")) {
+    const day = isoDate.split("-")[2]; // Ambil tanggal "01", "02", dst.
+
+    // Dani & Yaser: Tgl 1, 5, 8
+    if (["01", "05", "08"].includes(day)) {
+      return { 
+        host: "McDanny & Yaser", 
+        image: "/shows/drivetime-weekend-3.jpg" // Gunakan fallback atau foto spesifik jika ada
+      };
+    }
+
+    // Reno & Odah: Tgl 2, 3, 4, 17, 18
+    if (["02", "03", "04", "17", "18"].includes(day)) {
+      return { 
+        host: "Reno & Odah", 
+        image: "/shows/drivetime-weekend-3.jpg"
+      };
+    }
+
+    // Yaser & Odah: Tgl 19
+    if (day === "19") {
+      return { 
+        host: "Yaser & Odah", 
+        image: "/shows/drivetime-weekend-3.jpg" // Kebetulan ada file ini
+      };
+    }
+  }
+
+  // Default Schedule
+  return { 
+    host: defaultHost, 
+    image: "/shows/drivetime.jpg" 
+  };
+}
+
+// =====================================================
+// JADWAL PER HARI (Mon..Sun)
 // =====================================================
 
 // Senin
-function buildMonday(): Seg[] {
+function buildMonday(isoDate: string): Seg[] {
+  const dt = getDriveTimeInfo(isoDate, "Reno & McDanny");
+  
   return [
     { 
-      start: "00:00", 
-      end: "06:00", 
+      start: "00:00", end: "06:00", 
       show: "Night Flow", 
       desc: "Playlist santai buat temani malam hingga subuh.", 
-      image: "/shows/nightflow.jpg",
-      live: false 
+      image: "/shows/nightflow.jpg", live: false 
     },
     { 
-      start: "06:00", 
-      end: "10:00", 
-      show: "Good Morning Jakarta", 
-      host: "Indy & Irwan", 
+      start: "06:00", end: "10:00", 
+      show: "Good Morning Jakarta", host: "Indy & Irwan", 
       desc: "Semangat pagi Jakarta! Dengerin musik hits, info traffic, dan berita terkini.", 
-      image: "/shows/goodmorningjakarta.jpg",
-      live: true 
+      image: "/shows/goodmorningjakarta.jpg", live: true 
     },
     { 
-      start: "10:00", 
-      end: "13:00", 
-      show: "Office Hour", 
-      host: "Rio Octa", 
-      desc: "Teman kerja paling pas. Lagu-lagu terbaru hits Indo & manca, plus request via WA/TikTok.", 
-      image: "/shows/officehour-rio.jpg",
-      live: true 
+      start: "10:00", end: "13:00", 
+      show: "Office Hour", host: "Rio", 
+      desc: "Teman kerja paling pas. Lagu-lagu terbaru hits Indo & manca.", 
+      image: "/shows/officehour-rio.jpg", live: true 
     },
     { 
-      start: "13:00", 
-      end: "16:00", 
-      show: "Coffee Break", 
-      host: "OT Syech & Risan", 
-      desc: "Waktunya rehat sejenak. Obrolan santai seputar komunitas, budaya, dan info giat Pemprov.", 
-      image: "/shows/coffee-break2.jpg",
-      live: true 
+      start: "13:00", end: "16:00", 
+      show: "Coffee Break", host: "OT Syech & Risan", 
+      desc: "Waktunya rehat sejenak. Obrolan santai seputar komunitas dan budaya.", 
+      image: "/shows/coffee-break2.jpg", live: true 
     },
     { 
-      start: "16:00", 
-      end: "20:00", 
-      show: "Drive Time", 
-      host: "Reno & McDanny", 
-      desc: "Teman perjalanan pulang. Musik hits sore, update traffic, dan info seputar TransJakarta.", 
-      image: "/shows/drivetime.jpg",
-      live: true 
+      start: "16:00", end: "20:00", 
+      show: "Drive Time", host: dt.host, 
+      desc: "Teman perjalanan pulang. Musik hits sore, update traffic.", 
+      image: dt.image, live: true 
     },
     { 
-      start: "20:00", 
-      end: "24:00", 
-      show: "Shift Malam", 
-      host: "Denny Chandra & Eko", 
-      desc: "Obrolan malam yang ringan dan menghibur. Ada info penting, podcast mingguan, dan komedi.", 
-      image: "/shows/Shiftmalam.jpg",
-      live: true 
+      start: "20:00", end: "23:00", 
+      show: "Shift Malam", host: "Denny Chandra & Eko", 
+      desc: "Obrolan malam yang ringan dan menghibur.", 
+      image: "/shows/Shiftmalam.jpg", live: true 
+    },
+    { 
+      start: "23:00", end: "24:00", 
+      show: "Night Flow", 
+      desc: "Musik pengantar tidur terbaik.", 
+      image: "/shows/nightflow.jpg", live: false 
     }
   ];
 }
 
 // Selasa
-function buildTuesday(): Seg[] {
+function buildTuesday(isoDate: string): Seg[] {
+  const dt = getDriveTimeInfo(isoDate, "Reno & McDanny");
+
   return [
+    { start: "00:00", end: "06:00", show: "Night Flow", image: "/shows/nightflow.jpg", live: false },
     { 
-      start: "00:00", 
-      end: "06:00", 
-      show: "Night Flow", 
-      desc: "Playlist santai buat temani malam hingga subuh.", 
-      image: "/shows/nightflow.jpg",
-      live: false 
+      start: "06:00", end: "10:00", 
+      show: "Good Morning Jakarta", host: "Indy & Irwan", 
+      image: "/shows/goodmorningjakarta.jpg", live: true 
     },
     { 
-      start: "06:00", 
-      end: "10:00", 
-      show: "Good Morning Jakarta", 
-      host: "Indy & Irwan", 
-      desc: "Semangat pagi Jakarta! Dengerin musik hits, info traffic, dan berita terkini.", 
-      image: "/shows/goodmorningjakarta.jpg",
-      live: true 
+      start: "10:00", end: "13:00", 
+      show: "Office Hour", host: "Yaser", 
+      desc: "Teman kerja paling pas dengan Yaser.", 
+      image: "/shows/officehour-yaser.jpg", live: true 
     },
     { 
-      start: "10:00", 
-      end: "13:00", 
-      show: "Office Hour", 
-      host: "Odah", 
-      desc: "Teman kerja paling pas. Lagu-lagu terbaru hits Indo & manca, plus request via WA/TikTok.", 
-      image: "/shows/officehour-odah.jpg",
-      live: true 
+      start: "13:00", end: "16:00", 
+      show: "Coffee Break", host: "Abi & Hatma", 
+      image: "/shows/coffee-break2.jpg", live: true 
     },
     { 
-      start: "13:00", 
-      end: "16:00", 
-      show: "Coffee Break", 
-      host: "Abi & Hatma", 
-      desc: "Waktunya rehat sejenak. Obrolan santai seputar komunitas, budaya, dan info giat Pemprov.", 
-      image: "/shows/coffee-break2.jpg",
-      live: true 
+      start: "16:00", end: "20:00", 
+      show: "Drive Time", host: dt.host, 
+      image: dt.image, live: true 
     },
     { 
-      start: "16:00", 
-      end: "20:00", 
-      show: "Drive Time", 
-      host: "Reno & McDanny", 
-      desc: "Teman perjalanan pulang. Musik hits sore, update traffic, dan info seputar TransJakarta.", 
-      image: "/shows/drivetime.jpg",
-      live: true 
+      start: "20:00", end: "23:00", 
+      show: "Shift Malam", host: "Mazdjo Pray & Eko", 
+      image: "/shows/Shiftmalam.jpg", live: true 
     },
-    { 
-      start: "20:00", 
-      end: "24:00", 
-      show: "Shift Malam", 
-      host: "Mazdjo Pray & Eko", 
-      desc: "Obrolan malam yang ringan dan menghibur. Ada info penting, podcast mingguan, dan komedi.", 
-      image: "/shows/Shiftmalam.jpg",
-      live: true 
-    }
+    { start: "23:00", end: "24:00", show: "Night Flow", image: "/shows/nightflow.jpg", live: false }
   ];
 }
 
 // Rabu
-function buildWednesday(): Seg[] {
+function buildWednesday(isoDate: string): Seg[] {
+  const dt = getDriveTimeInfo(isoDate, "Reno & McDanny");
+
   return [
+    { start: "00:00", end: "06:00", show: "Night Flow", image: "/shows/nightflow.jpg", live: false },
     { 
-      start: "00:00", 
-      end: "06:00", 
-      show: "Night Flow", 
-      desc: "Playlist santai buat temani malam hingga subuh.", 
-      image: "/shows/nightflow.jpg",
-      live: false 
+      start: "06:00", end: "10:00", 
+      show: "Good Morning Jakarta", host: "Indy & Irwan", 
+      image: "/shows/goodmorningjakarta.jpg", live: true 
     },
     { 
-      start: "06:00", 
-      end: "10:00", 
-      show: "Good Morning Jakarta", 
-      host: "Indy & Irwan", 
-      desc: "Semangat pagi Jakarta! Dengerin musik hits, info traffic, dan berita terkini.", 
-      image: "/shows/goodmorningjakarta.jpg",
-      live: true 
+      start: "10:00", end: "13:00", 
+      show: "Office Hour", host: "Yaser", 
+      image: "/shows/officehour-yaser.jpg", live: true 
     },
     { 
-      start: "10:00", 
-      end: "13:00", 
-      show: "Office Hour", 
-      host: "Odah", 
-      desc: "Teman kerja paling pas. Lagu-lagu terbaru hits Indo & manca, plus request via WA/TikTok.", 
-      image: "/shows/officehour-odah.jpg",
-      live: true 
+      start: "13:00", end: "16:00", 
+      show: "Coffee Break", host: "Abi & Hatma", 
+      image: "/shows/coffee-break2.jpg", live: true 
     },
     { 
-      start: "13:00", 
-      end: "16:00", 
-      show: "Coffee Break", 
-      host: "Abi & Hatma", 
-      desc: "Waktunya rehat sejenak. Obrolan santai seputar komunitas, budaya, dan info giat Pemprov.", 
-      image: "/shows/coffee-break2.jpg",
-      live: true 
+      start: "16:00", end: "20:00", 
+      show: "Drive Time", host: dt.host, 
+      image: dt.image, live: true 
     },
     { 
-      start: "16:00", 
-      end: "20:00", 
-      show: "Drive Time", 
-      host: "Reno & McDanny", 
-      desc: "Teman perjalanan pulang. Musik hits sore, update traffic, dan info seputar TransJakarta.", 
-      image: "/shows/drivetime.jpg",
-      live: true 
+      start: "20:00", end: "23:00", 
+      show: "Shift Malam", host: "Mo Sidik & Denny Chandra", 
+      image: "/shows/Shiftmalam.jpg", live: true 
     },
-    { 
-      start: "20:00", 
-      end: "24:00", 
-      show: "Shift Malam", 
-      host: "Mo Sidik & Denny Chandra", 
-      desc: "Obrolan malam yang ringan dan menghibur. Ada info penting, podcast mingguan, dan komedi.", 
-      image: "/shows/Shiftmalam.jpg",
-      live: true 
-    }
+    { start: "23:00", end: "24:00", show: "Night Flow", image: "/shows/nightflow.jpg", live: false }
   ];
 }
 
 // Kamis
-function buildThursday(): Seg[] {
+function buildThursday(isoDate: string): Seg[] {
+  const dt = getDriveTimeInfo(isoDate, "Reno & McDanny");
+
   return [
+    { start: "00:00", end: "06:00", show: "Night Flow", image: "/shows/nightflow.jpg", live: false },
     { 
-      start: "00:00", 
-      end: "06:00", 
-      show: "Night Flow", 
-      desc: "Playlist santai buat temani malam hingga subuh.", 
-      image: "/shows/nightflow.jpg",
-      live: false 
+      start: "06:00", end: "10:00", 
+      show: "Good Morning Jakarta", host: "Indy & Irwan", 
+      image: "/shows/goodmorningjakarta.jpg", live: true 
     },
     { 
-      start: "06:00", 
-      end: "10:00", 
-      show: "Good Morning Jakarta", 
-      host: "Indy & Irwan", 
-      desc: "Semangat pagi Jakarta! Dengerin musik hits, info traffic, dan berita terkini.", 
-      image: "/shows/goodmorningjakarta.jpg",
-      live: true 
+      start: "10:00", end: "13:00", 
+      show: "Office Hour", host: "Luvi", 
+      image: "/shows/officehour-luvi.jpg", live: true 
     },
     { 
-      start: "10:00", 
-      end: "13:00", 
-      show: "Office Hour", 
-      host: "Luvi", 
-      desc: "Teman kerja paling pas. Lagu-lagu terbaru hits Indo & manca, plus request via WA/TikTok.", 
-      image: "/shows/officehour-luvi.jpg",
-      live: true 
+      start: "13:00", end: "16:00", 
+      show: "Coffee Break", host: "Abi & Hatma", 
+      image: "/shows/coffee-break2.jpg", live: true 
     },
     { 
-      start: "13:00", 
-      end: "16:00", 
-      show: "Coffee Break", 
-      host: "Abi & Hatma", 
-      desc: "Waktunya rehat sejenak. Obrolan santai seputar komunitas, budaya, dan info giat Pemprov.", 
-      image: "/shows/coffee-break2.jpg",
-      live: true 
+      start: "16:00", end: "20:00", 
+      show: "Drive Time", host: dt.host, 
+      image: dt.image, live: true 
     },
     { 
-      start: "16:00", 
-      end: "20:00", 
-      show: "Drive Time", 
-      host: "Reno & McDanny", 
-      desc: "Teman perjalanan pulang. Musik hits sore, update traffic, dan info seputar TransJakarta.", 
-      image: "/shows/drivetime.jpg",
-      live: true 
+      start: "20:00", end: "23:00", 
+      show: "Shift Malam", host: "Mazdjo Pray & Eko", 
+      image: "/shows/Shiftmalam.jpg", live: true 
     },
-    { 
-      start: "20:00", 
-      end: "24:00", 
-      show: "Shift Malam", 
-      host: "Mazdjo Pray & Eko", 
-      desc: "Obrolan malam yang ringan dan menghibur. Ada info penting, podcast mingguan, dan komedi.", 
-      image: "/shows/Shiftmalam.jpg",
-      live: true 
-    }
+    { start: "23:00", end: "24:00", show: "Night Flow", image: "/shows/nightflow.jpg", live: false }
   ];
 }
 
 // Jumat
-function buildFriday(): Seg[] {
+function buildFriday(isoDate: string): Seg[] {
+  const dt = getDriveTimeInfo(isoDate, "Reno & McDanny");
+
   return [
+    { start: "00:00", end: "06:00", show: "Night Flow", image: "/shows/nightflow.jpg", live: false },
     { 
-      start: "00:00", 
-      end: "06:00", 
-      show: "Night Flow", 
-      desc: "Playlist santai buat temani malam hingga subuh.", 
-      image: "/shows/nightflow.jpg",
-      live: false 
+      start: "06:00", end: "10:00", 
+      show: "Good Morning Jakarta", host: "Indy & Irwan", 
+      image: "/shows/goodmorningjakarta.jpg", live: true 
     },
     { 
-      start: "06:00", 
-      end: "10:00", 
-      show: "Good Morning Jakarta", 
-      host: "Indy & Irwan", 
-      desc: "Semangat pagi Jakarta! Dengerin musik hits, info traffic, dan berita terkini.", 
-      image: "/shows/goodmorningjakarta.jpg",
-      live: true 
+      start: "10:00", end: "13:00", 
+      show: "Office Hour", host: "Luvi", 
+      image: "/shows/officehour-luvi.jpg", live: true 
     },
     { 
-      start: "10:00", 
-      end: "13:00", 
-      show: "Office Hour", 
-      host: "Luvi", 
-      desc: "Teman kerja paling pas. Lagu-lagu terbaru hits Indo & manca, plus request via WA/TikTok.", 
-      image: "/shows/officehour-luvi.jpg",
-      live: true 
+      start: "13:00", end: "16:00", 
+      show: "Coffee Break", host: "OT Syech & Risan", 
+      image: "/shows/coffee-break2.jpg", live: true 
     },
     { 
-      start: "13:00", 
-      end: "16:00", 
-      show: "Coffee Break", 
-      host: "OT Syech & Risan", 
-      desc: "Waktunya rehat sejenak. Obrolan santai seputar komunitas, budaya, dan info giat Pemprov.", 
-      image: "/shows/coffee-break2.jpg",
-      live: true 
+      start: "16:00", end: "20:00", 
+      show: "Drive Time", host: dt.host, 
+      image: dt.image, live: true 
     },
     { 
-      start: "16:00", 
-      end: "20:00", 
-      show: "Drive Time", 
-      host: "Reno & McDanny", 
-      desc: "Teman perjalanan pulang. Musik hits sore, update traffic, dan info seputar TransJakarta.", 
-      image: "/shows/drivetime.jpg",
-      live: true 
+      start: "20:00", end: "23:00", 
+      show: "Shift Malam", host: "Mo Sidik", 
+      image: "/shows/Shiftmalam.jpg", live: true 
     },
-    { 
-      start: "20:00", 
-      end: "24:00", 
-      show: "Shift Malam", 
-      host: "Mo Sidik", 
-      desc: "Obrolan malam yang ringan dan menghibur. Ada info penting, podcast mingguan, dan komedi.", 
-      image: "/shows/Shiftmalam.jpg",
-      live: true 
-    }
+    { start: "23:00", end: "24:00", show: "Night Flow", image: "/shows/nightflow.jpg", live: false }
   ];
 }
 
 // Sabtu
 function buildSaturday(): Seg[] {
   return [
+    { start: "00:00", end: "06:00", show: "Night Flow", image: "/shows/nightflow.jpg", live: false },
     { 
-      start: "00:00", 
-      end: "06:00", 
-      show: "Night Flow", 
-      desc: "Playlist santai buat temani malam hingga subuh.", 
-      image: "/shows/nightflow.jpg",
-      live: false 
+      start: "06:00", end: "10:00", 
+      show: "Good Morning Jakarta Weekend", host: "OT Syech & Odah", 
+      desc: "Menemani akhir pekanmu dengan musik hits dan berita ringan.", 
+      image: "/shows/goodmorningjakarta-weekend.jpg", live: true 
     },
     { 
-      start: "06:00", 
-      end: "10:00", 
-      show: "Good Morning Jakarta Weekend", 
-      host: "OT Syech & Odah", 
-      desc: "Menemani akhir pekanmu dengan musik hits, info lalu lintas, dan berita ringan Jakarta.", 
-      image: "/shows/goodmorningjakarta-weekend.jpg",
-      live: true 
+      start: "10:00", end: "12:00", 
+      show: "Rute Akhir Pekan", host: "Rio", 
+      desc: "Program spesial weekend.", 
+      image: "/shows/rute-akhirpekan.jpg", live: true 
     },
     { 
-      start: "10:00", 
-      end: "12:00", 
-      show: "Rute Akhir Pekan", 
-      host: "Rio Octa", 
-      desc: "Program spesial weekend yang menemani perjalanan akhir pekanmu dengan musik hits dan informasi menarik.", 
-      image: "/shows/rute-akhirpekan.jpg",
-      live: true 
+      start: "12:00", end: "13:00", 
+      show: "Song on the Week", host: "TJ Radio", 
+      desc: "Lagu-lagu hits pilihan minggu ini.", 
+      image: "/shows/song-on-theweek.jpg", live: true 
     },
     { 
-      start: "12:00", 
-      end: "13:00", 
-      show: "Song on the Week", 
-      host: "TJ Radio Jakarta", 
-      desc: "Lagu-lagu hits pilihan minggu ini, spesial untuk weekend!", 
-      image: "/shows/song-on-theweek.jpg",
-      live: true 
+      start: "13:00", end: "16:00", 
+      show: "Coffee Break Weekend", host: "Putri & Hatma",
+      desc: "Waktunya rehat sejenak.", 
+      image: "/shows/coffee-break2.jpg", live: true 
     },
     { 
-      start: "13:00", 
-      end: "16:00", 
-      show: "Coffee Break Weekend", 
-      host: "Putri & Hatma",
-      desc: "Waktunya rehat sejenak. Obrolan santai seputar komunitas, budaya, dan info giat Pemprov.", 
-      image: "/shows/coffee-break2.jpg",
-      live: false 
+      start: "16:00", end: "20:00", 
+      show: "Drive Time Weekend", host: "Risan & Hegar", 
+      desc: "Menemani sore akhir pekanmu.", 
+      image: "/shows/drivetime-weekend-3.jpg", live: true 
     },
     { 
-      start: "16:00", 
-      end: "20:00", 
-      show: "Drive Time Weekend", 
-      host: "Risan & Nayla", 
-      desc: "Menemani sore akhir pekanmu di jalan. Dengerin musik hits sambil dapet update info lalu lintas.", 
-      image: "/shows/drivetime-weekend-2.jpg",
-      live: true 
-    },
-    { 
-      start: "20:00", 
-      end: "22:00", 
-      show: "Malming", 
+      start: "20:00", end: "22:00", 
+      show: "Malming", host: "Chaca & Salsa",
       desc: "Program spesial malam Minggu.", 
-      image: "/shows/malming.jpg",
-      live: true 
+      image: "/shows/malming.jpg", live: true 
     },
     { 
-      start: "22:00", 
-      end: "24:00", 
-      show: "Shift Malam", 
-      desc: "Obrolan malam yang ringan dan menghibur untuk menutup akhir pekan.", 
-      image: "/shows/Shiftmalam.jpg",
-      live: true 
+      start: "22:00", end: "24:00", 
+      show: "Shift Malam", host: "Mo Sidik (Tapping)",
+      desc: "Obrolan malam penutup pekan.", 
+      image: "/shows/Shiftmalam.jpg", live: true 
     }
   ];
 }
@@ -432,75 +343,42 @@ function buildSaturday(): Seg[] {
 // Minggu
 function buildSunday(): Seg[] {
   return [
+    { start: "00:00", end: "06:00", show: "Night Flow", image: "/shows/nightflow.jpg", live: false },
     { 
-      start: "00:00", 
-      end: "06:00", 
-      show: "Night Flow", 
-      desc: "Playlist santai buat temani malam hingga subuh.", 
-      image: "/shows/nightflow.jpg",
-      live: false 
+      start: "06:00", end: "10:00", 
+      show: "Good Morning Jakarta Weekend", host: "OT Syech & Odah", 
+      image: "/shows/goodmorningjakarta-weekend.jpg", live: true 
     },
     { 
-      start: "06:00", 
-      end: "10:00", 
-      show: "Good Morning Jakarta Weekend", 
-      host: "OT Syech & Odah", 
-      desc: "Menemani akhir pekanmu dengan musik hits, info lalu lintas, dan berita ringan Jakarta.", 
-      image: "/shows/goodmorningjakarta-weekend.jpg",
-      live: true 
+      start: "10:00", end: "12:00", 
+      show: "Rute Akhir Pekan", host: "Rio", 
+      image: "/shows/rute-akhirpekan.jpg", live: true 
     },
     { 
-      start: "10:00", 
-      end: "12:00", 
-      show: "Rute Akhir Pekan", 
-      host: "Rio Octa", 
-      desc: "Program spesial weekend yang menemani perjalanan akhir pekanmu dengan musik hits dan informasi menarik.", 
-      image: "/shows/rute-akhirpekan.jpg",
-      live: true 
+      start: "12:00", end: "13:00", 
+      show: "Song on the Week", host: "TJ Radio", 
+      image: "/shows/song-on-theweek.jpg", live: true 
     },
     { 
-      start: "12:00", 
-      end: "13:00", 
-      show: "Song on the Week", 
-      host: "TJ Radio Jakarta", 
-      desc: "Lagu-lagu hits pilihan minggu ini, spesial untuk weekend!", 
-      image: "/shows/song-on-theweek.jpg",
-      live: true 
+      start: "13:00", end: "16:00", 
+      show: "Coffee Break Weekend", host: "Putri & Abi",
+      image: "/shows/coffee-break2.jpg", live: true 
     },
     { 
-      start: "13:00", 
-      end: "16:00", 
-      show: "Coffee Break Weekend", 
-      host: "Putri & Abi",
-      desc: "Waktunya rehat sejenak. Obrolan santai seputar komunitas, budaya, dan info giat Pemprov.", 
-      image: "/shows/coffee-break2.jpg",
-      live: false 
+      start: "16:00", end: "20:00", 
+      show: "Drive Time Weekend", host: "Nayla & Hegar", 
+      image: "/shows/drivetime-weekend-3.jpg", live: true 
     },
     { 
-      start: "16:00", 
-      end: "20:00", 
-      show: "Drive Time Weekend", 
-      host: "Risan & Nayla", 
-      desc: "Menemani sore akhir pekanmu di jalan. Dengerin musik hits sambil dapet update info lalu lintas.", 
-      image: "/shows/drivetime-weekend-2.jpg",
-      live: true 
+      start: "20:00", end: "22:00", 
+      show: "Weekend Seru", host: "Chaca & Salsa",
+      desc: "Keseruan minggu malam sebelum kembali beraktivitas.", 
+      image: "/shows/weekend-seru.jpg", live: true 
     },
     { 
-      start: "20:00", 
-      end: "22:00", 
-      show: "Weekend Seru", 
-      desc: "Program spesial malam Minggu yang seru dan menghibur.", 
-      image: "/shows/weekend-seru.jpg",
-      live: true 
-    },
-    { 
-      start: "22:00", 
-      end: "24:00", 
-      show: "Shift Malam", 
-      host: "Mazdjo Pray & Eko", 
-      desc: "Obrolan malam yang ringan dan menghibur untuk menutup akhir pekan.", 
-      image: "/shows/Shiftmalam.jpg",
-      live: true 
+      start: "22:00", end: "24:00", 
+      show: "Shift Malam", host: "Mazdjo Pray & Eko Kuntadhi", 
+      image: "/shows/Shiftmalam.jpg", live: true 
     }
   ];
 }
@@ -515,14 +393,14 @@ function getDayKey(isoDate: string): "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sa
 export function getSchedule(isoDate: string): Seg[] {
   const day = getDayKey(isoDate);
   switch (day) {
-    case "Mon": return buildMonday();
-    case "Tue": return buildTuesday();
-    case "Wed": return buildWednesday();
-    case "Thu": return buildThursday();
-    case "Fri": return buildFriday();
+    case "Mon": return buildMonday(isoDate);
+    case "Tue": return buildTuesday(isoDate);
+    case "Wed": return buildWednesday(isoDate);
+    case "Thu": return buildThursday(isoDate);
+    case "Fri": return buildFriday(isoDate);
     case "Sat": return buildSaturday();
     case "Sun": return buildSunday();
-    default:    return buildMonday();
+    default:    return buildMonday(isoDate);
   }
 }
 
