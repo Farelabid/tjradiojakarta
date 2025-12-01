@@ -65,7 +65,7 @@ function getDriveTimeInfo(isoDate: string, defaultHost: string): { host: string,
     const day = isoDate.split("-")[2]; // Ambil tanggal "01", "02", dst.
 
     // Dani & Yaser: Tgl 1, 5, 8
-    if (["01", "05", "08"].includes(day)) {
+    if (["05", "08"].includes(day)) {
       return { 
         host: "McDanny & Yaser", 
         image: "/shows/drivetime-weekend-3.jpg" // Gunakan fallback atau foto spesifik jika ada
@@ -84,6 +84,13 @@ function getDriveTimeInfo(isoDate: string, defaultHost: string): { host: string,
     if (day === "19") {
       return { 
         host: "Yaser & Odah", 
+        image: "/shows/drivetime-weekend-3.jpg" // Kebetulan ada file ini
+      };
+    }
+
+    if (day === "01") {
+      return { 
+        host: "Reno & Yaser", 
         image: "/shows/drivetime-weekend-3.jpg" // Kebetulan ada file ini
       };
     }
