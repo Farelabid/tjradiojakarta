@@ -56,47 +56,54 @@ export function isSoftLaunchDay(isoDate: string) {
 }
 
 // =====================================================
-// HELPER LOGIC SPESIAL (DESEMBER 2025)
+// HELPER LOGIC SPESIAL (DRIVE TIME DESEMBER 2025)
 // =====================================================
 
 function getDriveTimeInfo(isoDate: string, defaultHost: string): { host: string, image: string } {
-  // Cek apakah bulan Desember 2025
+  // Hanya berlaku untuk Desember 2025
   if (isoDate.startsWith("2025-12")) {
     const day = isoDate.split("-")[2]; // Ambil tanggal "01", "02", dst.
 
-    // Dani & Yaser: Tgl 1, 5, 8
-    if (["05", "08"].includes(day)) {
-      return { 
-        host: "McDanny & Yaser", 
-        image: "/shows/drivetime-weekend-3.jpg" // Gunakan fallback atau foto spesifik jika ada
-      };
-    }
+    switch (day) {
+      // 1. RENO & YASSER
+      case "01":
+        return { host: "Reno & Yaser", image: "/shows/drivetime-weekend-3.jpg" }; // Fallback image jika belum ada foto berdua
 
-    // Reno & Odah: Tgl 2, 3, 4, 17, 18
-    if (["02", "03", "04", "17", "18"].includes(day)) {
-      return { 
-        host: "Reno & Odah", 
-        image: "/shows/drivetime-weekend-3.jpg"
-      };
-    }
+      // 2. RENO & ODAH
+      case "02":
+      case "03":
+      case "04":
+      case "18":
+        return { host: "Reno & Odah", image: "/shows/drivetime-weekend-3.jpg" };
 
-    // Yaser & Odah: Tgl 19
-    if (day === "19") {
-      return { 
-        host: "Yaser & Odah", 
-        image: "/shows/drivetime-weekend-3.jpg" // Kebetulan ada file ini
-      };
-    }
+      // 3. DANY & YASSER
+      case "05":
+      case "08":
+      case "22":
+      case "26":
+      case "29":
+        return { host: "McDanny & Yaser", image: "/shows/drivetime-weekend-3.jpg" };
 
-    if (day === "01") {
-      return { 
-        host: "Reno & Yaser", 
-        image: "/shows/drivetime-weekend-3.jpg" // Kebetulan ada file ini
-      };
+      // 4. ODAH & YASSER (atau YASSER & ODAH)
+      case "17":
+      case "19":
+        return { host: "Yaser & Odah", image: "/shows/drivetime-weekend-3.jpg" }; // Ada foto khusus
+
+      // 5. DANY & ODAH
+      case "23":
+      case "24":
+      case "25":
+      case "30":
+      case "31":
+        return { host: "McDanny & Odah", image: "/shows/drivetime-weekend-3.jpg" };
+      
+      // Default dates (9-12, 15-16) pakai pasangan asli (Dany & Reno)
+      default:
+        break;
     }
   }
 
-  // Default Schedule
+  // Default Schedule (Reno & McDanny)
   return { 
     host: defaultHost, 
     image: "/shows/drivetime.jpg" 
@@ -109,7 +116,7 @@ function getDriveTimeInfo(isoDate: string, defaultHost: string): { host: string,
 
 // Senin
 function buildMonday(isoDate: string): Seg[] {
-  const dt = getDriveTimeInfo(isoDate, "Reno & McDanny");
+  const dt = getDriveTimeInfo(isoDate, "McDanny & Reno");
   
   return [
     { 
