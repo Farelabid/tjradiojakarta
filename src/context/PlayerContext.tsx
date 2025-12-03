@@ -17,8 +17,8 @@ import React, {
 /* ==============================
    URL STREAM DIHARDCODE
    ============================== */
-const PRIMARY = "http://tjradiojakarta.arenastreaming.com:8026/stream";
-const BACKUP  = "https://live1.indostreamserver.com/8012/stream"; // ⚠️ HTTP bisa diblok jika site via HTTPS
+const PRIMARY = "https://live1.indostreamserver.com/8012/stream";
+const BACKUP  = "http://tjradiojakarta.arenastreaming.com:8026/stream";
 
 /* ==============================
    ENV untuk TUNING (opsional)
