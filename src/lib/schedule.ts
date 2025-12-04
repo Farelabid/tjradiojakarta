@@ -150,16 +150,10 @@ function buildMonday(isoDate: string): Seg[] {
       image: dt.image, live: true 
     },
     { 
-      start: "20:00", end: "23:00", 
+      start: "20:00", end: "24:00", 
       show: "Shift Malam", host: "Denny Chandra & Eko", 
       desc: "Obrolan malam yang ringan dan menghibur.", 
       image: "/shows/Shiftmalam.jpg", live: true 
-    },
-    { 
-      start: "23:00", end: "24:00", 
-      show: "Night Flow", 
-      desc: "Musik pengantar tidur terbaik.", 
-      image: "/shows/nightflow.jpg", live: false 
     }
   ];
 }
@@ -192,11 +186,10 @@ function buildTuesday(isoDate: string): Seg[] {
       image: dt.image, live: true 
     },
     { 
-      start: "20:00", end: "23:00", 
+      start: "20:00", end: "24:00", 
       show: "Shift Malam", host: "Mazdjo Pray & Eko", 
       image: "/shows/Shiftmalam.jpg", live: true 
-    },
-    { start: "23:00", end: "24:00", show: "Night Flow", image: "/shows/nightflow.jpg", live: false }
+    }
   ];
 }
 
@@ -227,11 +220,10 @@ function buildWednesday(isoDate: string): Seg[] {
       image: dt.image, live: true 
     },
     { 
-      start: "20:00", end: "23:00", 
+      start: "20:00", end: "24:00", 
       show: "Shift Malam", host: "Mo Sidik & Denny Chandra", 
       image: "/shows/Shiftmalam.jpg", live: true 
-    },
-    { start: "23:00", end: "24:00", show: "Night Flow", image: "/shows/nightflow.jpg", live: false }
+    }
   ];
 }
 
@@ -262,11 +254,10 @@ function buildThursday(isoDate: string): Seg[] {
       image: dt.image, live: true 
     },
     { 
-      start: "20:00", end: "23:00", 
+      start: "20:00", end: "24:00", 
       show: "Shift Malam", host: "Mazdjo Pray & Eko", 
       image: "/shows/Shiftmalam.jpg", live: true 
-    },
-    { start: "23:00", end: "24:00", show: "Night Flow", image: "/shows/nightflow.jpg", live: false }
+    }
   ];
 }
 
@@ -297,11 +288,10 @@ function buildFriday(isoDate: string): Seg[] {
       image: dt.image, live: true 
     },
     { 
-      start: "20:00", end: "23:00", 
+      start: "20:00", end: "24:00", 
       show: "Shift Malam", host: "Mo Sidik", 
       image: "/shows/Shiftmalam.jpg", live: true 
-    },
-    { start: "23:00", end: "24:00", show: "Night Flow", image: "/shows/nightflow.jpg", live: false }
+    }
   ];
 }
 
@@ -347,7 +337,7 @@ function buildSaturday(): Seg[] {
     },
     { 
       start: "22:00", end: "24:00", 
-      show: "Shift Malam", host: "Mo Sidik (Tapping)",
+      show: "Shift Malam", host: "Mo Sidik",
       desc: "Obrolan malam penutup pekan.", 
       image: "/shows/Shiftmalam.jpg", live: true 
     }
