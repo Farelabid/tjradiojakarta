@@ -77,7 +77,6 @@ function getDriveTimeInfo(isoDate: string, defaultHost: string): { host: string,
         return { host: "Reno & Odah", image: "/shows/drivetime-weekend-3.jpg" };
 
       // 3. DANY & YASSER
-      case "05":
       case "08":
       case "22":
       case "26":
@@ -85,6 +84,7 @@ function getDriveTimeInfo(isoDate: string, defaultHost: string): { host: string,
         return { host: "McDanny & Yaser", image: "/shows/drivetime-weekend-3.jpg" };
 
       // 4. ODAH & YASSER (atau YASSER & ODAH)
+      case "05":
       case "17":
       case "19":
         return { host: "Yaser & Odah", image: "/shows/drivetime-weekend-3.jpg" }; // Ada foto khusus
