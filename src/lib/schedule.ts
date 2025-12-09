@@ -177,7 +177,7 @@ function buildTuesday(isoDate: string): Seg[] {
     },
     { 
       start: "13:00", end: "16:00", 
-      show: "Coffee Break", host: "Abi & Hatma", 
+      show: "Coffee Break", host: "Abi & Salsa",  // Ganti Hatma dengan Salsa
       image: "/shows/coffee-break2.jpg", live: true 
     },
     { 
