@@ -29,6 +29,7 @@ const KEYWORDS = [
   'rano karno',
   'transjakarta',
   'jaklingko',
+  'pmi jakarta',
   'gubernur jakarta',
 ];
 
