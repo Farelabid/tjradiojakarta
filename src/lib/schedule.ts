@@ -279,7 +279,7 @@ function buildFriday(isoDate: string): Seg[] {
     },
     { 
       start: "13:00", end: "16:00", 
-      show: "Coffee Break", host: "Hegar & Risan", // Ganti Jumat OT & Risan
+      show: "Coffee Break", host: "OT Syech & Risan",
       image: "/shows/coffee-break2.jpg", live: true 
     },
     { 
