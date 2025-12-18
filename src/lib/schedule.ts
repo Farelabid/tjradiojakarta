@@ -250,7 +250,7 @@ function buildThursday(isoDate: string): Seg[] {
     },
     { 
       start: "16:00", end: "20:00", 
-      show: "Drive Time", host: dt.host, 
+      show: "Drive Time", host: "Odah & OT Syech", //dt.host
       image: dt.image, live: true 
     },
     { 
@@ -284,7 +284,7 @@ function buildFriday(isoDate: string): Seg[] {
     },
     { 
       start: "16:00", end: "20:00", 
-      show: "Drive Time", host: dt.host, 
+      show: "Drive Time", host: "Odah & Yaser", //dt.host 
       image: dt.image, live: true 
     },
     { 
