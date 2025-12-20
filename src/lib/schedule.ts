@@ -133,9 +133,9 @@ function buildMonday(isoDate: string): Seg[] {
     },
     { 
       start: "10:00", end: "13:00", 
-      show: "Office Hour", host: "Rio", 
+      show: "Office Hour", host: "Odah", //Rio
       desc: "Teman kerja paling pas. Lagu-lagu terbaru hits Indo & manca.", 
-      image: "/shows/officehour-rio.jpg", live: true 
+      image: "/shows/officehour-odah.jpg", live: true 
     },
     { 
       start: "13:00", end: "16:00", 
@@ -250,7 +250,7 @@ function buildThursday(isoDate: string): Seg[] {
     },
     { 
       start: "16:00", end: "20:00", 
-      show: "Drive Time", host: "Odah & OT Syech", //dt.host
+      show: "Drive Time", host: dt.host, 
       image: dt.image, live: true 
     },
     { 
@@ -284,7 +284,7 @@ function buildFriday(isoDate: string): Seg[] {
     },
     { 
       start: "16:00", end: "20:00", 
-      show: "Drive Time", host: "Odah & Yaser", //dt.host 
+      show: "Drive Time", host: dt.host, 
       image: dt.image, live: true 
     },
     { 
@@ -307,7 +307,7 @@ function buildSaturday(): Seg[] {
     },
     { 
       start: "10:00", end: "12:00", 
-      show: "Rute Akhir Pekan", host: "Rio", 
+      show: "Rute Akhir Pekan", host: "Abi Saan", //Rio
       desc: "Program spesial weekend.", 
       image: "/shows/rute-akhirpekan.jpg", live: true 
     },
@@ -355,7 +355,7 @@ function buildSunday(): Seg[] {
     },
     { 
       start: "10:00", end: "12:00", 
-      show: "Rute Akhir Pekan", host: "Rio", 
+      show: "Rute Akhir Pekan", host: "April", //Rio
       image: "/shows/rute-akhirpekan.jpg", live: true 
     },
     { 
