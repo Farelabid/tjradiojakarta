@@ -355,7 +355,7 @@ function buildSunday(): Seg[] {
     },
     { 
       start: "10:00", end: "12:00", 
-      show: "Rute Akhir Pekan", host: "April", //Rio
+      show: "Rute Akhir Pekan", host: "Luvi", //Rio
       image: "/shows/rute-akhirpekan.jpg", live: true 
     },
     { 
