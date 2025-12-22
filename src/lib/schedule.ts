@@ -133,9 +133,9 @@ function buildMonday(isoDate: string): Seg[] {
     },
     { 
       start: "10:00", end: "13:00", 
-      show: "Office Hour", host: "Odah", //Rio
+      show: "Office Hour", host: "Rio", 
       desc: "Teman kerja paling pas. Lagu-lagu terbaru hits Indo & manca.", 
-      image: "/shows/officehour-odah.jpg", live: true 
+      image: "/shows/officehour-rio.jpg", live: true 
     },
     { 
       start: "13:00", end: "16:00", 
@@ -355,7 +355,7 @@ function buildSunday(): Seg[] {
     },
     { 
       start: "10:00", end: "12:00", 
-      show: "Rute Akhir Pekan", host: "Luvi", //Rio
+      show: "Rute Akhir Pekan", host: "Rio",
       image: "/shows/rute-akhirpekan.jpg", live: true 
     },
     { 
