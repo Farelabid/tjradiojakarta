@@ -171,9 +171,9 @@ function buildTuesday(isoDate: string): Seg[] {
     },
     { 
       start: "10:00", end: "13:00", 
-      show: "Office Hour", host: "Yaser", 
-      desc: "Teman kerja paling pas dengan Yaser.", 
-      image: "/shows/officehour-yaser.jpg", live: true 
+      show: "Office Hour", host: "Luvi", //Yaser
+      desc: "Teman kerja paling pas.", 
+      image: "/shows/officehour-luvi.jpg", live: true 
     },
     { 
       start: "13:00", end: "16:00", 
@@ -182,8 +182,8 @@ function buildTuesday(isoDate: string): Seg[] {
     },
     { 
       start: "16:00", end: "20:00", 
-      show: "Drive Time", host: dt.host, 
-      image: dt.image, live: true 
+      show: "Drive Time", host: "Yaser & Odah", //dt.host
+      image: "/shows/drivetime-weekend-3.jpg", live: true  //dt.image
     },
     { 
       start: "20:00", end: "24:00", 
