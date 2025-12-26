@@ -274,18 +274,18 @@ function buildFriday(isoDate: string): Seg[] {
     },
     { 
       start: "10:00", end: "13:00", 
-      show: "Office Hour", host: "Rio", //Luvi
-      image: "/shows/officehour-rio.jpg", live: true 
+      show: "Office Hour", host: "Luvi", //Luvi
+      image: "/shows/officehour-luvi.jpg", live: true 
     },
     { 
       start: "13:00", end: "16:00", 
-      show: "Coffee Break", host: "Nayla & Chae", //OT Syech dan Risan
+      show: "Coffee Break", host: "OT Syech & Risan", //OT Syech dan Risan
       image: "/shows/coffee-break2.jpg", live: true 
     },
     { 
       start: "16:00", end: "20:00", 
-      show: "Drive Time", host: "Yaser & Luvi", //dt.host
-      image: "/shows/drivetime-weekend-3.jpg", live: true //dt.image
+      show: "Drive Time", host: dt.host, //dt.host
+      image: dt.image, live: true //dt.image
     },
     { 
       start: "20:00", end: "24:00", 
