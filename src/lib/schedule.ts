@@ -307,7 +307,7 @@ function buildSaturday(): Seg[] {
     },
     { 
       start: "10:00", end: "12:00", 
-      show: "Rute Akhir Pekan", host: "Abi Saan", //Rio
+      show: "Rute Akhir Pekan", host: "Rio", 
       desc: "Program spesial weekend.", 
       image: "/shows/rute-akhirpekan.jpg", live: true 
     },
@@ -319,7 +319,7 @@ function buildSaturday(): Seg[] {
     },
     { 
       start: "13:00", end: "16:00", 
-      show: "Coffee Break Weekend", host: "Putri & Hatma",
+      show: "Coffee Break Weekend", host: "Nayla", //Putri & Hatma
       desc: "Waktunya rehat sejenak.", 
       image: "/shows/coffee-break2.jpg", live: true 
     },
