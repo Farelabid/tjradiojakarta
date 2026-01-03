@@ -319,7 +319,7 @@ function buildSaturday(): Seg[] {
     },
     { 
       start: "13:00", end: "16:00", 
-      show: "Coffee Break Weekend", host: "Nayla", //Putri & Hatma
+      show: "Coffee Break Weekend", host: "Nayla & Nata", //Putri & Hatma
       desc: "Waktunya rehat sejenak.", 
       image: "/shows/coffee-break2.jpg", live: true 
     },
