@@ -207,7 +207,7 @@ function buildFriday(_isoDate: string): Seg[] {
     },
     { 
       start: "13:00", end: "16:00", 
-      show: "Coffee Break", host: "Abi & Hatma", 
+      show: "Coffee Break", host: "Risan & OT Syech", 
       image: "/shows/coffee-break2.jpg", live: true 
     },
     { 
