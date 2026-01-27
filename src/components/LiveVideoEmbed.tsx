@@ -19,7 +19,7 @@ type LiveVideoEmbedProps = {
 };
 
 export default function LiveVideoEmbed({
-  videoId = "74B253rbVEc",
+  videoId = "3SiEt26UF5U",
   autoplay = false,
 }: LiveVideoEmbedProps) {
   const { pause: pauseRadio } = usePlayer();
