@@ -18,19 +18,33 @@ type LiveVideoEmbedProps = {
   autoplay?: boolean;
 };
 
+/**
+ * Smart Mutual Exclusion:
+ * - Video pause Radio HANYA jika video benar-benar playing 500ms+ (bukan sekadar buffering)
+ * - Radio pause Video langsung (user intent jelas)
+ * - Tidak ada konflik saat page load atau buffering
+ */
 export default function LiveVideoEmbed({
   videoId = "3SiEt26UF5U",
   autoplay = false,
 }: LiveVideoEmbedProps) {
-  const { pause: pauseRadio } = usePlayer();
+  const { pause: pauseRadio, isPlaying: isRadioPlaying } = usePlayer();
 
-  /** Wrapper tetap (tidak diganti oleh API) */
   const wrapperRef = useRef<HTMLDivElement | null>(null);
-  /** Target elemen yang akan diganti <iframe> oleh IFrame API */
   const targetRef = useRef<HTMLDivElement | null>(null);
-
   const playerRef = useRef<any>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // Debounce timer untuk konfirmasi video benar-benar playing
+  const playConfirmTimerRef = useRef<number | null>(null);
+
+  /** Clear the confirmation timer */
+  const clearPlayConfirm = () => {
+    if (playConfirmTimerRef.current != null) {
+      window.clearTimeout(playConfirmTimerRef.current);
+      playConfirmTimerRef.current = null;
+    }
+  };
 
   /** Muat YouTube IFrame API sekali, lalu buat player */
   useEffect(() => {
@@ -53,11 +67,9 @@ export default function LiveVideoEmbed({
         playerRef.current = new window.YT.Player(targetRef.current, {
           videoId,
           playerVars: {
-            // kontrol utama API
             autoplay: autoplay ? 1 : 0,
-            playsinline: 1, // penting di iOS agar inline, bukan fullscreen
+            playsinline: 1,
             rel: 0,
-            // enablejsapi perlu saat kontrol via JS
             enablejsapi: 1,
             origin:
               typeof window !== "undefined" ? window.location.origin : undefined,
@@ -67,9 +79,21 @@ export default function LiveVideoEmbed({
             onStateChange: (e: any) => {
               const YT = window.YT;
               if (!YT) return;
-              // Saat video mulai PLAY → radio auto-pause
+
               if (e.data === YT.PlayerState.PLAYING) {
-                pauseRadio(); // HTMLMediaElement.pause() idempoten
+                // Video mulai PLAYING — tapi jangan langsung pause radio!
+                // Tunggu 500ms untuk konfirmasi ini bukan sekadar buffering/preload
+                clearPlayConfirm();
+                playConfirmTimerRef.current = window.setTimeout(() => {
+                  // Setelah 500ms masih playing? Berarti user memang mau nonton.
+                  // Pause radio agar tidak bertumpuk.
+                  pauseRadio();
+                  // Dispatch event untuk sinkronisasi komponen lain jika ada
+                  window.dispatchEvent(new Event("tj:video-play"));
+                }, 500);
+              } else {
+                // Video paused/buffering/ended → batalkan timer
+                clearPlayConfirm();
               }
             },
           },
@@ -82,15 +106,17 @@ export default function LiveVideoEmbed({
 
     return () => {
       cancelled = true;
+      clearPlayConfirm();
       try {
         playerRef.current?.destroy?.();
       } catch {}
     };
   }, [videoId, autoplay, pauseRadio]);
 
-  /** Jika RADIO mulai play → pause video */
+  /** Jika RADIO mulai play → pause video (user intent jelas) */
   useEffect(() => {
     const onRadioPlay = () => {
+      clearPlayConfirm(); // Batalkan timer jika ada
       try {
         playerRef.current?.pauseVideo?.();
       } catch {}
@@ -99,7 +125,7 @@ export default function LiveVideoEmbed({
     return () => window.removeEventListener("tj:radio-play", onRadioPlay);
   }, []);
 
-  /** Cadangan: sinkron ukuran iframe dengan kontainer saat resize */
+  /** Sinkron ukuran iframe dengan kontainer saat resize */
   useEffect(() => {
     if (!("ResizeObserver" in window)) return;
     const ro = new ResizeObserver(() => {
@@ -118,14 +144,12 @@ export default function LiveVideoEmbed({
       className="
         relative w-full aspect-video rounded-2xl overflow-hidden
         ring-1 ring-white/10 bg-black/40
-        /* Paksa iframe buatan YT mengisi penuh kontainer */
         [&>iframe]:absolute [&>iframe]:inset-0
         [&>iframe]:!w-full [&>iframe]:!h-full
         [&>iframe]:!top-0 [&>iframe]:!left-0
         [&>iframe]:block
       "
     >
-      {/* Elemen ini akan DIGANTI <iframe> oleh YouTube IFrame API */}
       <div ref={targetRef} />
 
       {error && (

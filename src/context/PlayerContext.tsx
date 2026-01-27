@@ -180,6 +180,8 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 
     const a = document.createElement("audio");
     a.preload = "none";
+    // crossOrigin diperlukan untuk Web Audio API (visualizer).
+    // Jika server stream tidak support CORS, visualizer tidak akan berfungsi tapi audio tetap jalan.
     a.crossOrigin = "anonymous";
     a.controls = false;
     a.style.display = "none";
