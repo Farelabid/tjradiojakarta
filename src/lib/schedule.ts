@@ -240,7 +240,7 @@ function buildSaturday(): Seg[] {
     },
     { 
       start: "12:00", end: "13:00", 
-      show: "Majuin UMKM", host: "Cindee", 
+      show: "Majuin UMKM", host: "Luvi", 
       image: "/shows/majuin-umkm.jpg", live: true 
     },
     { 
