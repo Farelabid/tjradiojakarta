@@ -71,7 +71,7 @@ function buildMonday(_isoDate: string): Seg[] {
     { 
       start: "10:00", end: "13:00", 
       show: "Office Hour", host: "Risan", //Rio
-      image: "/shows/officehour-odah.jpg", live: true 
+      image: "/shows/officehour-risan.jpg", live: true 
     },
     { 
       start: "13:00", end: "16:00", 
