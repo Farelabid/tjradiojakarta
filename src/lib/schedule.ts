@@ -103,12 +103,12 @@ function buildTuesday(_isoDate: string): Seg[] {
     },
     { 
       start: "10:00", end: "13:00", 
-      show: "Office Hour", host: "Rio", //Odah
-      image: "/shows/officehour-rio.jpg", live: true 
+      show: "Office Hour", host: "Risan", //Odah
+      image: "/shows/officehour-risan.jpg", live: true 
     },
     { 
       start: "13:00", end: "16:00", 
-      show: "Coffee Break", host: "Abi & Hatma",
+      show: "Coffee Break", host: "OT Syech & Abi",
       image: "/shows/coffee-break2.jpg", live: true 
     },
     { 
