@@ -136,8 +136,8 @@ function buildWednesday(_isoDate: string): Seg[] {
     },
     { 
       start: "10:00", end: "13:00", 
-      show: "Office Hour", host: "Luvi", //Luvi
-      image: "/shows/officehour-luvi.jpg", live: true 
+      show: "Office Hour", host: "Yaser", //Luvi
+      image: "/shows/officehour-yaser.jpg", live: true 
     },
     { 
       start: "13:00", end: "16:00", 
