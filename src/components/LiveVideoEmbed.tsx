@@ -25,7 +25,7 @@ type LiveVideoEmbedProps = {
  * - Tidak ada konflik saat page load atau buffering
  */
 export default function LiveVideoEmbed({
-  videoId = "b3bd5KWiyqk",
+  videoId = "-02uE2J8up8",
   autoplay = false,
 }: LiveVideoEmbedProps) {
   const { pause: pauseRadio, isPlaying: isRadioPlaying } = usePlayer();
