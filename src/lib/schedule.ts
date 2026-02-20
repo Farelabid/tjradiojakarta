@@ -230,7 +230,7 @@ function buildSaturday(): Seg[] {
     { start: "00:00", end: "06:00", show: "Night Flow", image: "/shows/nightflow.jpg", live: false },
     { 
       start: "06:00", end: "10:00", 
-      show: "Good Morning Jakarta Weekend", host: "OT Syech & Odah", 
+      show: "Good Morning Jakarta Weekend", host: "Rio & Odah", 
       image: "/shows/goodmorningjakarta-weekend.jpg", live: true 
     },
     { 
@@ -276,7 +276,7 @@ function buildSunday(): Seg[] {
     { start: "00:00", end: "06:00", show: "Night Flow", image: "/shows/nightflow.jpg", live: false },
     { 
       start: "06:00", end: "10:00", 
-      show: "Good Morning Jakarta Weekend", host: "OT Syech & Chaca", 
+      show: "Good Morning Jakarta Weekend", host: "OT Syech & Salsa", 
       image: "/shows/goodmorningjakarta-weekend.jpg", live: true 
     },
     { 
