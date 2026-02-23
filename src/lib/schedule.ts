@@ -70,8 +70,8 @@ function buildMonday(_isoDate: string): Seg[] {
     },
     { 
       start: "10:00", end: "13:00", 
-      show: "Office Hour", host: "Risan", //Rio
-      image: "/shows/officehour-risan.jpg", live: true 
+      show: "Office Hour", host: "Odah", //Rio
+      image: "/shows/officehour-odah.jpg", live: true 
     },
     { 
       start: "13:00", end: "16:00", 
@@ -103,8 +103,8 @@ function buildTuesday(_isoDate: string): Seg[] {
     },
     { 
       start: "10:00", end: "13:00", 
-      show: "Office Hour", host: "Odah", //Odah
-      image: "/shows/officehour-odah.jpg", live: true 
+      show: "Office Hour", host: "Rio", //Odah
+      image: "/shows/officehour-rio.jpg", live: true 
     },
     { 
       start: "13:00", end: "16:00", 
